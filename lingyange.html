@@ -584,7 +584,7 @@
           ]
         },
         {
-          id: 9, stage: 'early', storyline: 'prince', historicalYear: '628', title: '长孙请立太子',
+          id: 9, stage: 'early', storyline: 'prince', historicalYear: '627', title: '长孙请立太子',
           desc: '长孙无忌上奏，请求正式册立李承乾为太子，以定国本。',
           options: [
             { text: '立即册立', effects: { changsun: 25, weizheng: -15, yuchi: -5, fangxuanling: -5, stability: -5 }, feedback: '太子之位既定，但魏征与房玄龄皆忧虑外戚坐大。' },
@@ -593,12 +593,12 @@
           ]
         },
         {
-          id: 10, stage: 'early', storyline: null, historicalYear: '628', title: '太上皇去世',
-          desc: '太上皇李渊病重，朝堂之上关于丧礼仪制议论纷纷，有人主张厚葬以显孝道。',
+          id: 10, stage: 'early', storyline: null, historicalYear: '628', title: '突厥内乱',
+          desc: '628年，突厥颉利可汗与其侄突利可汗内斗，草原各部离心。朝臣对此看法不一。',
           options: [
-            { text: '厚葬太上皇，举国哀悼', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: -10, stability: -5 }, feedback: '孝道可彰，但国库负担加重。' },
-            { text: '从简办理，不扰民生', effects: { weizheng: 20, fangxuanling: 15, changsun: -10, yuchi: -5, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，百姓无扰。' },
-            { text: '按礼制办，不大操大办', effects: { changsun: 5, weizheng: 5, fangxuanling: 5, yuchi: 5 }, feedback: '中规中矩，各方无话可说。' }
+            { text: '支持尉迟敬德整军备战', effects: { yuchi: 20, changsun: -5, weizheng: -5, fangxuanling: 5, stability: 5 }, feedback: '尉迟敬德摩拳擦掌，但国库和民生尚未准备好。' },
+            { text: '支持长孙无忌静观其变', effects: { changsun: 15, yuchi: -15, weizheng: 5, fangxuanling: -5 }, feedback: '突厥继续内耗，但尉迟敬德认为这是错失良机。' },
+            { text: '派房玄龄遣使分化突厥各部', effects: { fangxuanling: 20, changsun: 5, yuchi: 5, weizheng: -5, stability: 10 }, feedback: '房玄龄暗中联络突厥反对派，为未来北伐埋下伏笔。' }
           ]
         },
         {
@@ -711,12 +711,12 @@
           ]
         },
         {
-          id: 28, stage: 'middle', storyline: null, historicalYear: '635', title: '凌烟阁画像排序',
-          desc: '你要为凌烟阁功臣画像排定次序，这直接关系到各方势力的脸面。',
+          id: 28, stage: 'middle', storyline: null, historicalYear: '635', title: '太上皇去世',
+          desc: '635年，太上皇李渊驾崩。朝堂之上关于丧礼仪制议论纷纷，有人主张厚葬以显孝道。',
           options: [
-            { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5, fangxuanling: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
-            { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5, fangxuanling: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
-            { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10, fangxuanling: 10 }, feedback: '魏征与房玄龄称赞你公允，朝堂相安无事。' }
+            { text: '厚葬太上皇，举国哀悼', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: -10, stability: -5 }, feedback: '孝道可彰，但国库负担加重。' },
+            { text: '从简办理，不扰民生', effects: { weizheng: 20, fangxuanling: 15, changsun: -10, yuchi: -5, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，百姓无扰。' },
+            { text: '按礼制办，不大操大办', effects: { changsun: 5, weizheng: 5, fangxuanling: 5, yuchi: 5 }, feedback: '中规中矩，各方无话可说。' }
           ]
         },
         {
@@ -892,12 +892,12 @@
           ]
         },
         {
-          id: 48, stage: 'late', storyline: null, historicalYear: '643', title: '荧惑守心',
-          desc: '钦天监奏报"荧惑守心"，魏征上书归咎朝政，房玄龄建议开坛祭天、大赦天下。',
+          id: 48, stage: 'late', storyline: null, historicalYear: '643', title: '凌烟阁画像排序',
+          desc: '643年，凌烟阁二十四功臣画像即将完成。排定画像次序，直接关系到各方势力的脸面。',
           options: [
-            { text: '大赦天下，减轻刑罚', effects: { weizheng: 15, fangxuanling: 15, yuchi: -10, changsun: -5, stability: 5 }, feedback: '民心稍安，但尉迟敬德认为此举示弱。' },
-            { text: '斥责钦天监妖言惑众', effects: { weizheng: -20, fangxuanling: -10, yuchi: 10, changsun: 10, stability: -10 }, feedback: '朝野议论纷纷，以为你要掩盖过失。' },
-            { text: '纳谏自省，下罪己诏', effects: { weizheng: 25, fangxuanling: 10, changsun: -5, yuchi: -5, stability: 10 }, feedback: '魏征与房玄龄皆称圣明，天下归心。' }
+            { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5, fangxuanling: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
+            { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5, fangxuanling: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
+            { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10, fangxuanling: 10 }, feedback: '魏征与房玄龄称赞你公允，朝堂相安无事。' }
           ]
         },
         {
