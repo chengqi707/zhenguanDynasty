@@ -412,6 +412,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
+      version: '1.2.2',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -1852,7 +1853,21 @@
     }
 
     // ==================== 初始化 ====================
+    function checkVersion() {
+      try {
+        const savedVersion = localStorage.getItem('lyg_version');
+        if (savedVersion !== config.version) {
+          localStorage.removeItem('lyg_save');
+          localStorage.removeItem('lyg_logs');
+          localStorage.removeItem('lyg_archive_unlocks');
+          localStorage.setItem('lyg_version', config.version);
+          console.log(`版本已更新：${savedVersion || '无'} → ${config.version}，旧存档已清除`);
+        }
+      } catch (e) {}
+    }
+
     window.onload = function() {
+      checkVersion();
       const hasSaveData = loadGame();
       if (!hasSaveData) {
         gameState.currentEvents = randomEvents(config.eventsPerDay);
