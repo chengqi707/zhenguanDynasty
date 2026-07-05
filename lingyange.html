@@ -17,11 +17,7 @@
       --text-light: #6b5d4d;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: "Noto Serif SC", "SimSun", "STSong", serif;
@@ -38,7 +34,7 @@
       min-height: 100vh;
     }
 
-    /* 顶部状态栏 */
+    /* 顶部 */
     .header {
       background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
       border: 2px solid var(--gold);
@@ -58,62 +54,38 @@
       gap: 8px;
     }
 
-    .title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      letter-spacing: 4px;
-      color: var(--gold);
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
+    .title { font-size: 1.5rem; font-weight: bold; letter-spacing: 4px; color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .day-badge { background: var(--red); color: #fff; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid var(--gold); }
 
-    .day-badge {
-      background: var(--red);
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 16px;
-      font-size: 0.9rem;
+    .header-actions { display: flex; gap: 8px; }
+    .icon-btn {
+      background: transparent;
       border: 1px solid var(--gold);
-    }
-
-    .stability-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .stability-label {
-      white-space: nowrap;
-      font-size: 0.9rem;
-    }
-
-    .progress-wrap {
-      flex: 1;
-      height: 12px;
-      background: rgba(0,0,0,0.5);
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid var(--gold);
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--red), var(--gold));
-      transition: width 0.5s ease;
-    }
-
-    .stability-value {
-      min-width: 40px;
-      text-align: right;
-      font-weight: bold;
       color: var(--gold);
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
     }
+    .icon-btn:hover { background: rgba(201,162,39,0.15); }
+
+    .stability-bar { display: flex; align-items: center; gap: 12px; }
+    .stability-label { white-space: nowrap; font-size: 0.9rem; }
+    .progress-wrap { flex: 1; height: 12px; background: rgba(0,0,0,0.5); border-radius: 6px; overflow: hidden; border: 1px solid var(--gold); }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold)); transition: width 0.5s ease; }
+    .stability-value { min-width: 40px; text-align: right; font-weight: bold; color: var(--gold); }
 
     /* 角色面板 */
     .characters {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
       margin-bottom: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .characters { grid-template-columns: repeat(2, 1fr); }
     }
 
     .character-card {
@@ -125,70 +97,26 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       position: relative;
     }
-
     .character-card::before {
       content: "";
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      right: 4px;
-      bottom: 4px;
-      border: 1px solid rgba(201, 162, 39, 0.3);
-      border-radius: 6px;
-      pointer-events: none;
+      position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px solid rgba(201, 162, 39, 0.3); border-radius: 6px; pointer-events: none;
     }
 
     .portrait {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
+      width: 56px; height: 56px; border-radius: 50%;
       background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
       margin: 0 auto 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      border: 2px solid var(--gold);
-      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; border: 2px solid var(--gold); color: var(--gold);
     }
+    .character-name { font-weight: bold; font-size: 1rem; margin-bottom: 2px; color: var(--text); }
+    .character-title { font-size: 0.7rem; color: var(--text-light); margin-bottom: 8px; }
 
-    .character-name {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-bottom: 4px;
-      color: var(--text);
-    }
-
-    .character-title {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      margin-bottom: 8px;
-    }
-
-    .stat {
-      margin-bottom: 6px;
-    }
-
-    .stat-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      margin-bottom: 2px;
-      color: var(--text-light);
-    }
-
-    .stat-bar {
-      height: 8px;
-      background: #e0d8c8;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .stat-fill {
-      height: 100%;
-      transition: width 0.5s ease;
-    }
-
+    .stat { margin-bottom: 6px; }
+    .stat-label { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px; color: var(--text-light); }
+    .stat-bar { height: 7px; background: #e0d8c8; border-radius: 4px; overflow: hidden; }
+    .stat-fill { height: 100%; transition: width 0.5s ease; }
     .favor-fill { background: linear-gradient(90deg, #8b1a1a, #c9a227); }
     .power-fill { background: linear-gradient(90deg, #2c5aa0, #4a90d9); }
 
@@ -200,46 +128,14 @@
       padding: 20px;
       min-height: 300px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      position: relative;
     }
 
-    .phase-title {
-      text-align: center;
-      font-size: 1.3rem;
-      color: var(--red);
-      margin-bottom: 16px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
-
-    .event-card {
-      background: #fffef8;
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .event-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--red);
-      margin-bottom: 8px;
-      border-bottom: 1px solid var(--gold-light);
-      padding-bottom: 8px;
-    }
-
-    .event-desc {
-      color: var(--text);
-      font-size: 1rem;
-      margin-bottom: 16px;
-      line-height: 1.8;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .phase-title { text-align: center; font-size: 1.3rem; color: var(--red); margin-bottom: 16px; font-weight: bold; letter-spacing: 2px; }
+    .event-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .event-title { font-size: 1.1rem; font-weight: bold; color: var(--red); margin-bottom: 8px; border-bottom: 1px solid var(--gold-light); padding-bottom: 8px; }
+    .event-desc { color: var(--text); font-size: 1rem; margin-bottom: 16px; line-height: 1.8; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
 
     .btn {
       padding: 12px 16px;
@@ -252,202 +148,128 @@
       text-align: left;
       line-height: 1.5;
     }
+    .btn-primary { background: linear-gradient(180deg, #8b1a1a, var(--red)); color: #fff; }
+    .btn-primary:hover { background: linear-gradient(180deg, var(--red), #d32f2f); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(178,34,34,0.4); }
+    .btn-secondary { background: var(--paper); color: var(--text); }
+    .btn-secondary:hover { background: var(--gold-light); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    .btn-primary {
-      background: linear-gradient(180deg, #8b1a1a, var(--red));
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(180deg, var(--red), #d32f2f);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(178, 34, 34, 0.4);
-    }
-
-    .btn-secondary {
-      background: var(--paper);
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      background: var(--gold-light);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .option-label {
-      font-weight: bold;
-      margin-right: 8px;
-      color: var(--gold);
-    }
-
-    .feedback {
-      background: #fff8e1;
-      border-left: 4px solid var(--gold);
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 4px;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
+    .option-label { font-weight: bold; margin-right: 8px; color: var(--gold); }
+    .feedback { background: #fff8e1; border-left: 4px solid var(--gold); padding: 12px; margin-top: 12px; border-radius: 4px; font-size: 0.95rem; color: var(--text); }
 
     /* 晚间决策 */
-    .night-actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-    }
-
-    .action-card {
-      background: #fffef8;
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 14px;
-      text-align: center;
-    }
-
-    .action-name {
-      font-weight: bold;
-      color: var(--red);
-      margin-bottom: 6px;
-    }
-
-    .action-desc {
-      font-size: 0.85rem;
-      color: var(--text-light);
-      margin-bottom: 10px;
-    }
+    .night-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .action-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 14px; text-align: center; }
+    .action-name { font-weight: bold; color: var(--red); margin-bottom: 6px; }
+    .action-desc { font-size: 0.82rem; color: var(--text-light); margin-bottom: 10px; }
 
     /* 结局页 */
-    .ending-screen {
+    .ending-screen { text-align: center; padding: 10px; }
+    .ending-title { font-size: 2rem; color: var(--red); margin-bottom: 12px; letter-spacing: 4px; }
+    .ending-subtitle { font-size: 1.2rem; color: var(--text-light); margin-bottom: 20px; }
+    .posthumous-title { font-size: 3rem; color: var(--gold); margin: 16px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: bold; }
+    .summary-text { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 18px; margin: 16px 0; text-align: left; font-size: 1.02rem; line-height: 1.8; }
+    .final-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin: 16px 0; }
+    .final-stat { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; }
+    .final-stat-value { font-size: 1.2rem; font-weight: bold; color: var(--red); }
+    .final-stat-label { font-size: 0.75rem; color: var(--text-light); }
+    .ending-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+
+    /* 商业化 */
+    .monetization-note { font-size: 0.72rem; color: var(--text-light); margin-top: 6px; }
+    .ad-badge { display: inline-block; background: var(--gold); color: var(--black); font-size: 0.65rem; padding: 1px 5px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 16px;
+    }
+    .modal {
+      background: var(--paper); border: 2px solid var(--gold); border-radius: 8px;
+      max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;
+      padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .modal-title { font-size: 1.3rem; color: var(--red); margin-bottom: 16px; text-align: center; font-weight: bold; }
+    .modal-close { float: right; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+    .modal-section { margin-bottom: 16px; }
+    .modal-section h4 { color: var(--red); margin-bottom: 8px; font-size: 1rem; }
+    .modal-section p, .modal-section li { font-size: 0.9rem; color: var(--text); margin-bottom: 6px; }
+    .modal-section ul { padding-left: 20px; }
+    .history-item { border-bottom: 1px dashed var(--gold-light); padding: 8px 0; font-size: 0.9rem; }
+    .history-day { color: var(--red); font-weight: bold; margin-right: 8px; }
+
+    /* 分享卡片 */
+    .share-card {
+      width: 375px;
+      background: linear-gradient(135deg, #2d2418 0%, #1a1a1a 100%);
+      border: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 28px;
+      color: var(--gold-light);
       text-align: center;
-      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
+    .share-title { font-size: 1.4rem; letter-spacing: 4px; color: var(--gold); margin-bottom: 8px; }
+    .share-ending { font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
+    .share-posthumous { font-size: 3rem; color: var(--gold); margin: 12px 0; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .share-summary { font-size: 0.95rem; line-height: 1.7; color: var(--gold-light); margin: 12px 0; text-align: left; }
+    .share-footer { margin-top: 16px; font-size: 0.8rem; color: var(--text-light); border-top: 1px solid var(--gold); padding-top: 10px; }
 
-    .ending-title {
-      font-size: 2rem;
-      color: var(--red);
-      margin-bottom: 12px;
-      letter-spacing: 4px;
+    /* 飘字动画 */
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-30px); }
     }
-
-    .ending-subtitle {
-      font-size: 1.2rem;
-      color: var(--text-light);
-      margin-bottom: 24px;
-    }
-
-    .posthumous-title {
-      font-size: 3rem;
-      color: var(--gold);
-      margin: 20px 0;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+    .float-text {
+      position: absolute;
       font-weight: bold;
+      font-size: 1rem;
+      pointer-events: none;
+      animation: floatUp 1s ease forwards;
+      z-index: 50;
     }
-
-    .summary-text {
-      background: #fffef8;
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-      text-align: left;
-      font-size: 1.05rem;
-      line-height: 1.8;
-    }
-
-    .final-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-      margin: 20px 0;
-    }
-
-    .final-stat {
-      background: #fffef8;
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .final-stat-value {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: var(--red);
-    }
-
-    .final-stat-label {
-      font-size: 0.8rem;
-      color: var(--text-light);
-    }
-
-    .ending-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    /* 商业化占位 */
-    .monetization-note {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      margin-top: 6px;
-    }
-
-    .ad-badge {
-      display: inline-block;
-      background: var(--gold);
-      color: var(--black);
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-    }
-
-    /* 隐藏 */
-    .hidden {
-      display: none !important;
-    }
+    .float-positive { color: #2e7d32; }
+    .float-negative { color: var(--red); }
 
     /* 动画 */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .fade-in { animation: fadeIn 0.4s ease; }
 
-    .fade-in {
-      animation: fadeIn 0.4s ease;
-    }
+    .hidden { display: none !important; }
 
     @media (max-width: 600px) {
-      .title { font-size: 1.2rem; letter-spacing: 2px; }
+      .title { font-size: 1.1rem; letter-spacing: 2px; }
       .phase-title { font-size: 1.1rem; }
       .posthumous-title { font-size: 2.2rem; }
       .ending-title { font-size: 1.5rem; }
       .game-area { padding: 14px; }
+      .night-actions { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- 顶部状态栏 -->
+    <!-- 顶部 -->
     <div class="header">
       <div class="header-top">
         <div class="title">凌烟阁密档</div>
-        <div class="day-badge">第 <span id="dayDisplay">1</span> / 30 天</div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="openHistory()">编年史</button>
+          <button class="icon-btn" onclick="openSettings()">设置</button>
+        </div>
       </div>
       <div class="stability-bar">
         <span class="stability-label">皇权稳定度</span>
-        <div class="progress-wrap">
-          <div class="progress-fill" id="stabilityBar" style="width: 50%"></div>
-        </div>
+        <div class="progress-wrap"><div class="progress-fill" id="stabilityBar" style="width: 50%"></div></div>
         <span class="stability-value" id="stabilityValue">50</span>
+      </div>
+      <div style="margin-top:8px; text-align:right; font-size:0.8rem; color:var(--text-light);">
+        第 <span id="dayDisplay">1</span> / <span id="maxDayDisplay">30</span> 天
       </div>
     </div>
 
@@ -462,182 +284,340 @@
     </div>
   </div>
 
+  <!-- 设置弹窗 -->
+  <div id="settingsModal" class="modal-overlay hidden" onclick="closeSettings(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeSettings()">×</button>
+      <div class="modal-title">设置</div>
+      <div class="modal-section">
+        <h4>存档</h4>
+        <p>游戏会自动保存当前进度。你可以手动导出/导入存档或清空数据。</p>
+        <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="exportSave()">导出存档</button>
+        <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="importSavePrompt()">导入存档</button>
+        <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="clearAllData()">清空所有数据</button>
+      </div>
+      <div class="modal-section">
+        <h4>埋点日志</h4>
+        <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="exportLogs()">导出日志</button>
+        <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="clearLogs()">清空日志</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编年史弹窗 -->
+  <div id="historyModal" class="modal-overlay hidden" onclick="closeHistory(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeHistory()">×</button>
+      <div class="modal-title">编年史</div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- 分享卡片（隐藏，用于截图） -->
+  <div id="shareCard" class="share-card hidden">
+    <div class="share-title">凌烟阁密档</div>
+    <div class="share-ending" id="shareEnding"></div>
+    <div class="share-posthumous" id="sharePosthumous"></div>
+    <div class="share-summary" id="shareSummary"></div>
+    <div class="share-footer">来扮演李世民，书写你的贞观传奇</div>
+  </div>
+
   <script>
-    // ==================== 游戏状态 ====================
-    const gameState = {
-      day: 1,
+    // ==================== 配置数据 ====================
+    const config = {
       maxDay: 30,
-      stability: 50,
-      eventIndex: 0,
-      currentEvents: [],
-      lastMeetDay: { changsun: -99, yuchi: -99, weizheng: -99 },
-      adUsedToday: false,
-      history: [],
+      eventsPerDay: 3,
+      meetCooldown: 5,
+      banquetCost: 10,
+      meetFavor: 15,
+      meetPenalty: 5,
+      banquetFavor: 5,
+      adMeetFavor: 15,
+      stabilityInitial: 50,
+      powerInitial: 30,
       characters: {
-        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔', favor: 0, power: 30 },
-        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', favor: 0, power: 30 },
-        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜', favor: 0, power: 30 }
-      }
+        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔' },
+        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️' },
+        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜' },
+        fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️' }
+      },
+      posthumousTitles: [
+        {
+          id: 'taizong',
+          name: '太宗',
+          condition: (s) => s.stability >= 80 &&
+            s.characters.changsun.favor >= 20 &&
+            s.characters.yuchi.favor >= 20 &&
+            s.characters.weizheng.favor >= 20 &&
+            s.characters.fangxuanling.favor >= 20,
+          summary: '你开创了一代盛世，君臣相得，四海升平。'
+        },
+        {
+          id: 'wudi',
+          name: '武帝',
+          condition: (s) => s.characters.yuchi.power >= 80 && s.stability >= 40,
+          summary: '你倚重武功，威震四方，但朝堂之上暗流涌动。'
+        },
+        {
+          id: 'wenzong',
+          name: '文宗',
+          condition: (s) => s.characters.weizheng.power >= 80 && s.stability >= 40,
+          summary: '你广开言路，重视文治，朝堂风气为之一新。'
+        },
+        {
+          id: 'gaozong',
+          name: '高宗',
+          condition: (s) => s.characters.changsun.power >= 80 && s.stability >= 40,
+          summary: '外戚势力渐大，你的皇权被逐步架空，沦为象征。'
+        },
+        {
+          id: 'xuanzong',
+          name: '宣宗',
+          condition: (s) => s.characters.fangxuanling.power >= 80 && s.stability >= 40,
+          summary: '你知人善任，制度严明，朝堂运转井然有序。'
+        },
+        {
+          id: 'yang',
+          name: '炀',
+          condition: (s) => s.stability <= 0 ||
+            Object.values(s.characters).some(c => c.favor <= -100),
+          summary: '你众叛亲离，统治分崩离析，成为后人警示的反面教材。'
+        },
+        {
+          id: 'zhongzong',
+          name: '中宗',
+          condition: () => true,
+          summary: '你守住了祖宗基业，虽无赫赫之功，也算平稳度日。'
+        }
+      ],
+      events: [
+        {
+          id: 1, title: '尉迟争座',
+          desc: '尉迟敬德在宴会上因座次排在长孙无忌之后，当众发怒："我有夺门之功，岂能让文官压一头！"',
+          options: [
+            { text: '训斥尉迟，维护礼制', effects: { yuchi: -30, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
+            { text: '安抚尉迟，给他更高座次', effects: { yuchi: 20, changsun: -20, weizheng: -20 }, feedback: '尉迟敬德得意洋洋，长孙无忌面色阴沉，魏征摇头叹息。' },
+            { text: '和稀泥，各退一步', effects: { yuchi: 5, changsun: 5, weizheng: -10 }, feedback: '争端暂时平息，但魏征认为你软弱可欺。' }
+          ]
+        },
+        {
+          id: 2, title: '魏征直谏修宫殿',
+          desc: '魏征上书反对修建洛阳宫，言辞激烈："隋炀帝前车之鉴，陛下不可重蹈覆辙！"',
+          options: [
+            { text: '接受谏言，停工', effects: { weizheng: 30, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
+            { text: '驳回谏言，继续修建', effects: { weizheng: -30, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
+            { text: '缩减规模，折中处理', effects: { weizheng: 10, yuchi: 5, fangxuanling: 5 }, feedback: '房玄龄称此法可省国库，各方亦有台阶。' }
+          ]
+        },
+        {
+          id: 3, title: '长孙推荐太子党',
+          desc: '长孙无忌私下推荐几位亲信担任要职，暗示这是为了"太子未来的班底"。',
+          options: [
+            { text: '全部批准', effects: { changsun: 30, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私，房玄龄默然不语。' },
+            { text: '拒绝，坚持任人唯贤', effects: { changsun: -20, weizheng: 20, fangxuanling: 10, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，长孙无忌心中不悦。' },
+            { text: '批准一半，留一半自己任命', effects: { changsun: 10, weizheng: 5, fangxuanling: 5 }, feedback: '两边都得了些好处，朝局维持平衡。' }
+          ]
+        },
+        {
+          id: 4, title: '突厥边报紧急',
+          desc: '突厥骑兵犯边，边关告急。尉迟敬德请战，长孙无忌主张和谈，魏征认为应先整饬内政。',
+          options: [
+            { text: '派尉迟敬德出征', effects: { yuchi: 25, changsun: -10, weizheng: -5, stability: 5 }, feedback: '尉迟敬德得偿所愿，挥师北上，朝堂暂时安静。' },
+            { text: '派使者议和', effects: { changsun: 20, yuchi: -25, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
+            { text: '召房玄龄商议后发兵', effects: { yuchi: 10, fangxuanling: 15, changsun: -5, weizheng: -5, stability: 5 }, feedback: '房玄龄调拨粮草，尉迟敬德无后顾之忧，朝堂皆大欢喜。' }
+          ]
+        },
+        {
+          id: 5, title: '尉迟私斗伤人',
+          desc: '尉迟敬德在朝堂外与一名文官争执，一拳将其打伤。百官哗然，要求严惩。',
+          options: [
+            { text: '杖责二十，以儆效尤', effects: { yuchi: -25, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
+            { text: '口头训斥，从轻发落', effects: { yuchi: 10, changsun: -10, weizheng: -20, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激涕零，但清流与务实派都认为他恃功而骄。' },
+            { text: '罚俸三月，令其闭门思过', effects: { yuchi: -5, changsun: 5, weizheng: 5, fangxuanling: 5 }, feedback: '处罚不痛不痒，各方皆有微词。' }
+          ]
+        },
+        {
+          id: 6, title: '魏征弹劾皇亲',
+          desc: '魏征上书弹劾一名皇亲国戚侵占民田，奏折中言辞激烈，甚至影射后宫。',
+          options: [
+            { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -10, yuchi: -5, fangxuanling: 5, stability: -5 }, feedback: '民心大快，宗室对你颇有怨言，房玄龄认为此乃立威之机。' },
+            { text: '压下奏折，保全皇亲', effects: { weizheng: -30, changsun: 10, yuchi: 5, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"房玄龄摇头退朝。' },
+            { text: '责令退还民田，不再追究', effects: { weizheng: 10, changsun: 5, yuchi: 5, fangxuanling: 10 }, feedback: '两边各退一步，民怨稍平，房玄龄赞你处事周全。' }
+          ]
+        },
+        {
+          id: 7, title: '长孙请立太子',
+          desc: '长孙无忌再次上奏，请求正式册立李承乾为太子，以定国本。',
+          options: [
+            { text: '立即册立', effects: { changsun: 25, weizheng: -15, yuchi: -5, fangxuanling: -5, stability: -5 }, feedback: '太子之位既定，但魏征与房玄龄皆忧虑外戚坐大。' },
+            { text: '暂缓，再观察诸皇子', effects: { changsun: -20, weizheng: 10, yuchi: 10, fangxuanling: -5, stability: 5 }, feedback: '长孙无忌表面恭顺，心中已有芥蒂。' },
+            { text: '册立但削减太子府属官', effects: { changsun: 5, weizheng: 5, yuchi: 5, fangxuanling: 15 }, feedback: '国本既立，又防外戚专权，房玄龄称此举深得制衡之道。' }
+          ]
+        },
+        {
+          id: 8, title: '减免赋税之争',
+          desc: '关中大旱，魏征奏请减免赋税；长孙无忌担心国库空虚；尉迟敬德认为应先赈济军户。',
+          options: [
+            { text: '全面减税，开仓放粮', effects: { weizheng: 20, changsun: -10, yuchi: -5, fangxuanling: -10, stability: 10 }, feedback: '百姓称颂，但国库压力陡增，房玄龄忧虑后续开支。' },
+            { text: '只减农税，军赋不变', effects: { yuchi: 15, weizheng: -5, changsun: 5, fangxuanling: -5 }, feedback: '尉迟敬德满意，但魏征与房玄龄认为不够彻底。' },
+            { text: '以工代赈，暂不减税', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: 20, stability: -5 }, feedback: '房玄龄主持修渠赈灾，国库得以维持，灾民亦有生计。' }
+          ]
+        },
+        {
+          id: 9, title: '科举取士风波',
+          desc: '今科进士多出自寒门，世家大族不满，长孙无忌暗示应"照顾旧族"。',
+          options: [
+            { text: '坚持唯才是举，不论出身', effects: { weizheng: 20, changsun: -20, fangxuanling: 10, stability: 5 }, feedback: '寒门士子感恩戴德，世家怨气暗生，房玄龄称此乃长久之计。' },
+            { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -25, fangxuanling: -15, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车，房玄龄反对无效。' },
+            { text: '维持原榜，另设恩科', effects: { changsun: 10, weizheng: 5, fangxuanling: 15 }, feedback: '两边都有台阶下，风波暂时平息，房玄龄赞你折中得法。' }
+          ]
+        },
+        {
+          id: 10, title: '凌烟阁画像排序',
+          desc: '你要为凌烟阁功臣画像排定次序，这直接关系到各方势力的脸面。',
+          options: [
+            { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5, fangxuanling: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
+            { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5, fangxuanling: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
+            { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10, fangxuanling: 10 }, feedback: '魏征与房玄龄称赞你公允，朝堂相安无事。' }
+          ]
+        },
+        {
+          id: 11, title: '房玄龄献租庸调法',
+          desc: '房玄龄呈上新的赋税制度，主张均田、租庸调并举，以求国用充足。',
+          options: [
+            { text: '全面推行', effects: { fangxuanling: 25, weizheng: 10, changsun: -10, yuchi: -10, stability: 5 }, feedback: '国库收入渐稳，但旧族与军户一时难以适应。' },
+            { text: '暂缓施行', effects: { fangxuanling: -15, weizheng: -5, changsun: 5, yuchi: 5 }, feedback: '房玄龄失望退下，各方势力暂时相安。' },
+            { text: '选三州试点', effects: { fangxuanling: 15, weizheng: 5, changsun: 5, yuchi: 5 }, feedback: '稳妥推进，房玄龄称此法可收长远之效。' }
+          ]
+        },
+        {
+          id: 12, title: '文武两派当庭争执',
+          desc: '长孙无忌与尉迟敬德为一件军务互相攻讦，朝堂之上剑拔弩张。',
+          options: [
+            { text: '让房玄龄居中调停', effects: { fangxuanling: 20, changsun: 5, yuchi: 5, weizheng: -5, stability: 5 }, feedback: '房玄龄两边安抚，争端平息，魏征却觉得你在和稀泥。' },
+            { text: '各打五十大板', effects: { changsun: -10, yuchi: -10, weizheng: 10, fangxuanling: 5 }, feedback: '魏征称赞你公正，但两派首领皆感不快。' },
+            { text: '支持长孙，压制尉迟', effects: { changsun: 15, yuchi: -20, weizheng: -5, fangxuanling: -5, stability: -5 }, feedback: '文官得势，尉迟敬德怒目而退。' }
+          ]
+        },
+        {
+          id: 13, title: '房玄龄请修国史',
+          desc: '房玄龄建议设立史馆，修撰前朝国史，以明得失。魏征认为当前应以谏政为先。',
+          options: [
+            { text: '准奏，设立史馆', effects: { fangxuanling: 20, weizheng: -10, changsun: 5, stability: 5 }, feedback: '史官动笔，后世有据，但魏征认为眼前政事更急。' },
+            { text: '驳回，先理朝政', effects: { fangxuanling: -15, weizheng: 15, changsun: -5 }, feedback: '魏征称善，房玄龄虽遗憾但无异议。' },
+            { text: '由魏征兼领史馆', effects: { fangxuanling: 10, weizheng: 15, changsun: -5 }, feedback: '两贤共事，既修史又不忘谏政，可谓两全。' }
+          ]
+        },
+        {
+          id: 14, title: '房玄龄举荐贤才',
+          desc: '房玄龄举荐几名寒门才子入仕，与长孙无忌推荐的世家子弟形成竞争。',
+          options: [
+            { text: '采纳房玄龄所荐', effects: { fangxuanling: 20, changsun: -15, weizheng: 10, stability: 5 }, feedback: '寒门得进，长孙无忌暗生不满。' },
+            { text: '采纳长孙无忌所荐', effects: { changsun: 20, fangxuanling: -15, weizheng: -10, stability: -5 }, feedback: '世家得利，房玄龄默然。' },
+            { text: '让二人各荐一半', effects: { fangxuanling: 5, changsun: 5, weizheng: -5 }, feedback: '各得其所，但魏征认为此举仍有结党之嫌。' }
+          ]
+        },
+        {
+          id: 15, title: '尉迟敬德请辞兵权',
+          desc: '尉迟敬德以年老为由请辞禁军统领，朝中有人建议顺水推舟，也有人认为会寒了功臣心。',
+          options: [
+            { text: '准辞，赐金还乡', effects: { yuchi: -20, changsun: 10, weizheng: 10, fangxuanling: 15, stability: 5 }, feedback: '尉迟敬德黯然离去，但皇权得以巩固。' },
+            { text: '挽留，仍掌兵权', effects: { yuchi: 20, changsun: -10, weizheng: -10, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激，但文官们忧心忡忡。' },
+            { text: '改任虚衔，另派亲信掌兵', effects: { yuchi: -5, changsun: 5, weizheng: -5, fangxuanling: 10 }, feedback: '房玄龄称此为上策，尉迟敬德虽不满但尚可接受。' }
+          ]
+        },
+        {
+          id: 16, title: '魏征与房玄龄政见不合',
+          desc: '魏征主张严惩贪官，房玄龄认为应以教化为主，二人当庭争辩。',
+          options: [
+            { text: '支持魏征，严刑峻法', effects: { weizheng: 20, fangxuanling: -15, changsun: 5, stability: 5 }, feedback: '朝堂肃杀，房玄龄担忧过犹不及。' },
+            { text: '支持房玄龄，以教化为先', effects: { fangxuanling: 20, weizheng: -15, changsun: -5, stability: -5 }, feedback: '魏征认为你纵容贪腐，颇有微词。' },
+            { text: '严办首恶，余者教化', effects: { weizheng: 10, fangxuanling: 15, changsun: 5, stability: 5 }, feedback: '二人各得其所，朝野称你处置得当。' }
+          ]
+        },
+        {
+          id: 17, title: '长孙无忌排挤房玄龄',
+          desc: '长孙无忌多次在奏对中暗示房玄龄"权柄过重"，建议分其权责。',
+          options: [
+            { text: '分房玄龄之权', effects: { changsun: 20, fangxuanling: -25, weizheng: -5, stability: -5 }, feedback: '房玄龄心灰意冷，魏征为你惋惜。' },
+            { text: '驳斥长孙，信任房玄龄', effects: { changsun: -20, fangxuanling: 25, weizheng: 10, stability: 5 }, feedback: '房玄龄感念知遇，长孙无忌悻悻而退。' },
+            { text: '令二人共理政务，互相牵制', effects: { changsun: 5, fangxuanling: 5, weizheng: 5, yuchi: -5 }, feedback: '朝堂再平衡，但效率略降。' }
+          ]
+        },
+        {
+          id: 18, title: '边境军饷不足',
+          desc: '兵部奏报军饷短缺，尉迟敬德要求加税，房玄龄主张裁撤老弱、精简开支。',
+          options: [
+            { text: '加征税赋，充实军饷', effects: { yuchi: 20, weizheng: -15, fangxuanling: -15, changsun: -5, stability: -10 }, feedback: '军队满意，但百姓负担加重。' },
+            { text: '按房玄龄之策裁军省饷', effects: { fangxuanling: 25, yuchi: -25, weizheng: 10, changsun: 10, stability: 5 }, feedback: '国库减压，但尉迟敬德认为你在削他根基。' },
+            { text: '向关中世家借款应急', effects: { changsun: 15, yuchi: 10, weizheng: -10, fangxuanling: -5, stability: -5 }, feedback: '军饷得解，但世家借此要官。' }
+          ]
+        },
+        {
+          id: 19, title: '皇子争储暗流',
+          desc: '太子李承乾与魏王李泰各有拥趸，朝臣开始站队。',
+          options: [
+            { text: '公开支持太子', effects: { changsun: 15, fangxuanling: 10, weizheng: -5, yuchi: -5 }, feedback: '国本稳固，但魏王党羽暗恨。' },
+            { text: '敲打太子，抬高魏王', effects: { changsun: -15, weizheng: 15, fangxuanling: -5, yuchi: 5, stability: -5 }, feedback: '太子惶恐，朝局再生波澜。' },
+            { text: '召集房玄龄等重臣共议', effects: { fangxuanling: 20, changsun: 5, weizheng: 10, yuchi: 5, stability: 5 }, feedback: '集思广益，储位之争暂息。' }
+          ]
+        },
+        {
+          id: 20, title: '荧惑守心',
+          desc: '钦天监奏报"荧惑守心"，魏征上书归咎朝政，房玄龄建议开坛祭天、大赦天下。',
+          options: [
+            { text: '大赦天下，减轻刑罚', effects: { weizheng: 15, fangxuanling: 15, yuchi: -10, changsun: -5, stability: 5 }, feedback: '民心稍安，但尉迟敬德认为此举示弱。' },
+            { text: '斥责钦天监妖言惑众', effects: { weizheng: -20, fangxuanling: -10, yuchi: 10, changsun: 10, stability: -10 }, feedback: '朝野议论纷纷，以为你要掩盖过失。' },
+            { text: '纳谏自省，下罪己诏', effects: { weizheng: 25, fangxuanling: 10, changsun: -5, yuchi: -5, stability: 10 }, feedback: '魏征与房玄龄皆称圣明，天下归心。' }
+          ]
+        }
+      ]
     };
 
-    // ==================== 谥号配置 ====================
-    const posthumousTitles = [
-      {
-        id: 'taizong',
-        name: '太宗',
-        condition: (s) => s.stability >= 80 &&
-          s.characters.changsun.favor >= 20 &&
-          s.characters.yuchi.favor >= 20 &&
-          s.characters.weizheng.favor >= 20,
-        summary: '你开创了一代盛世，君臣相得，四海升平。'
-      },
-      {
-        id: 'wudi',
-        name: '武帝',
-        condition: (s) => s.characters.yuchi.power >= 80 && s.stability >= 40,
-        summary: '你倚重武功，威震四方，但朝堂之上暗流涌动。'
-      },
-      {
-        id: 'wenzong',
-        name: '文宗',
-        condition: (s) => s.characters.weizheng.power >= 80 && s.stability >= 40,
-        summary: '你广开言路，重视文治，朝堂风气为之一新。'
-      },
-      {
-        id: 'gaozong',
-        name: '高宗',
-        condition: (s) => s.characters.changsun.power >= 80 && s.stability >= 40,
-        summary: '外戚势力渐大，你的皇权被逐步架空，沦为象征。'
-      },
-      {
-        id: 'yang',
-        name: '炀',
-        condition: (s) => s.stability <= 0 ||
-          s.characters.changsun.favor <= -100 ||
-          s.characters.yuchi.favor <= -100 ||
-          s.characters.weizheng.favor <= -100,
-        summary: '你众叛亲离，统治分崩离析，成为后人警示的反面教材。'
-      },
-      {
-        id: 'zhongzong',
-        name: '中宗',
-        condition: () => true,
-        summary: '你守住了祖宗基业，虽无赫赫之功，也算平稳度日。'
-      }
-    ];
+    // ==================== 运行时状态 ====================
+    let gameState = createInitialState();
+    let noAds = loadNoAds();
+    let eventLogs = loadLogs();
 
-    // ==================== 事件库 ====================
-    const events = [
-      {
-        id: 1,
-        title: '尉迟争座',
-        desc: '尉迟敬德在宴会上因座次排在长孙无忌之后，当众发怒："我有夺门之功，岂能让文官压一头！"',
-        options: [
-          { text: '训斥尉迟，维护礼制', effects: { yuchi: -30, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
-          { text: '安抚尉迟，给他更高座次', effects: { yuchi: 20, changsun: -20, weizheng: -20 }, feedback: '尉迟敬德得意洋洋，长孙无忌面色阴沉，魏征摇头叹息。' },
-          { text: '和稀泥，各退一步', effects: { yuchi: 5, changsun: 5, weizheng: -10 }, feedback: '争端暂时平息，但魏征认为你软弱可欺。' }
-        ]
-      },
-      {
-        id: 2,
-        title: '魏征直谏修宫殿',
-        desc: '魏征上书反对修建洛阳宫，言辞激烈："隋炀帝前车之鉴，陛下不可重蹈覆辙！"',
-        options: [
-          { text: '接受谏言，停工', effects: { weizheng: 30, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
-          { text: '驳回谏言，继续修建', effects: { weizheng: -30, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
-          { text: '缩减规模，折中处理', effects: { weizheng: 10, yuchi: 5 }, feedback: '各方都不甚满意，但也没有强烈反对。' }
-        ]
-      },
-      {
-        id: 3,
-        title: '长孙推荐太子党',
-        desc: '长孙无忌私下推荐几位亲信担任要职，暗示这是为了"太子未来的班底"。',
-        options: [
-          { text: '全部批准', effects: { changsun: 30, weizheng: -20, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私。' },
-          { text: '拒绝，坚持任人唯贤', effects: { changsun: -20, weizheng: 20, stability: 5 }, feedback: '魏征称赞你圣明，长孙无忌心中不悦。' },
-          { text: '批准一半，留一半自己任命', effects: { changsun: 10, weizheng: 5 }, feedback: '两边都得了些好处，朝局维持平衡。' }
-        ]
-      },
-      {
-        id: 4,
-        title: '突厥边报紧急',
-        desc: '突厥骑兵犯边，边关告急。尉迟敬德请战，长孙无忌主张和谈，魏征认为应先整饬内政。',
-        options: [
-          { text: '派尉迟敬德出征', effects: { yuchi: 25, changsun: -10, weizheng: -5, stability: 5 }, feedback: '尉迟敬德得偿所愿，挥师北上，朝堂暂时安静。' },
-          { text: '派使者议和', effects: { changsun: 20, yuchi: -25, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
-          { text: '增兵固守，暂不出战', effects: { yuchi: 5, changsun: 5, weizheng: 15 }, feedback: '魏征称赞你冷静持重，两派亦无话说。' }
-        ]
-      },
-      {
-        id: 5,
-        title: '尉迟私斗伤人',
-        desc: '尉迟敬德在朝堂外与一名文官争执，一拳将其打伤。百官哗然，要求严惩。',
-        options: [
-          { text: '杖责二十，以儆效尤', effects: { yuchi: -25, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
-          { text: '口头训斥，从轻发落', effects: { yuchi: 10, changsun: -10, weizheng: -20, stability: -5 }, feedback: '尉迟敬德感激涕零，但清流认为他恃功而骄。' },
-          { text: '罚俸三月，令其闭门思过', effects: { yuchi: -5, changsun: 5, weizheng: 5 }, feedback: '处罚不痛不痒，各方皆有微词。' }
-        ]
-      },
-      {
-        id: 6,
-        title: '魏征弹劾皇亲',
-        desc: '魏征上书弹劾一名皇亲国戚侵占民田，奏折中言辞激烈，甚至影射后宫。',
-        options: [
-          { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -10, yuchi: -5, stability: -5 }, feedback: '民心大快，但宗室对你颇有怨言。' },
-          { text: '压下奏折，保全皇亲', effects: { weizheng: -30, changsun: 10, yuchi: 5, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"' },
-          { text: '责令退还民田，不再追究', effects: { weizheng: 10, changsun: 5, yuchi: 5 }, feedback: '两边各退一步，民怨稍平。' }
-        ]
-      },
-      {
-        id: 7,
-        title: '长孙请立太子',
-        desc: '长孙无忌再次上奏，请求正式册立李承乾为太子，以定国本。',
-        options: [
-          { text: '立即册立', effects: { changsun: 25, weizheng: -15, yuchi: -5, stability: -5 }, feedback: '太子之位既定，但魏征忧虑外戚坐大。' },
-          { text: '暂缓，再观察诸皇子', effects: { changsun: -20, weizheng: 10, yuchi: 10, stability: 5 }, feedback: '长孙无忌表面恭顺，心中已有芥蒂。' },
-          { text: '册立但削减太子府属官', effects: { changsun: 5, weizheng: 5, yuchi: 5 }, feedback: '国本既立，又防外戚专权，可谓稳妥。' }
-        ]
-      },
-      {
-        id: 8,
-        title: '减免赋税之争',
-        desc: '关中大旱，魏征奏请减免赋税；长孙无忌担心国库空虚；尉迟敬德认为应先赈济军户。',
-        options: [
-          { text: '全面减税，开仓放粮', effects: { weizheng: 20, changsun: -10, yuchi: -5, stability: 10 }, feedback: '百姓称颂，但国库压力陡增。' },
-          { text: '只减农税，军赋不变', effects: { yuchi: 15, weizheng: -5, changsun: 5 }, feedback: '尉迟敬德满意，但魏征认为不够彻底。' },
-          { text: '以工代赈，暂不减税', effects: { changsun: 15, weizheng: -10, yuchi: 5, stability: -5 }, feedback: '国库得以维持，但灾民颇有怨言。' }
-        ]
-      },
-      {
-        id: 9,
-        title: '科举取士风波',
-        desc: '今科进士多出自寒门，世家大族不满，长孙无忌暗示应"照顾旧族"。',
-        options: [
-          { text: '坚持唯才是举，不论出身', effects: { weizheng: 20, changsun: -20, stability: 5 }, feedback: '寒门士子感恩戴德，世家怨气暗生。' },
-          { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -25, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车。' },
-          { text: '维持原榜，另设恩科', effects: { changsun: 10, weizheng: 5 }, feedback: '两边都有台阶下，风波暂时平息。' }
-        ]
-      },
-      {
-        id: 10,
-        title: '凌烟阁画像排序',
-        desc: '你要为凌烟阁功臣画像排定次序，这直接关系到各方势力的脸面。',
-        options: [
-          { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
-          { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
-          { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10 }, feedback: '魏征称赞你公允，朝堂相安无事。' }
-        ]
-      }
-    ];
+    function createInitialState() {
+      const state = {
+        day: 1,
+        maxDay: config.maxDay,
+        stability: config.stabilityInitial,
+        eventIndex: 0,
+        currentEvents: [],
+        lastMeetDay: {},
+        adUsedToday: false,
+        history: [],
+        characters: {}
+      };
+      Object.keys(config.characters).forEach(key => {
+        state.lastMeetDay[key] = -99;
+        state.characters[key] = {
+          ...config.characters[key],
+          favor: 0,
+          power: config.powerInitial
+        };
+      });
+      return state;
+    }
 
     // ==================== 工具函数 ====================
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
     }
 
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
     function randomEvents(count) {
-      const shuffled = [...events].sort(() => Math.random() - 0.5);
-      return shuffled.slice(0, count);
+      return shuffle(config.events).slice(0, count);
     }
 
     function getFavorColor(value) {
@@ -647,9 +627,181 @@
       return '#b22222';
     }
 
+    function formatNumber(n) {
+      return n > 0 ? `+${n}` : `${n}`;
+    }
+
+    // ==================== 埋点系统 ====================
+    function logEvent(event, data = {}) {
+      const entry = {
+        time: new Date().toISOString(),
+        event,
+        day: gameState.day,
+        data
+      };
+      eventLogs.push(entry);
+      console.log('[凌烟阁埋点]', entry);
+      saveLogs();
+    }
+
+    function saveLogs() {
+      try { localStorage.setItem('lyg_logs', JSON.stringify(eventLogs)); } catch (e) {}
+    }
+
+    function loadLogs() {
+      try {
+        const raw = localStorage.getItem('lyg_logs');
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) { return []; }
+    }
+
+    function clearLogs() {
+      eventLogs = [];
+      saveLogs();
+      alert('日志已清空');
+    }
+
+    function exportLogs() {
+      const text = JSON.stringify(eventLogs, null, 2);
+      navigator.clipboard.writeText(text).then(() => alert('日志已复制到剪贴板'));
+    }
+
+    // ==================== 存档系统 ====================
+    function saveGame() {
+      try {
+        localStorage.setItem('lyg_save', JSON.stringify(gameState));
+      } catch (e) {}
+    }
+
+    function loadGame() {
+      try {
+        const raw = localStorage.getItem('lyg_save');
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        // 兼容性：补充新增字段
+        if (!saved.characters.fangxuanling) return false;
+        gameState = saved;
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function hasSave() {
+      try { return !!localStorage.getItem('lyg_save'); } catch (e) { return false; }
+    }
+
+    function exportSave() {
+      const text = JSON.stringify(gameState);
+      navigator.clipboard.writeText(text).then(() => alert('存档已复制到剪贴板'));
+    }
+
+    function importSavePrompt() {
+      const text = prompt('请粘贴存档字符串：');
+      if (!text) return;
+      try {
+        const saved = JSON.parse(text);
+        if (!saved.characters || !saved.day) throw new Error('格式错误');
+        gameState = saved;
+        saveGame();
+        logEvent('save_imported');
+        renderAll();
+        alert('存档导入成功');
+      } catch (e) {
+        alert('存档格式错误：' + e.message);
+      }
+    }
+
+    function clearAllData() {
+      if (!confirm('确定要清空所有存档、日志和设置吗？此操作不可恢复。')) return;
+      try {
+        localStorage.removeItem('lyg_save');
+        localStorage.removeItem('lyg_logs');
+        localStorage.removeItem('lyg_noads');
+      } catch (e) {}
+      noAds = false;
+      eventLogs = [];
+      restartGame();
+      alert('所有数据已清空');
+    }
+
+    // ==================== 去广告 ====================
+    function saveNoAds() {
+      try { localStorage.setItem('lyg_noads', noAds ? '1' : '0'); } catch (e) {}
+    }
+
+    function loadNoAds() {
+      try { return localStorage.getItem('lyg_noads') === '1'; } catch (e) { return false; }
+    }
+
+    // ==================== 音效系统 ====================
+    const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
+    function playSound(type) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'stamp') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } else if (type === 'success') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+          osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.4);
+        } else if (type === 'fail') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+          osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.3);
+        }
+      } catch (e) {}
+    }
+
+    // ==================== 飘字动画 ====================
+    function showFloatingText(element, value, isPositive) {
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const el = document.createElement('div');
+      el.className = `float-text ${isPositive ? 'float-positive' : 'float-negative'}`;
+      el.textContent = formatNumber(value);
+      el.style.left = `${rect.left + rect.width / 2}px`;
+      el.style.top = `${rect.top}px`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }
+
     // ==================== 渲染函数 ====================
+    function renderAll() {
+      renderHeader();
+      renderCharacters();
+      if (gameState.day > gameState.maxDay || isInstantEnding()) {
+        showEnding();
+      } else if (gameState.eventIndex >= config.eventsPerDay) {
+        startNightPhase();
+      } else {
+        renderEvent();
+      }
+    }
+
     function renderHeader() {
       document.getElementById('dayDisplay').textContent = gameState.day;
+      document.getElementById('maxDayDisplay').textContent = gameState.maxDay;
       document.getElementById('stabilityValue').textContent = gameState.stability;
       document.getElementById('stabilityBar').style.width = gameState.stability + '%';
     }
@@ -659,9 +811,9 @@
       panel.innerHTML = '';
       Object.entries(gameState.characters).forEach(([key, char]) => {
         const favorWidth = clamp((char.favor + 100) / 2, 0, 100);
-        const powerWidth = char.power;
         const card = document.createElement('div');
         card.className = 'character-card fade-in';
+        card.id = `char-${key}`;
         card.innerHTML = `
           <div class="portrait">${char.emoji}</div>
           <div class="character-name">${char.name}</div>
@@ -672,7 +824,7 @@
           </div>
           <div class="stat">
             <div class="stat-label"><span>影响力</span><span>${char.power}</span></div>
-            <div class="stat-bar"><div class="stat-fill power-fill" style="width:${powerWidth}%"></div></div>
+            <div class="stat-bar"><div class="stat-fill power-fill" style="width:${char.power}%"></div></div>
           </div>
         `;
         panel.appendChild(card);
@@ -693,7 +845,7 @@
       document.getElementById('endingSection').classList.add('hidden');
 
       section.innerHTML = `
-        <div class="phase-title">☀️ 早朝 · 第 ${gameState.eventIndex + 1} / 3 件事务</div>
+        <div class="phase-title">☀️ 早朝 · 第 ${gameState.eventIndex + 1} / ${config.eventsPerDay} 件事务</div>
         <div class="event-card fade-in">
           <div class="event-title">${currentEvent.title}</div>
           <div class="event-desc">${currentEvent.desc}</div>
@@ -715,10 +867,13 @@
       const currentEvent = gameState.currentEvents[gameState.eventIndex];
       const option = currentEvent.options[optionIndex];
 
-      // 应用效果
-      applyEffects(option.effects);
+      logEvent('event_choice', { eventId: currentEvent.id, eventTitle: currentEvent.title, optionIndex, optionText: option.text });
 
-      // 显示反馈
+      const oldValues = getCharacterValues();
+      applyEffects(option.effects);
+      showChanges(oldValues, option.effects);
+      playSound('stamp');
+
       const optionsDiv = document.getElementById('eventOptions');
       optionsDiv.innerHTML = '';
       const feedback = document.createElement('div');
@@ -726,10 +881,17 @@
       feedback.innerHTML = `<strong>朱批已下：</strong>${option.feedback}`;
       optionsDiv.appendChild(feedback);
 
-      // 下一个事件按钮
+      gameState.history.push({
+        day: gameState.day,
+        phase: '早朝',
+        action: currentEvent.title,
+        detail: option.text
+      });
+      saveGame();
+
       const nextBtn = document.createElement('button');
       nextBtn.className = 'btn btn-secondary';
-      nextBtn.textContent = gameState.eventIndex < 2 ? '继续处理下一件事' : '退朝，进入晚间决策';
+      nextBtn.textContent = gameState.eventIndex < config.eventsPerDay - 1 ? '继续处理下一件事' : '退朝，进入晚间决策';
       nextBtn.onclick = () => {
         gameState.eventIndex++;
         renderHeader();
@@ -737,6 +899,26 @@
         renderEvent();
       };
       optionsDiv.appendChild(nextBtn);
+    }
+
+    function getCharacterValues() {
+      const values = { stability: gameState.stability };
+      Object.keys(gameState.characters).forEach(key => {
+        values[key] = gameState.characters[key].favor;
+      });
+      return values;
+    }
+
+    function showChanges(oldValues, effects) {
+      if (!effects) return;
+      Object.entries(effects).forEach(([key, value]) => {
+        if (key === 'stability') {
+          showFloatingText(document.getElementById('stabilityBar'), value, value >= 0);
+        } else {
+          const card = document.getElementById(`char-${key}`);
+          if (card) showFloatingText(card, value, value >= 0);
+        }
+      });
     }
 
     function applyEffects(effects) {
@@ -748,19 +930,21 @@
           gameState.characters[key].favor = clamp(gameState.characters[key].favor + value, -100, 100);
         }
       });
-      // 根据好感度轻微调整影响力
       Object.keys(gameState.characters).forEach(key => {
         const char = gameState.characters[key];
         if (char.favor > 50) char.power = clamp(char.power + 2, 0, 100);
         if (char.favor < -50) char.power = clamp(char.power - 2, 0, 100);
       });
-      // 势力失衡影响稳定度
       const powers = Object.values(gameState.characters).map(c => c.power);
       const maxPower = Math.max(...powers);
       const minPower = Math.min(...powers);
       if (maxPower >= 80 && minPower <= 20) {
         gameState.stability = clamp(gameState.stability - 3, 0, 100);
       }
+    }
+
+    function isInstantEnding() {
+      return gameState.stability <= 0 || Object.values(gameState.characters).some(c => c.favor <= -100);
     }
 
     function startNightPhase() {
@@ -770,7 +954,7 @@
       nightSection.classList.remove('hidden');
       document.getElementById('endingSection').classList.add('hidden');
 
-      const canBanquet = gameState.stability >= 20;
+      const canBanquet = gameState.stability >= config.banquetCost;
 
       nightSection.innerHTML = `
         <div class="phase-title">🌙 晚间决策</div>
@@ -783,16 +967,17 @@
           </div>
           <div class="action-card">
             <div class="action-name">举办宴会</div>
-            <div class="action-desc">所有人好感度+5，消耗10点皇权稳定</div>
+            <div class="action-desc">所有人好感度+${config.banquetFavor}，消耗${config.banquetCost}点皇权稳定</div>
             <button class="btn btn-primary" ${canBanquet ? '' : 'disabled'} onclick="handleBanquet()">举办宴会</button>
-            ${!canBanquet ? '<div class="monetization-note">稳定度不足20，无法举办</div>' : ''}
+            ${!canBanquet ? `<div class="monetization-note">稳定度不足${config.banquetCost}，无法举办</div>` : ''}
           </div>
+          ${noAds ? '' : `
           <div class="action-card">
             <div class="action-name">看广告召见心腹<span class="ad-badge">广告</span></div>
             <div class="action-desc">额外一次不占用限制的召见机会</div>
             <button class="btn btn-secondary" ${gameState.adUsedToday ? 'disabled' : ''} onclick="handleAdMeet()">${gameState.adUsedToday ? '今日已使用' : '看广告获得'}</button>
-            <div class="monetization-note">MVP占位：点击统计意愿</div>
-          </div>
+            <div class="monetization-note">点击统计意愿</div>
+          </div>`}
           <div class="action-card">
             <div class="action-name">批阅奏折</div>
             <div class="action-desc">不采取行动，直接进入下一天</div>
@@ -808,13 +993,13 @@
       menu.innerHTML = '';
       Object.entries(gameState.characters).forEach(([key, char]) => {
         const daysSince = gameState.day - gameState.lastMeetDay[key];
-        const canMeet = daysSince >= 5;
+        const canMeet = daysSince >= config.meetCooldown;
         const btn = document.createElement('button');
         btn.className = 'btn btn-secondary';
         btn.style.width = '100%';
         btn.style.marginBottom = '8px';
         btn.disabled = !canMeet;
-        btn.innerHTML = `${char.name} ${canMeet ? '' : `<span class="monetization-note">（还需等待 ${5 - daysSince} 天）</span>`}`;
+        btn.innerHTML = `${char.name} ${canMeet ? '' : `<span class="monetization-note">（还需等待 ${config.meetCooldown - daysSince} 天）</span>`}`;
         btn.onclick = () => handleMeet(key);
         menu.appendChild(btn);
       });
@@ -822,41 +1007,47 @@
 
     function handleMeet(key) {
       const others = Object.keys(gameState.characters).filter(k => k !== key);
-      gameState.characters[key].favor = clamp(gameState.characters[key].favor + 15, -100, 100);
+      const oldValues = getCharacterValues();
+      gameState.characters[key].favor = clamp(gameState.characters[key].favor + config.meetFavor, -100, 100);
       others.forEach(k => {
-        gameState.characters[k].favor = clamp(gameState.characters[k].favor - 5, -100, 100);
+        gameState.characters[k].favor = clamp(gameState.characters[k].favor - config.meetPenalty, -100, 100);
       });
+      showChanges(oldValues, { [key]: config.meetFavor });
+      others.forEach(k => showChanges(oldValues, { [k]: -config.meetPenalty }));
       gameState.lastMeetDay[key] = gameState.day;
-      gameState.history.push({ day: gameState.day, action: '召见', target: gameState.characters[key].name });
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name });
+      logEvent('night_action', { action: 'meet', target: key });
+      playSound('success');
       nextDay();
     }
 
     function handleAdMeet() {
+      logEvent('ad_click', { placement: 'night_ad_meet' });
       gameState.adUsedToday = true;
-      // MVP阶段：模拟广告15秒，实际用占位
       const menu = document.getElementById('meetMenu');
       menu.classList.remove('hidden');
-      menu.innerHTML = '<div class="feedback">广告播放中（MVP占位）...</div>';
+      menu.innerHTML = '<div class="feedback">广告播放中（占位）...</div>';
       setTimeout(() => {
         openMeetMenu();
-      }, 500);
+      }, 800);
     }
 
     function handleBanquet() {
+      const oldValues = getCharacterValues();
       Object.values(gameState.characters).forEach(char => {
-        char.favor = clamp(char.favor + 5, -100, 100);
+        char.favor = clamp(char.favor + config.banquetFavor, -100, 100);
       });
-      gameState.stability = clamp(gameState.stability - 10, 0, 100);
-      gameState.history.push({ day: gameState.day, action: '宴会' });
+      gameState.stability = clamp(gameState.stability - config.banquetCost, 0, 100);
+      showChanges(oldValues, { stability: -config.banquetCost });
+      Object.keys(gameState.characters).forEach(k => showChanges(oldValues, { [k]: config.banquetFavor }));
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '宴会' });
+      logEvent('night_action', { action: 'banquet' });
+      playSound('success');
       nextDay();
     }
 
     function nextDay() {
-      // 检查即时失败条件
-      if (gameState.stability <= 0 ||
-          gameState.characters.changsun.favor <= -100 ||
-          gameState.characters.yuchi.favor <= -100 ||
-          gameState.characters.weizheng.favor <= -100) {
+      if (isInstantEnding()) {
         showEnding();
         return;
       }
@@ -870,7 +1061,8 @@
         return;
       }
 
-      gameState.currentEvents = randomEvents(3);
+      gameState.currentEvents = randomEvents(config.eventsPerDay);
+      saveGame();
       renderHeader();
       renderCharacters();
       renderEvent();
@@ -879,22 +1071,15 @@
     // ==================== 结局与谥号 ====================
     function getEnding() {
       const s = gameState;
-      if (s.stability <= 0 ||
-          s.characters.changsun.favor <= -100 ||
-          s.characters.yuchi.favor <= -100 ||
-          s.characters.weizheng.favor <= -100) {
+      if (isInstantEnding()) {
         return { name: '众叛亲离', desc: '政变爆发，你的统治结束了。' };
       }
-      if (s.stability >= 80 &&
-          s.characters.changsun.favor >= 20 &&
-          s.characters.yuchi.favor >= 20 &&
-          s.characters.weizheng.favor >= 20) {
+      const favors = Object.values(s.characters);
+      if (s.stability >= 80 && favors.every(c => c.favor >= 20)) {
         return { name: '贞观之治', desc: '你成功平衡了各方，开创了盛世。' };
       }
-      if (s.stability >= 60 &&
-          ((s.characters.changsun.favor >= 0 && s.characters.yuchi.favor >= 0) ||
-           (s.characters.changsun.favor >= 0 && s.characters.weizheng.favor >= 0) ||
-           (s.characters.yuchi.favor >= 0 && s.characters.weizheng.favor >= 0))) {
+      const positiveCount = favors.filter(c => c.favor >= 0).length;
+      if (s.stability >= 60 && positiveCount >= 2) {
         return { name: '君臣相得', desc: '虽有波折，但总体平稳。' };
       }
       if (s.characters.yuchi.power >= 80) {
@@ -903,14 +1088,17 @@
       if (s.characters.changsun.power >= 80) {
         return { name: '外戚专权', desc: '长孙无忌成为实际掌权者，你逐渐沦为傀儡。' };
       }
+      if (s.characters.fangxuanling.power >= 80) {
+        return { name: '权相治国', desc: '房玄龄权倾朝野，你成为垂拱而治的象征。' };
+      }
       return { name: '君臣相得', desc: '虽有波折，但总体平稳。' };
     }
 
     function getPosthumousTitle() {
-      for (const title of posthumousTitles) {
+      for (const title of config.posthumousTitles) {
         if (title.condition(gameState)) return title;
       }
-      return posthumousTitles[posthumousTitles.length - 1];
+      return config.posthumousTitles[config.posthumousTitles.length - 1];
     }
 
     function generateSummary(ending, title) {
@@ -921,30 +1109,26 @@
       const stdDev = Math.sqrt(variance);
 
       let balanceText = '';
-      if (stdDev < 20) {
-        balanceText = '你善于制衡朝堂，三方势力在你的调教下各安其位。';
-      } else if (stdDev < 50) {
-        balanceText = '朝堂之上虽有偏重，但大体尚能维持均势。';
-      } else {
-        balanceText = '你明显偏向一方，朝堂失衡之象已现。';
-      }
+      if (stdDev < 25) balanceText = '你善于制衡朝堂，各方势力在你的调教下各安其位。';
+      else if (stdDev < 55) balanceText = '朝堂之上虽有偏重，但大体尚能维持均势。';
+      else balanceText = '你明显偏向一方，朝堂失衡之象已现。';
 
       let stabilityText = '';
-      if (gameState.stability >= 70) {
-        stabilityText = '皇权稳固，乾纲独断。';
-      } else if (gameState.stability >= 40) {
-        stabilityText = '皇权尚可，但已有所松动。';
-      } else {
-        stabilityText = '皇权飘摇，政令难出宫门。';
-      }
+      if (gameState.stability >= 70) stabilityText = '皇权稳固，乾纲独断。';
+      else if (gameState.stability >= 40) stabilityText = '皇权尚可，但已有所松动。';
+      else stabilityText = '皇权飘摇，政令难出宫门。';
 
-      // 找影响力最高者
       const dominant = Object.entries(chars).sort((a, b) => b[1].power - a[1].power)[0];
       let dominantText = '';
       if (dominant[1].power >= 70) {
-        if (dominant[0] === 'changsun') dominantText = '长孙无忌权势熏天，朝野侧目。';
-        if (dominant[0] === 'yuchi') dominantText = '尉迟敬德军功赫赫，功高震主。';
-        if (dominant[0] === 'weizheng') dominantText = '魏征清流一党声势日隆。';
+        const nameMap = { changsun: '长孙无忌', yuchi: '尉迟敬德', weizheng: '魏征', fangxuanling: '房玄龄' };
+        const descMap = {
+          changsun: '权势熏天，朝野侧目。',
+          yuchi: '军功赫赫，功高震主。',
+          weizheng: '清流一党声势日隆。',
+          fangxuanling: '权柄日重，朝堂倚重。'
+        };
+        dominantText = `${nameMap[dominant[0]]}${descMap[dominant[0]]}`;
       }
 
       return `${balanceText}${stabilityText}${dominantText ? dominantText : ''}最终，史官在凌烟阁记下你的结局——<strong>${ending.name}</strong>，并赐谥号<strong>${title.name}</strong>。`;
@@ -962,85 +1146,142 @@
       const title = getPosthumousTitle();
       const summary = generateSummary(ending, title);
 
+      logEvent('ending_reached', { ending: ending.name, title: title.name, day: gameState.day, stability: gameState.stability });
+      playSound(isInstantEnding() ? 'fail' : 'success');
+
+      let statsHtml = '';
+      Object.entries(gameState.characters).forEach(([key, char]) => {
+        statsHtml += `
+          <div class="final-stat">
+            <div class="final-stat-value">${char.favor}</div>
+            <div class="final-stat-label">${char.name}好感</div>
+          </div>`;
+      });
+
       endingSection.innerHTML = `
         <div class="ending-screen fade-in">
           <div class="ending-title">凌烟阁评定</div>
           <div class="ending-subtitle">${ending.name}</div>
           <div class="posthumous-title">${title.name}</div>
-          <div class="summary-text">${summary}</div>
+          <div class="summary-text" id="endingSummaryText">${summary}</div>
           <div class="final-stats">
             <div class="final-stat">
               <div class="final-stat-value">${gameState.stability}</div>
               <div class="final-stat-label">皇权稳定度</div>
             </div>
-            <div class="final-stat">
-              <div class="final-stat-value">${gameState.characters.changsun.favor}</div>
-              <div class="final-stat-label">长孙好感</div>
-            </div>
-            <div class="final-stat">
-              <div class="final-stat-value">${gameState.characters.yuchi.favor}</div>
-              <div class="final-stat-label">尉迟好感</div>
-            </div>
-            <div class="final-stat">
-              <div class="final-stat-value">${gameState.characters.weizheng.favor}</div>
-              <div class="final-stat-label">魏征好感</div>
-            </div>
+            ${statsHtml}
           </div>
           <div class="ending-actions">
             <button class="btn btn-primary" onclick="restartGame()">重新开始</button>
-            <button class="btn btn-secondary" onclick="handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>
+            ${noAds ? '' : `<button class="btn btn-secondary" onclick="handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>`}
             <button class="btn btn-secondary" onclick="handleShare()">分享结局</button>
-            <button class="btn btn-secondary" onclick="handleRemoveAds()">¥6 永久去广告</button>
+            ${noAds ? '' : `<button class="btn btn-secondary" onclick="handleRemoveAds()">¥6 永久去广告</button>`}
           </div>
         </div>
       `;
+
+      saveGame();
     }
 
     // ==================== 商业化占位 ====================
     function handleAdRestart() {
-      alert('MVP占位：此处将播放激励视频，播放完成后可重新开始。');
+      logEvent('ad_click', { placement: 'ending_ad_restart' });
+      alert('占位：此处将播放激励视频，播放完成后可重新开始。');
       restartGame();
     }
 
     function handleShare() {
-      const title = getPosthumousTitle();
       const ending = getEnding();
-      const text = `我在《凌烟阁密档》中扮演李世民，最终获得结局「${ending.name}」，谥号「${title.name}」。你能比我做得更好吗？`;
-      if (navigator.share) {
-        navigator.share({ title: '凌烟阁密档', text: text });
+      const title = getPosthumousTitle();
+      logEvent('share_click', { ending: ending.name, title: title.name });
+
+      const card = document.getElementById('shareCard');
+      document.getElementById('shareEnding').textContent = ending.name;
+      document.getElementById('sharePosthumous').textContent = title.name;
+      document.getElementById('shareSummary').innerHTML = generateSummary(ending, title);
+
+      if (typeof html2canvas !== 'undefined') {
+        card.classList.remove('hidden');
+        html2canvas(card, { backgroundColor: null, scale: 2 }).then(canvas => {
+          card.classList.add('hidden');
+          canvas.toBlob(blob => {
+            const file = new File([blob], 'lingyange.png', { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: '凌烟阁密档' });
+            } else {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'lingyange.png';
+              a.click();
+              URL.revokeObjectURL(url);
+              alert('分享图片已保存到本地');
+            }
+          });
+        });
       } else {
-        navigator.clipboard.writeText(text).then(() => alert('结局文案已复制到剪贴板'));
+        const text = `我在《凌烟阁密档》中扮演李世民，最终获得结局「${ending.name}」，谥号「${title.name}」。你能比我做得更好吗？`;
+        navigator.clipboard.writeText(text).then(() => alert('html2canvas 加载失败，已复制文本到剪贴板'));
       }
     }
 
     function handleRemoveAds() {
-      alert('MVP占位：此处将接入支付流程（¥6永久去广告）。当前仅统计点击意愿。');
+      logEvent('purchase_click', { product: 'remove_ads' });
+      if (confirm('MVP占位：点击确认模拟购买「¥6永久去广告」。')) {
+        noAds = true;
+        saveNoAds();
+        alert('购买成功！广告已隐藏。');
+        renderAll();
+      }
+    }
+
+    // ==================== 设置与编年史 ====================
+    function openSettings() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function closeSettings(e) {
+      if (e && e.target !== document.getElementById('settingsModal')) return;
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    function openHistory() {
+      const list = document.getElementById('historyList');
+      if (gameState.history.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:var(--text-light)">暂无记录</p>';
+      } else {
+        list.innerHTML = gameState.history.map(h => `
+          <div class="history-item">
+            <span class="history-day">第${h.day}天 · ${h.phase}</span>
+            ${h.action}${h.detail ? '：' + h.detail : ''}
+          </div>
+        `).join('');
+      }
+      document.getElementById('historyModal').classList.remove('hidden');
+    }
+
+    function closeHistory(e) {
+      if (e && e.target !== document.getElementById('historyModal')) return;
+      document.getElementById('historyModal').classList.add('hidden');
     }
 
     // ==================== 游戏控制 ====================
     function restartGame() {
-      gameState.day = 1;
-      gameState.stability = 50;
-      gameState.eventIndex = 0;
-      gameState.adUsedToday = false;
-      gameState.history = [];
-      gameState.lastMeetDay = { changsun: -99, yuchi: -99, weizheng: -99 };
-      Object.values(gameState.characters).forEach(char => {
-        char.favor = 0;
-        char.power = 30;
-      });
-      gameState.currentEvents = randomEvents(3);
-      renderHeader();
-      renderCharacters();
-      renderEvent();
+      gameState = createInitialState();
+      gameState.currentEvents = randomEvents(config.eventsPerDay);
+      try { localStorage.removeItem('lyg_save'); } catch (e) {}
+      logEvent('game_start', { from: 'restart' });
+      renderAll();
     }
 
     // ==================== 初始化 ====================
     window.onload = function() {
-      gameState.currentEvents = randomEvents(3);
-      renderHeader();
-      renderCharacters();
-      renderEvent();
+      const hasSaveData = loadGame();
+      if (!hasSaveData) {
+        gameState.currentEvents = randomEvents(config.eventsPerDay);
+      }
+      logEvent('game_start', { from: hasSaveData ? 'save' : 'new' });
+      renderAll();
     };
   </script>
 </body>
