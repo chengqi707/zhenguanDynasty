@@ -317,7 +317,7 @@
         <span class="stability-value" id="stabilityValue">50</span>
       </div>
       <div style="margin-top:8px; text-align:right; font-size:0.8rem; color:var(--text-light);">
-        第 <span id="dayDisplay">1</span> / <span id="maxDayDisplay">30</span> 天
+        第 <span id="dayDisplay">1</span> / <span id="maxDayDisplay">15</span> 天
       </div>
     </div>
 
@@ -378,9 +378,9 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      maxDay: 30,
+      maxDay: 15,
       eventsPerDay: 3,
-      meetCooldown: 5,
+      meetCooldown: 3,
       banquetCost: 10,
       meetFavor: 15,
       meetPenalty: 5,
@@ -395,9 +395,9 @@
         fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️' }
       },
       stages: [
-        { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 10, color: '#4a90d9' },
-        { id: 'middle', name: '贞观中期', years: '630-639', startDay: 11, endDay: 20, color: '#2e7d32' },
-        { id: 'late',   name: '贞观晚年', years: '640-649', startDay: 21, endDay: 30, color: '#b22222' }
+        { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 5,  color: '#4a90d9' },
+        { id: 'middle', name: '贞观中期', years: '630-639', startDay: 6,  endDay: 10, color: '#2e7d32' },
+        { id: 'late',   name: '贞观晚年', years: '640-649', startDay: 11, endDay: 15, color: '#b22222' }
       ],
       storylines: {
         reform:    { name: '制度改革', color: '#c9a227' },
@@ -463,7 +463,7 @@
             biography: '长孙皇后之兄，凌烟阁功臣之首。外戚势力的代表，心思缜密，善于经营人脉。他力保太子李承乾，却也在不知不觉中让外戚势力坐大。',
             hiddenStories: [
               { id: 'cs1', title: '国舅的棋局', content: '长孙无忌从不公开与皇帝争执，但他的每一步推荐、每一次上奏，都在为太子和外戚集团布局。你渐渐发现，朝堂上越来越多的要职，都姓"长孙"。', condition: (s) => s.characters.changsun.power >= 60 },
-              { id: 'cs2', title: '废立的阴影', content: '当太子李承乾被废，长孙无忌力主立晋王李治。他说这是为了社稷稳定，但你清楚，年幼的李治更容易被他影响。', condition: (s) => s.day >= 25 && s.characters.changsun.favor >= 30 }
+              { id: 'cs2', title: '废立的阴影', content: '当太子李承乾被废，长孙无忌力主立晋王李治。他说这是为了社稷稳定，但你清楚，年幼的李治更容易被他影响。', condition: (s) => s.day >= 11 && s.characters.changsun.favor >= 30 }
             ]
           },
           yuchi: {
@@ -472,7 +472,7 @@
             biography: '玄武门之变的首席功臣，性格粗犷，居功自傲。他是武将集团的旗帜，对文官掌权极为不满，但也曾对李世民忠心耿耿。',
             hiddenStories: [
               { id: 'yc1', title: '夺门之功', content: '当年玄武门前，是尉迟敬德一箭射杀了齐王李元吉。这份功劳让他觉得，天下有他一份。', condition: (s) => s.characters.yuchi.favor >= 40 },
-              { id: 'yc2', title: '暮年的醒悟', content: '晚年的尉迟敬德渐渐淡出朝堂，转而沉迷炼丹。有人说他是被迫隐退，也有人说他终于看清了功高震主的危险。', condition: (s) => s.characters.yuchi.power <= 30 && s.day >= 25 }
+              { id: 'yc2', title: '暮年的醒悟', content: '晚年的尉迟敬德渐渐淡出朝堂，转而沉迷炼丹。有人说他是被迫隐退，也有人说他终于看清了功高震主的危险。', condition: (s) => s.characters.yuchi.power <= 30 && s.day >= 11 }
             ]
           },
           weizheng: {
@@ -481,7 +481,7 @@
             biography: '原太子李建成属官，后归顺李世民。以敢谏闻名，曾上疏二百余次。他代表清流，主张抑制权贵、推行新政，是贞观朝堂上最尖锐的声音。',
             hiddenStories: [
               { id: 'wz1', title: '贰臣的忠诚', content: '很多人质疑魏征曾侍奉李建成，但他用一生的谏言证明：忠臣不忠于一姓，而忠于天下百姓。', condition: (s) => s.characters.weizheng.favor >= 50 },
-              { id: 'wz2', title: '最后的谏言', content: '魏征临终前，让人呈上最后一道奏疏。上面没有歌功颂德，只有十条劝谏。你握着奏疏，久久无言。', condition: (s) => s.day >= 25 && s.characters.weizheng.favor >= 20 }
+              { id: 'wz2', title: '最后的谏言', content: '魏征临终前，让人呈上最后一道奏疏。上面没有歌功颂德，只有十条劝谏。你握着奏疏，久久无言。', condition: (s) => s.day >= 11 && s.characters.weizheng.favor >= 20 }
             ]
           },
           fangxuanling: {
