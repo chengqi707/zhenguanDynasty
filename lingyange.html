@@ -199,6 +199,51 @@
     .history-item { border-bottom: 1px dashed var(--gold-light); padding: 8px 0; font-size: 0.9rem; }
     .history-day { color: var(--red); font-weight: bold; margin-right: 8px; }
 
+    /* 档案标签页 */
+    .archive-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--gold); }
+    .archive-tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    .archive-tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: bold; }
+
+    .archive-section { margin-bottom: 16px; }
+    .archive-section h4 { color: var(--red); margin-bottom: 8px; font-size: 1rem; }
+    .archive-section p { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
+    .archive-section .locked { color: var(--text-light); font-style: italic; }
+
+    .character-archive {
+      background: #fffef8;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .character-archive h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .character-archive .emoji { font-size: 1.4rem; }
+
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--gold-light);
+    }
+    .timeline-year {
+      min-width: 60px;
+      font-weight: bold;
+      color: var(--red);
+    }
+    .timeline-content h5 { font-size: 0.95rem; margin-bottom: 4px; color: var(--text); }
+    .timeline-content p { font-size: 0.85rem; color: var(--text-light); }
+    .timeline-stage { font-size: 0.75rem; color: var(--gold); margin-top: 4px; }
+
     /* 分享卡片 */
     .share-card {
       width: 375px;
@@ -259,9 +304,12 @@
       <div class="header-top">
         <div class="title">凌烟阁密档</div>
         <div class="header-actions">
-          <button class="icon-btn" onclick="openHistory()">编年史</button>
+          <button class="icon-btn" onclick="openArchive()">档案</button>
           <button class="icon-btn" onclick="openSettings()">设置</button>
         </div>
+      </div>
+      <div style="margin-bottom:10px; text-align:center; color:var(--gold); font-size:0.95rem; letter-spacing:1px;" id="stageDisplay">
+        贞观初年 · 627年
       </div>
       <div class="stability-bar">
         <span class="stability-label">皇权稳定度</span>
@@ -304,12 +352,17 @@
     </div>
   </div>
 
-  <!-- 编年史弹窗 -->
-  <div id="historyModal" class="modal-overlay hidden" onclick="closeHistory(event)">
+  <!-- 档案弹窗 -->
+  <div id="archiveModal" class="modal-overlay hidden" onclick="closeArchive(event)">
     <div class="modal" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeHistory()">×</button>
-      <div class="modal-title">编年史</div>
-      <div id="historyList"></div>
+      <button class="modal-close" onclick="closeArchive()">×</button>
+      <div class="modal-title">凌烟阁档案</div>
+      <div class="archive-tabs">
+        <button class="archive-tab active" onclick="switchArchiveTab('characters')" id="tab-characters">人物档案</button>
+        <button class="archive-tab" onclick="switchArchiveTab('timeline')" id="tab-timeline">历史时间线</button>
+        <button class="archive-tab" onclick="switchArchiveTab('history')" id="tab-history">本局编年史</button>
+      </div>
+      <div id="archiveContent"></div>
     </div>
   </div>
 
@@ -340,6 +393,18 @@
         yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️' },
         weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜' },
         fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️' }
+      },
+      stages: [
+        { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 10, color: '#4a90d9' },
+        { id: 'middle', name: '贞观中期', years: '630-639', startDay: 11, endDay: 20, color: '#2e7d32' },
+        { id: 'late',   name: '贞观晚年', years: '640-649', startDay: 21, endDay: 30, color: '#b22222' }
+      ],
+      storylines: {
+        reform:    { name: '制度改革', color: '#c9a227' },
+        turkic:    { name: '突厥战争', color: '#b22222' },
+        prince:    { name: '太子储位', color: '#4a90d9' },
+        weizheng:  { name: '魏征直谏', color: '#2e7d32' },
+        harem:     { name: '后宫暗流', color: '#8e44ad' }
       },
       posthumousTitles: [
         {
@@ -390,99 +455,82 @@
           summary: '你守住了祖宗基业，虽无赫赫之功，也算平稳度日。'
         }
       ],
+      archives: {
+        characters: {
+          changsun: {
+            name: '长孙无忌',
+            emoji: '👔',
+            biography: '长孙皇后之兄，凌烟阁功臣之首。外戚势力的代表，心思缜密，善于经营人脉。他力保太子李承乾，却也在不知不觉中让外戚势力坐大。',
+            hiddenStories: [
+              { id: 'cs1', title: '国舅的棋局', content: '长孙无忌从不公开与皇帝争执，但他的每一步推荐、每一次上奏，都在为太子和外戚集团布局。你渐渐发现，朝堂上越来越多的要职，都姓"长孙"。', condition: (s) => s.characters.changsun.power >= 60 },
+              { id: 'cs2', title: '废立的阴影', content: '当太子李承乾被废，长孙无忌力主立晋王李治。他说这是为了社稷稳定，但你清楚，年幼的李治更容易被他影响。', condition: (s) => s.day >= 25 && s.characters.changsun.favor >= 30 }
+            ]
+          },
+          yuchi: {
+            name: '尉迟敬德',
+            emoji: '⚔️',
+            biography: '玄武门之变的首席功臣，性格粗犷，居功自傲。他是武将集团的旗帜，对文官掌权极为不满，但也曾对李世民忠心耿耿。',
+            hiddenStories: [
+              { id: 'yc1', title: '夺门之功', content: '当年玄武门前，是尉迟敬德一箭射杀了齐王李元吉。这份功劳让他觉得，天下有他一份。', condition: (s) => s.characters.yuchi.favor >= 40 },
+              { id: 'yc2', title: '暮年的醒悟', content: '晚年的尉迟敬德渐渐淡出朝堂，转而沉迷炼丹。有人说他是被迫隐退，也有人说他终于看清了功高震主的危险。', condition: (s) => s.characters.yuchi.power <= 30 && s.day >= 25 }
+            ]
+          },
+          weizheng: {
+            name: '魏征',
+            emoji: '📜',
+            biography: '原太子李建成属官，后归顺李世民。以敢谏闻名，曾上疏二百余次。他代表清流，主张抑制权贵、推行新政，是贞观朝堂上最尖锐的声音。',
+            hiddenStories: [
+              { id: 'wz1', title: '贰臣的忠诚', content: '很多人质疑魏征曾侍奉李建成，但他用一生的谏言证明：忠臣不忠于一姓，而忠于天下百姓。', condition: (s) => s.characters.weizheng.favor >= 50 },
+              { id: 'wz2', title: '最后的谏言', content: '魏征临终前，让人呈上最后一道奏疏。上面没有歌功颂德，只有十条劝谏。你握着奏疏，久久无言。', condition: (s) => s.day >= 25 && s.characters.weizheng.favor >= 20 }
+            ]
+          },
+          fangxuanling: {
+            name: '房玄龄',
+            emoji: '🏛️',
+            biography: '贞观朝的首席谋臣，为人沉稳务实，擅长制度设计。他主持修订律令、推行租庸调法，是李世民最倚重的"管家"。',
+            hiddenStories: [
+              { id: 'fx1', title: '房谋杜断', content: '世人称"房谋杜断"，房玄龄善于谋划，杜如晦善于决断。杜如晦早逝后，房玄龄独自撑起了贞观朝的制度大厦。', condition: (s) => s.characters.fangxuanling.power >= 60 },
+              { id: 'fx2', title: '避嫌的智慧', content: '房玄龄从不主动结交武将，也避免与长孙无忌走得太近。他深知，谋臣最大的危险，就是成为皇帝眼中的"权相"。', condition: (s) => s.characters.fangxuanling.favor >= 40 && s.characters.changsun.favor <= 0 }
+            ]
+          }
+        },
+        timeline: [
+          { year: '626', title: '玄武门之变', desc: '李世民发动玄武门之变，杀死太子李建成、齐王李元吉，随后登基。', stage: 'early' },
+          { year: '627', title: '贞观元年', desc: '改元贞观，李世民开始整顿吏治，虚心纳谏。', stage: 'early' },
+          { year: '628', title: '立李承乾为太子', desc: '李世民立长子李承乾为太子，长孙无忌成为太子最重要的支持者。', stage: 'early' },
+          { year: '630', title: '灭东突厥', desc: '李靖率军灭东突厥，俘颉利可汗，西北诸蕃尊李世民为"天可汗"。', stage: 'middle' },
+          { year: '634', title: '长孙皇后去世', desc: '长孙皇后病逝，临终前请求李世民不要重用长孙无忌，以防外戚专权。', stage: 'middle' },
+          { year: '635', title: '太上皇李渊去世', desc: '李渊去世，李世民守孝期间，太子李承乾开始监国。', stage: 'middle' },
+          { year: '640', title: '侯君集平高昌', desc: '唐朝灭高昌，设西州，丝绸之路更加畅通。', stage: 'late' },
+          { year: '641', title: '文成公主入藏', desc: '文成公主远嫁吐蕃松赞干布，唐蕃关系进入蜜月期。', stage: 'late' },
+          { year: '643', title: '魏征去世', desc: '魏征病逝，李世民悲痛不已，亲自撰写碑文。同年太子承乾谋反被废。', stage: 'late' },
+          { year: '643', title: '太子承乾被废', desc: '太子李承乾谋反事泄，被废为庶人。魏王李泰、晋王李治卷入储位之争。', stage: 'late' },
+          { year: '643', title: '立李治为太子', desc: '在长孙无忌支持下，李世民立晋王李治为太子。', stage: 'late' },
+          { year: '649', title: '李世民去世', desc: '李世民驾崩，享年五十二岁，谥号"文皇帝"，庙号太宗。', stage: 'late' }
+        ]
+      },
       events: [
+        // ==================== 贞观初年（627-629）====================
         {
-          id: 1, title: '尉迟争座',
-          desc: '尉迟敬德在宴会上因座次排在长孙无忌之后，当众发怒："我有夺门之功，岂能让文官压一头！"',
+          id: 1, stage: 'early', storyline: null, historicalYear: '627', title: '玄武门余波',
+          desc: '玄武门之变刚过不久，宗室中仍有人对你得位不正心存疑虑，暗中串联。',
           options: [
-            { text: '训斥尉迟，维护礼制', effects: { yuchi: -30, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
-            { text: '安抚尉迟，给他更高座次', effects: { yuchi: 20, changsun: -20, weizheng: -20 }, feedback: '尉迟敬德得意洋洋，长孙无忌面色阴沉，魏征摇头叹息。' },
-            { text: '和稀泥，各退一步', effects: { yuchi: 5, changsun: 5, weizheng: -10 }, feedback: '争端暂时平息，但魏征认为你软弱可欺。' }
+            { text: '大加封赏宗室，以示宽仁', effects: { changsun: 10, yuchi: -5, weizheng: -10, fangxuanling: -5, stability: -5 }, feedback: '宗室暂时安稳，但国库支出增加，魏征认为你在收买人心。' },
+            { text: '严惩心怀不满者，震慑宗室', effects: { yuchi: 15, changsun: -5, weizheng: 10, fangxuanling: 5, stability: 5 }, feedback: '朝野震慑，宗室不敢再言，但人心惶惶。' },
+            { text: '让房玄龄出面安抚，转移矛盾', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: -5, stability: 5 }, feedback: '房玄龄以制度换人心，宗室情绪渐平。' }
           ]
         },
         {
-          id: 2, title: '魏征直谏修宫殿',
-          desc: '魏征上书反对修建洛阳宫，言辞激烈："隋炀帝前车之鉴，陛下不可重蹈覆辙！"',
+          id: 2, stage: 'early', storyline: null, historicalYear: '627', title: '释放宫女',
+          desc: '你下令释放宫中数千宫女，让她们归家婚配。长孙无忌认为此举有损皇家体面，魏征则大加赞赏。',
           options: [
-            { text: '接受谏言，停工', effects: { weizheng: 30, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
-            { text: '驳回谏言，继续修建', effects: { weizheng: -30, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
-            { text: '缩减规模，折中处理', effects: { weizheng: 10, yuchi: 5, fangxuanling: 5 }, feedback: '房玄龄称此法可省国库，各方亦有台阶。' }
+            { text: '坚持释放，彰显仁德', effects: { weizheng: 20, fangxuanling: 10, changsun: -10, yuchi: -5, stability: 10 }, feedback: '民间称颂，后宫开支大减。' },
+            { text: '只释放年老者，其余留用', effects: { changsun: 10, weizheng: -5, fangxuanling: -5 }, feedback: '各方都不甚满意，但亦无大波澜。' },
+            { text: '收回成命，维持旧制', effects: { changsun: 15, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息，清流士气受挫。' }
           ]
         },
         {
-          id: 3, title: '长孙推荐太子党',
-          desc: '长孙无忌私下推荐几位亲信担任要职，暗示这是为了"太子未来的班底"。',
-          options: [
-            { text: '全部批准', effects: { changsun: 30, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私，房玄龄默然不语。' },
-            { text: '拒绝，坚持任人唯贤', effects: { changsun: -20, weizheng: 20, fangxuanling: 10, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，长孙无忌心中不悦。' },
-            { text: '批准一半，留一半自己任命', effects: { changsun: 10, weizheng: 5, fangxuanling: 5 }, feedback: '两边都得了些好处，朝局维持平衡。' }
-          ]
-        },
-        {
-          id: 4, title: '突厥边报紧急',
-          desc: '突厥骑兵犯边，边关告急。尉迟敬德请战，长孙无忌主张和谈，魏征认为应先整饬内政。',
-          options: [
-            { text: '派尉迟敬德出征', effects: { yuchi: 25, changsun: -10, weizheng: -5, stability: 5 }, feedback: '尉迟敬德得偿所愿，挥师北上，朝堂暂时安静。' },
-            { text: '派使者议和', effects: { changsun: 20, yuchi: -25, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
-            { text: '召房玄龄商议后发兵', effects: { yuchi: 10, fangxuanling: 15, changsun: -5, weizheng: -5, stability: 5 }, feedback: '房玄龄调拨粮草，尉迟敬德无后顾之忧，朝堂皆大欢喜。' }
-          ]
-        },
-        {
-          id: 5, title: '尉迟私斗伤人',
-          desc: '尉迟敬德在朝堂外与一名文官争执，一拳将其打伤。百官哗然，要求严惩。',
-          options: [
-            { text: '杖责二十，以儆效尤', effects: { yuchi: -25, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
-            { text: '口头训斥，从轻发落', effects: { yuchi: 10, changsun: -10, weizheng: -20, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激涕零，但清流与务实派都认为他恃功而骄。' },
-            { text: '罚俸三月，令其闭门思过', effects: { yuchi: -5, changsun: 5, weizheng: 5, fangxuanling: 5 }, feedback: '处罚不痛不痒，各方皆有微词。' }
-          ]
-        },
-        {
-          id: 6, title: '魏征弹劾皇亲',
-          desc: '魏征上书弹劾一名皇亲国戚侵占民田，奏折中言辞激烈，甚至影射后宫。',
-          options: [
-            { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -10, yuchi: -5, fangxuanling: 5, stability: -5 }, feedback: '民心大快，宗室对你颇有怨言，房玄龄认为此乃立威之机。' },
-            { text: '压下奏折，保全皇亲', effects: { weizheng: -30, changsun: 10, yuchi: 5, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"房玄龄摇头退朝。' },
-            { text: '责令退还民田，不再追究', effects: { weizheng: 10, changsun: 5, yuchi: 5, fangxuanling: 10 }, feedback: '两边各退一步，民怨稍平，房玄龄赞你处事周全。' }
-          ]
-        },
-        {
-          id: 7, title: '长孙请立太子',
-          desc: '长孙无忌再次上奏，请求正式册立李承乾为太子，以定国本。',
-          options: [
-            { text: '立即册立', effects: { changsun: 25, weizheng: -15, yuchi: -5, fangxuanling: -5, stability: -5 }, feedback: '太子之位既定，但魏征与房玄龄皆忧虑外戚坐大。' },
-            { text: '暂缓，再观察诸皇子', effects: { changsun: -20, weizheng: 10, yuchi: 10, fangxuanling: -5, stability: 5 }, feedback: '长孙无忌表面恭顺，心中已有芥蒂。' },
-            { text: '册立但削减太子府属官', effects: { changsun: 5, weizheng: 5, yuchi: 5, fangxuanling: 15 }, feedback: '国本既立，又防外戚专权，房玄龄称此举深得制衡之道。' }
-          ]
-        },
-        {
-          id: 8, title: '减免赋税之争',
-          desc: '关中大旱，魏征奏请减免赋税；长孙无忌担心国库空虚；尉迟敬德认为应先赈济军户。',
-          options: [
-            { text: '全面减税，开仓放粮', effects: { weizheng: 20, changsun: -10, yuchi: -5, fangxuanling: -10, stability: 10 }, feedback: '百姓称颂，但国库压力陡增，房玄龄忧虑后续开支。' },
-            { text: '只减农税，军赋不变', effects: { yuchi: 15, weizheng: -5, changsun: 5, fangxuanling: -5 }, feedback: '尉迟敬德满意，但魏征与房玄龄认为不够彻底。' },
-            { text: '以工代赈，暂不减税', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: 20, stability: -5 }, feedback: '房玄龄主持修渠赈灾，国库得以维持，灾民亦有生计。' }
-          ]
-        },
-        {
-          id: 9, title: '科举取士风波',
-          desc: '今科进士多出自寒门，世家大族不满，长孙无忌暗示应"照顾旧族"。',
-          options: [
-            { text: '坚持唯才是举，不论出身', effects: { weizheng: 20, changsun: -20, fangxuanling: 10, stability: 5 }, feedback: '寒门士子感恩戴德，世家怨气暗生，房玄龄称此乃长久之计。' },
-            { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -25, fangxuanling: -15, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车，房玄龄反对无效。' },
-            { text: '维持原榜，另设恩科', effects: { changsun: 10, weizheng: 5, fangxuanling: 15 }, feedback: '两边都有台阶下，风波暂时平息，房玄龄赞你折中得法。' }
-          ]
-        },
-        {
-          id: 10, title: '凌烟阁画像排序',
-          desc: '你要为凌烟阁功臣画像排定次序，这直接关系到各方势力的脸面。',
-          options: [
-            { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5, fangxuanling: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
-            { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5, fangxuanling: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
-            { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10, fangxuanling: 10 }, feedback: '魏征与房玄龄称赞你公允，朝堂相安无事。' }
-          ]
-        },
-        {
-          id: 11, title: '房玄龄献租庸调法',
+          id: 3, stage: 'early', storyline: 'reform', historicalYear: '627', title: '房玄龄献租庸调法',
           desc: '房玄龄呈上新的赋税制度，主张均田、租庸调并举，以求国用充足。',
           options: [
             { text: '全面推行', effects: { fangxuanling: 25, weizheng: 10, changsun: -10, yuchi: -10, stability: 5 }, feedback: '国库收入渐稳，但旧族与军户一时难以适应。' },
@@ -491,16 +539,79 @@
           ]
         },
         {
-          id: 12, title: '文武两派当庭争执',
-          desc: '长孙无忌与尉迟敬德为一件军务互相攻讦，朝堂之上剑拔弩张。',
+          id: 4, stage: 'early', storyline: 'reform', historicalYear: '627', title: '均田制推行',
+          desc: '房玄龄建议按均田制重新丈量土地，抑制世家大族兼并。此举触动了许多旧族利益。',
           options: [
-            { text: '让房玄龄居中调停', effects: { fangxuanling: 20, changsun: 5, yuchi: 5, weizheng: -5, stability: 5 }, feedback: '房玄龄两边安抚，争端平息，魏征却觉得你在和稀泥。' },
-            { text: '各打五十大板', effects: { changsun: -10, yuchi: -10, weizheng: 10, fangxuanling: 5 }, feedback: '魏征称赞你公正，但两派首领皆感不快。' },
-            { text: '支持长孙，压制尉迟', effects: { changsun: 15, yuchi: -20, weizheng: -5, fangxuanling: -5, stability: -5 }, feedback: '文官得势，尉迟敬德怒目而退。' }
+            { text: '强力推行，不论阻力', effects: { fangxuanling: 20, weizheng: 10, changsun: -20, yuchi: -5, stability: -5 }, feedback: '百姓受益，但世家怨声载道，长孙无忌首当其冲。' },
+            { text: '暂缓，待秋收后再议', effects: { changsun: 10, fangxuanling: -10, weizheng: -5 }, feedback: '旧族满意，但均田制遥遥无期。' },
+            { text: '只在新开垦地区试行', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: 5 }, feedback: '避开了旧族核心利益，改革得以启动。' }
           ]
         },
         {
-          id: 13, title: '房玄龄请修国史',
+          id: 5, stage: 'early', storyline: 'reform', historicalYear: '627', title: '修订唐律',
+          desc: '房玄龄主持修订唐律，主张"死者不可复生"，减少死刑条款。尉迟敬德认为乱世当用重典。',
+          options: [
+            { text: '采纳宽刑建议', effects: { fangxuanling: 20, weizheng: 15, yuchi: -15, changsun: 5, stability: 5 }, feedback: '天下称颂贞观德政，但武将担心刑过宽则民不畏。' },
+            { text: '维持旧律，乱世重典', effects: { yuchi: 15, weizheng: -15, fangxuanling: -15, stability: -5 }, feedback: '朝堂肃杀，但社会秩序得以维持。' },
+            { text: '宽严并济，分情定罪', effects: { fangxuanling: 15, weizheng: 10, yuchi: 5, changsun: 5 }, feedback: '各方各得其所，律令修订顺利进行。' }
+          ]
+        },
+        {
+          id: 6, stage: 'early', storyline: 'weizheng', historicalYear: '627', title: '魏征直谏修宫殿',
+          desc: '魏征上书反对修建洛阳宫，言辞激烈："隋炀帝前车之鉴，陛下不可重蹈覆辙！"',
+          options: [
+            { text: '接受谏言，停工', effects: { weizheng: 30, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
+            { text: '驳回谏言，继续修建', effects: { weizheng: -30, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
+            { text: '缩减规模，折中处理', effects: { weizheng: 10, yuchi: 5, fangxuanling: 5 }, feedback: '房玄龄称此法可省国库，各方亦有台阶。' }
+          ]
+        },
+        {
+          id: 7, stage: 'early', storyline: 'weizheng', historicalYear: '627', title: '整饬吏治',
+          desc: '魏征弹劾数名贪官污吏，其中一人与长孙无忌有旧。长孙请求从轻发落。',
+          options: [
+            { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -15, fangxuanling: 10, stability: 5 }, feedback: '贪官落马，朝野震动，清流士气大振。' },
+            { text: '从轻发落，顾全长孙颜面', effects: { changsun: 15, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息，百姓议论纷纷。' },
+            { text: '撤职查办，但不株连家人', effects: { weizheng: 10, changsun: 5, fangxuanling: 10 }, feedback: '既整肃了吏治，又未过度牵连，各方尚可接受。' }
+          ]
+        },
+        {
+          id: 8, stage: 'early', storyline: 'reform', historicalYear: '628', title: '科举取士风波',
+          desc: '今科进士多出自寒门，世家大族不满，长孙无忌暗示应"照顾旧族"。',
+          options: [
+            { text: '坚持唯才是举，不论出身', effects: { weizheng: 20, changsun: -20, fangxuanling: 10, stability: 5 }, feedback: '寒门士子感恩戴德，世家怨气暗生，房玄龄称此乃长久之计。' },
+            { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -25, fangxuanling: -15, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车，房玄龄反对无效。' },
+            { text: '维持原榜，另设恩科', effects: { changsun: 10, weizheng: 5, fangxuanling: 15 }, feedback: '两边都有台阶下，风波暂时平息，房玄龄赞你折中得法。' }
+          ]
+        },
+        {
+          id: 9, stage: 'early', storyline: 'prince', historicalYear: '628', title: '长孙请立太子',
+          desc: '长孙无忌上奏，请求正式册立李承乾为太子，以定国本。',
+          options: [
+            { text: '立即册立', effects: { changsun: 25, weizheng: -15, yuchi: -5, fangxuanling: -5, stability: -5 }, feedback: '太子之位既定，但魏征与房玄龄皆忧虑外戚坐大。' },
+            { text: '暂缓，再观察诸皇子', effects: { changsun: -20, weizheng: 10, yuchi: 10, fangxuanling: -5, stability: 5 }, feedback: '长孙无忌表面恭顺，心中已有芥蒂。' },
+            { text: '册立但削减太子府属官', effects: { changsun: 5, weizheng: 5, yuchi: 5, fangxuanling: 15 }, feedback: '国本既立，又防外戚专权，房玄龄称此举深得制衡之道。' }
+          ]
+        },
+        {
+          id: 10, stage: 'early', storyline: null, historicalYear: '628', title: '太上皇去世',
+          desc: '太上皇李渊病重，朝堂之上关于丧礼仪制议论纷纷，有人主张厚葬以显孝道。',
+          options: [
+            { text: '厚葬太上皇，举国哀悼', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: -10, stability: -5 }, feedback: '孝道可彰，但国库负担加重。' },
+            { text: '从简办理，不扰民生', effects: { weizheng: 20, fangxuanling: 15, changsun: -10, yuchi: -5, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，百姓无扰。' },
+            { text: '按礼制办，不大操大办', effects: { changsun: 5, weizheng: 5, fangxuanling: 5, yuchi: 5 }, feedback: '中规中矩，各方无话可说。' }
+          ]
+        },
+        {
+          id: 11, stage: 'early', storyline: null, historicalYear: '629', title: '尉迟争座',
+          desc: '尉迟敬德在宴会上因座次排在长孙无忌之后，当众发怒："我有夺门之功，岂能让文官压一头！"',
+          options: [
+            { text: '训斥尉迟，维护礼制', effects: { yuchi: -30, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
+            { text: '安抚尉迟，给他更高座次', effects: { yuchi: 20, changsun: -20, weizheng: -20 }, feedback: '尉迟敬德得意洋洋，长孙无忌面色阴沉，魏征摇头叹息。' },
+            { text: '和稀泥，各退一步', effects: { yuchi: 5, changsun: 5, weizheng: -10 }, feedback: '争端暂时平息，但魏征认为你软弱可欺。' }
+          ]
+        },
+        {
+          id: 12, stage: 'early', storyline: null, historicalYear: '629', title: '房玄龄请修国史',
           desc: '房玄龄建议设立史馆，修撰前朝国史，以明得失。魏征认为当前应以谏政为先。',
           options: [
             { text: '准奏，设立史馆', effects: { fangxuanling: 20, weizheng: -10, changsun: 5, stability: 5 }, feedback: '史官动笔，后世有据，但魏征认为眼前政事更急。' },
@@ -509,7 +620,16 @@
           ]
         },
         {
-          id: 14, title: '房玄龄举荐贤才',
+          id: 13, stage: 'early', storyline: 'weizheng', historicalYear: '629', title: '魏征弹劾皇亲',
+          desc: '魏征上书弹劾一名皇亲国戚侵占民田，奏折中言辞激烈，甚至影射后宫。',
+          options: [
+            { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -10, yuchi: -5, fangxuanling: 5, stability: -5 }, feedback: '民心大快，宗室对你颇有怨言，房玄龄认为此乃立威之机。' },
+            { text: '压下奏折，保全皇亲', effects: { weizheng: -30, changsun: 10, yuchi: 5, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"房玄龄摇头退朝。' },
+            { text: '责令退还民田，不再追究', effects: { weizheng: 10, changsun: 5, yuchi: 5, fangxuanling: 10 }, feedback: '两边各退一步，民怨稍平，房玄龄赞你处事周全。' }
+          ]
+        },
+        {
+          id: 14, stage: 'early', storyline: null, historicalYear: '629', title: '房玄龄举荐贤才',
           desc: '房玄龄举荐几名寒门才子入仕，与长孙无忌推荐的世家子弟形成竞争。',
           options: [
             { text: '采纳房玄龄所荐', effects: { fangxuanling: 20, changsun: -15, weizheng: 10, stability: 5 }, feedback: '寒门得进，长孙无忌暗生不满。' },
@@ -518,16 +638,143 @@
           ]
         },
         {
-          id: 15, title: '尉迟敬德请辞兵权',
-          desc: '尉迟敬德以年老为由请辞禁军统领，朝中有人建议顺水推舟，也有人认为会寒了功臣心。',
+          id: 15, stage: 'early', storyline: 'reform', historicalYear: '629', title: '减免赋税之争',
+          desc: '关中大旱，魏征奏请减免赋税；长孙无忌担心国库空虚；尉迟敬德认为应先赈济军户。',
           options: [
-            { text: '准辞，赐金还乡', effects: { yuchi: -20, changsun: 10, weizheng: 10, fangxuanling: 15, stability: 5 }, feedback: '尉迟敬德黯然离去，但皇权得以巩固。' },
-            { text: '挽留，仍掌兵权', effects: { yuchi: 20, changsun: -10, weizheng: -10, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激，但文官们忧心忡忡。' },
-            { text: '改任虚衔，另派亲信掌兵', effects: { yuchi: -5, changsun: 5, weizheng: -5, fangxuanling: 10 }, feedback: '房玄龄称此为上策，尉迟敬德虽不满但尚可接受。' }
+            { text: '全面减税，开仓放粮', effects: { weizheng: 20, changsun: -10, yuchi: -5, fangxuanling: -10, stability: 10 }, feedback: '百姓称颂，但国库压力陡增，房玄龄忧虑后续开支。' },
+            { text: '只减农税，军赋不变', effects: { yuchi: 15, weizheng: -5, changsun: 5, fangxuanling: -5 }, feedback: '尉迟敬德满意，但魏征与房玄龄认为不够彻底。' },
+            { text: '以工代赈，暂不减税', effects: { changsun: 15, weizheng: -10, yuchi: 5, fangxuanling: 20, stability: -5 }, feedback: '房玄龄主持修渠赈灾，国库得以维持，灾民亦有生计。' }
+          ]
+        },
+        // ==================== 贞观中期（630-639）====================
+        {
+          id: 21, stage: 'middle', storyline: 'turkic', historicalYear: '630', title: '突厥边报紧急',
+          desc: '突厥骑兵犯边，边关告急。尉迟敬德请战，长孙无忌主张和谈，魏征认为应先整饬内政。',
+          options: [
+            { text: '派尉迟敬德出征', effects: { yuchi: 25, changsun: -10, weizheng: -5, stability: 5 }, feedback: '尉迟敬德得偿所愿，挥师北上，朝堂暂时安静。' },
+            { text: '派使者议和', effects: { changsun: 20, yuchi: -25, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
+            { text: '召房玄龄商议后发兵', effects: { yuchi: 10, fangxuanling: 15, changsun: -5, weizheng: -5, stability: 5 }, feedback: '房玄龄调拨粮草，尉迟敬德无后顾之忧，朝堂皆大欢喜。' }
           ]
         },
         {
-          id: 16, title: '魏征与房玄龄政见不合',
+          id: 22, stage: 'middle', storyline: 'turkic', prerequisite: 21, historicalYear: '630', title: '李靖请战',
+          desc: '兵部尚书李靖主动请缨，主张出奇兵直击突厥牙帐，一举解决边患。',
+          options: [
+            { text: '准奏，命李靖出征', effects: { yuchi: 20, fangxuanling: 10, changsun: -5, weizheng: -5, stability: 5 }, feedback: '李靖率精骑北上，朝堂拭目以待。' },
+            { text: '以稳为主，先守后攻', effects: { changsun: 15, yuchi: -15, fangxuanling: 5, weizheng: 5 }, feedback: '边境稳固，但战机稍纵即逝，尉迟敬德不满。' },
+            { text: '让尉迟敬德与李靖分兵', effects: { yuchi: 15, fangxuanling: -5, changsun: -5, stability: -5 }, feedback: '两将争功， coordination 困难，战果平平。' }
+          ]
+        },
+        {
+          id: 23, stage: 'middle', storyline: 'turkic', prerequisite: 22, historicalYear: '630', title: '灭东突厥',
+          desc: '李靖大破突厥，俘颉利可汗，东突厥灭亡。捷报传来，朝野欢腾。',
+          options: [
+            { text: '大赏功臣，举国欢庆', effects: { yuchi: 25, changsun: -10, fangxuanling: -5, stability: 10 }, feedback: '武将集团声势大振，文官们忧心忡忡。' },
+            { text: '安抚降众，设立都督府', effects: { fangxuanling: 20, weizheng: 10, yuchi: 5, changsun: 5, stability: 15 }, feedback: '突厥降众归心，房玄龄的制度安排尽显智慧。' },
+            { text: '迁徙突厥民众于中原', effects: { yuchi: 10, changsun: 15, weizheng: -10, fangxuanling: -10, stability: -5 }, feedback: '便于控制，但引发中原士民不满。' }
+          ]
+        },
+        {
+          id: 24, stage: 'middle', storyline: 'turkic', prerequisite: 23, historicalYear: '630', title: '天可汗尊号',
+          desc: '西北诸蕃上表，尊你为"天可汗"。长孙无忌主张欣然接受，魏征提醒不可因此骄纵。',
+          options: [
+            { text: '接受尊号，大宴诸蕃', effects: { yuchi: 20, changsun: 15, weizheng: -10, fangxuanling: -5, stability: 10 }, feedback: '四夷来朝，贞观盛世气象初显。' },
+            { text: '婉拒，只称大唐皇帝', effects: { weizheng: 20, fangxuanling: 15, yuchi: -10, changsun: -5, stability: 5 }, feedback: '魏征称圣明，但武将们觉得少了份荣耀。' },
+            { text: '接受尊号但节俭操办', effects: { weizheng: 10, fangxuanling: 10, yuchi: 5, changsun: 5, stability: 10 }, feedback: '既得四夷之心，又不至劳民伤财。' }
+          ]
+        },
+        {
+          id: 25, stage: 'middle', storyline: null, historicalYear: '634', title: '长孙皇后病重',
+          desc: '长孙皇后病重，临终前请求你不要重用长孙无忌，以防外戚专权。',
+          options: [
+            { text: '答应皇后，疏远长孙无忌', effects: { changsun: -20, weizheng: 15, fangxuanling: 10, stability: 5 }, feedback: '长孙无忌心中怨恨，但外戚势力得到遏制。' },
+            { text: '安慰皇后，但仍重用长孙', effects: { changsun: 25, weizheng: -15, fangxuanling: -10, stability: -5 }, feedback: '长孙无忌感激涕零，但朝堂暗流涌动。' },
+            { text: '沉默不语，待皇后去世后再议', effects: { changsun: 5, weizheng: -5, fangxuanling: 5 }, feedback: '皇后薨逝，朝堂之上人人自危。' }
+          ]
+        },
+        {
+          id: 26, stage: 'middle', storyline: 'harem', prerequisite: 25, historicalYear: '636', title: '长孙皇后去世',
+          desc: '长孙皇后去世，后宫无主。朝臣建议你尽快册立新后，以定六宫。',
+          options: [
+            { text: '暂不册后，为先皇后守制', effects: { weizheng: 15, fangxuanling: 10, changsun: -10, stability: 5 }, feedback: '朝野称颂你情深义重，但后宫管理渐乱。' },
+            { text: '从世家女中择新后', effects: { changsun: 20, weizheng: -10, fangxuanling: -5, stability: -5 }, feedback: '新后家族借机攀升，外戚势力再抬头。' },
+            { text: '升贵妃代掌后宫', effects: { changsun: 5, yuchi: 5, weizheng: -5, fangxuanling: -5 }, feedback: '后宫暂时安定，但贵妃野心渐露。' }
+          ]
+        },
+        {
+          id: 27, stage: 'middle', storyline: null, historicalYear: '635', title: '尉迟私斗伤人',
+          desc: '尉迟敬德在朝堂外与一名文官争执，一拳将其打伤。百官哗然，要求严惩。',
+          options: [
+            { text: '杖责二十，以儆效尤', effects: { yuchi: -25, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
+            { text: '口头训斥，从轻发落', effects: { yuchi: 10, changsun: -10, weizheng: -20, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激涕零，但清流与务实派都认为他恃功而骄。' },
+            { text: '罚俸三月，令其闭门思过', effects: { yuchi: -5, changsun: 5, weizheng: 5, fangxuanling: 5 }, feedback: '处罚不痛不痒，各方皆有微词。' }
+          ]
+        },
+        {
+          id: 28, stage: 'middle', storyline: null, historicalYear: '635', title: '凌烟阁画像排序',
+          desc: '你要为凌烟阁功臣画像排定次序，这直接关系到各方势力的脸面。',
+          options: [
+            { text: '长孙无忌居首', effects: { changsun: 20, yuchi: -20, weizheng: -5, fangxuanling: -5 }, feedback: '文官集团欢欣鼓舞，武将侧目。' },
+            { text: '尉迟敬德居首', effects: { yuchi: 20, changsun: -20, weizheng: -5, fangxuanling: -5 }, feedback: '武将集团扬眉吐气，文官心生不满。' },
+            { text: '按功绩平衡排列', effects: { changsun: 5, yuchi: 5, weizheng: 10, fangxuanling: 10 }, feedback: '魏征与房玄龄称赞你公允，朝堂相安无事。' }
+          ]
+        },
+        {
+          id: 29, stage: 'middle', storyline: 'prince', prerequisite: 9, historicalYear: '636', title: '太子狩猎伤民',
+          desc: '太子李承乾出城狩猎，践踏农田，伤及百姓。魏征上书弹劾，长孙无忌力保太子年少。',
+          options: [
+            { text: '严惩太子，责令道歉', effects: { weizheng: 20, changsun: -20, fangxuanling: 10, stability: 5 }, feedback: '太子惶恐，百姓称颂，但长孙无忌心生怨恨。' },
+            { text: '轻轻揭过，罚俸了事', effects: { changsun: 15, weizheng: -20, yuchi: 5, stability: -10 }, feedback: '魏征叹息，太子更加骄纵。' },
+            { text: '让房玄龄教导太子礼仪', effects: { fangxuanling: 20, changsun: 5, weizheng: 5, yuchi: -5 }, feedback: '太子收敛，长孙无忌也无话可说。' }
+          ]
+        },
+        {
+          id: 30, stage: 'middle', storyline: 'prince', historicalYear: '638', title: '魏王献书',
+          desc: '魏王李泰献上《括地志》，博得朝野赞誉。有人暗中提醒你，魏王有夺嫡之心。',
+          options: [
+            { text: '大加赏赐，鼓励魏王', effects: { changsun: -10, weizheng: -10, fangxuanling: -5, stability: -10 }, feedback: '魏王声势日隆，太子李承乾暗恨。' },
+            { text: '嘉奖但明确太子地位', effects: { weizheng: 15, fangxuanling: 10, changsun: 10, stability: 5 }, feedback: '魏王失望，但朝局稳定。' },
+            { text: '冷处理，不置可否', effects: { changsun: 5, fangxuanling: 5, weizheng: -5 }, feedback: '朝臣猜测纷纷，储位之争暗流涌动。' }
+          ]
+        },
+        {
+          id: 31, stage: 'middle', storyline: null, historicalYear: '638', title: '高昌国不服',
+          desc: '西域高昌国仗着远离长安，停止朝贡，还劫掠丝路商队。尉迟敬德主张出兵。',
+          options: [
+            { text: '派侯君集远征高昌', effects: { yuchi: 20, fangxuanling: -10, changsun: -5, weizheng: -5, stability: 5 }, feedback: '大军西征，丝路畅通有望。' },
+            { text: '遣使斥责，以观后效', effects: { changsun: 10, weizheng: 10, yuchi: -15, fangxuanling: 5 }, feedback: '高昌表面臣服，但劫掠未止。' },
+            { text: '联合西突厥施压', effects: { fangxuanling: 15, yuchi: 5, changsun: 5, weizheng: -5 }, feedback: '不费一兵一卒，高昌被迫低头。' }
+          ]
+        },
+        {
+          id: 32, stage: 'middle', storyline: null, prerequisite: 31, historicalYear: '640', title: '侯君集平高昌',
+          desc: '侯君集攻破高昌，俘获国王。如何处理高昌故地，朝臣意见不一。',
+          options: [
+            { text: '设西州，直接管辖', effects: { fangxuanling: 20, yuchi: 10, changsun: -5, weizheng: -10, stability: 5 }, feedback: '西域纳入版图，但治理成本大增。' },
+            { text: '立高昌王族为傀儡', effects: { changsun: 15, fangxuanling: -5, yuchi: -5, weizheng: 5 }, feedback: '短期安稳，但日后反复。' },
+            { text: '撤军，只要求高昌朝贡', effects: { weizheng: 15, fangxuanling: -10, yuchi: -15, stability: -5 }, feedback: '省却军费，但威严受损。' }
+          ]
+        },
+        {
+          id: 33, stage: 'middle', storyline: null, historicalYear: '641', title: '吐蕃请婚',
+          desc: '吐蕃赞普松赞干布遣使求婚，请求尚大唐公主。尉迟敬德认为吐蕃蛮夷，不配与天家结亲。',
+          options: [
+            { text: '许嫁文成公主', effects: { fangxuanling: 20, weizheng: 10, yuchi: -15, changsun: 5, stability: 10 }, feedback: '唐蕃和亲，边疆安定，房玄龄称此乃长远之策。' },
+            { text: '拒绝，派兵威慑', effects: { yuchi: 20, fangxuanling: -10, weizheng: -10, changsun: -5, stability: -10 }, feedback: '吐蕃恼怒，边境再起烽烟。' },
+            { text: '拖延，先观其诚意', effects: { changsun: 10, fangxuanling: 5, yuchi: -5, weizheng: -5 }, feedback: '吐蕃使者久候，朝堂议论纷纷。' }
+          ]
+        },
+        {
+          id: 34, stage: 'middle', storyline: null, prerequisite: 33, historicalYear: '641', title: '文成公主入藏',
+          desc: '文成公主远嫁吐蕃，带去了中原文化和技术。朝堂上有人担心此举会助长吐蕃实力。',
+          options: [
+            { text: '厚赐嫁妆，彰显天朝气度', effects: { fangxuanling: 15, weizheng: 10, yuchi: -5, changsun: -5, stability: 5 }, feedback: '吐蕃感恩，唐蕃关系进入蜜月期。' },
+            { text: '限制技术书籍流出', effects: { yuchi: 10, weizheng: -5, fangxuanling: 10, changsun: 5 }, feedback: '有所保留，但吐蕃使者颇为失望。' },
+            { text: '命尉迟敬德护送公主', effects: { yuchi: 20, fangxuanling: 5, weizheng: -5, stability: 5 }, feedback: '吐蕃敬畏唐军武力，和亲更有保障。' }
+          ]
+        },
+        {
+          id: 35, stage: 'middle', storyline: 'weizheng', historicalYear: '638', title: '魏征与房玄龄政见不合',
           desc: '魏征主张严惩贪官，房玄龄认为应以教化为主，二人当庭争辩。',
           options: [
             { text: '支持魏征，严刑峻法', effects: { weizheng: 20, fangxuanling: -15, changsun: 5, stability: 5 }, feedback: '朝堂肃杀，房玄龄担忧过犹不及。' },
@@ -536,16 +783,7 @@
           ]
         },
         {
-          id: 17, title: '长孙无忌排挤房玄龄',
-          desc: '长孙无忌多次在奏对中暗示房玄龄"权柄过重"，建议分其权责。',
-          options: [
-            { text: '分房玄龄之权', effects: { changsun: 20, fangxuanling: -25, weizheng: -5, stability: -5 }, feedback: '房玄龄心灰意冷，魏征为你惋惜。' },
-            { text: '驳斥长孙，信任房玄龄', effects: { changsun: -20, fangxuanling: 25, weizheng: 10, stability: 5 }, feedback: '房玄龄感念知遇，长孙无忌悻悻而退。' },
-            { text: '令二人共理政务，互相牵制', effects: { changsun: 5, fangxuanling: 5, weizheng: 5, yuchi: -5 }, feedback: '朝堂再平衡，但效率略降。' }
-          ]
-        },
-        {
-          id: 18, title: '边境军饷不足',
+          id: 36, stage: 'middle', storyline: null, historicalYear: '639', title: '边境军饷不足',
           desc: '兵部奏报军饷短缺，尉迟敬德要求加税，房玄龄主张裁撤老弱、精简开支。',
           options: [
             { text: '加征税赋，充实军饷', effects: { yuchi: 20, weizheng: -15, fangxuanling: -15, changsun: -5, stability: -10 }, feedback: '军队满意，但百姓负担加重。' },
@@ -554,7 +792,7 @@
           ]
         },
         {
-          id: 19, title: '皇子争储暗流',
+          id: 37, stage: 'middle', storyline: 'prince', prerequisite: 29, historicalYear: '639', title: '皇子争储暗流',
           desc: '太子李承乾与魏王李泰各有拥趸，朝臣开始站队。',
           options: [
             { text: '公开支持太子', effects: { changsun: 15, fangxuanling: 10, weizheng: -5, yuchi: -5 }, feedback: '国本稳固，但魏王党羽暗恨。' },
@@ -562,13 +800,122 @@
             { text: '召集房玄龄等重臣共议', effects: { fangxuanling: 20, changsun: 5, weizheng: 10, yuchi: 5, stability: 5 }, feedback: '集思广益，储位之争暂息。' }
           ]
         },
+        // ==================== 贞观晚年（640-649）====================
         {
-          id: 20, title: '荧惑守心',
+          id: 38, stage: 'late', storyline: 'prince', prerequisite: 37, historicalYear: '643', title: '太子谋反被废',
+          desc: '太子李承乾谋反事泄，证据确凿。长孙无忌痛哭流涕，请求你饶太子一命。',
+          options: [
+            { text: '废为庶人，流放黔州', effects: { changsun: -20, weizheng: 20, fangxuanling: 10, yuchi: 5, stability: 10 }, feedback: '太子被废，朝堂震动，但国法得以维护。' },
+            { text: '从轻处置，幽禁东宫', effects: { changsun: 15, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌感激，但魏征认为国法败坏。' },
+            { text: '让房玄龄彻查党羽', effects: { fangxuanling: 20, changsun: -10, weizheng: 10, yuchi: -5, stability: 5 }, feedback: '牵连甚广，但朝局得以澄清。' }
+          ]
+        },
+        {
+          id: 39, stage: 'late', storyline: 'prince', prerequisite: 38, historicalYear: '643', title: '立李治为太子',
+          desc: '太子被废后，魏王李泰咄咄逼人，晋王李治仁弱。长孙无忌力主立李治。',
+          options: [
+            { text: '立晋王李治为太子', effects: { changsun: 25, fangxuanling: 10, weizheng: -5, yuchi: -5, stability: 5 }, feedback: '李治成为太子，长孙无忌影响力大增。' },
+            { text: '立魏王李泰为太子', effects: { changsun: -20, weizheng: -10, fangxuanling: -10, yuchi: 10, stability: -10 }, feedback: '魏王得意，但朝臣多有不服。' },
+            { text: '让重臣廷议，再作决定', effects: { fangxuanling: 15, weizheng: 10, changsun: 5, yuchi: 5, stability: 5 }, feedback: '朝堂共议，太子之位最终尘埃落定。' }
+          ]
+        },
+        {
+          id: 40, stage: 'late', storyline: 'weizheng', prerequisite: 35, historicalYear: '643', title: '魏征病危',
+          desc: '魏征病重，上最后一道奏疏，直言你的十大过失。长孙无忌认为魏征不敬。',
+          options: [
+            { text: '亲自探望，嘉纳谏言', effects: { weizheng: 30, fangxuanling: 15, changsun: -10, stability: 10 }, feedback: '魏征涕泪横流，朝野称颂圣明。' },
+            { text: '嘉纳谏言但不去探望', effects: { weizheng: 15, fangxuanling: 5, changsun: 5 }, feedback: '魏征感激，但民间有微词。' },
+            { text: '斥责魏征临死不敬', effects: { weizheng: -30, changsun: 15, yuchi: 5, stability: -10 }, feedback: '魏征含恨而终，清流人心离散。' }
+          ]
+        },
+        {
+          id: 41, stage: 'late', storyline: 'weizheng', prerequisite: 40, historicalYear: '643', title: '魏征去世',
+          desc: '魏征去世。你悲痛欲绝，欲以最高规格安葬，但长孙无忌提醒不可过于优厚。',
+          options: [
+            { text: '辍朝五日，亲撰碑文', effects: { weizheng: 10, fangxuanling: 10, changsun: -10, yuchi: -5, stability: 10 }, feedback: '天下感念，贞观朝堂失去了一面镜子。' },
+            { text: '按礼制安葬，不逾规格', effects: { changsun: 10, weizheng: 5, fangxuanling: 5, yuchi: 5 }, feedback: '中规中矩，但少了些人情味。' },
+            { text: '薄葬，以示节俭', effects: { weizheng: -10, fangxuanling: 15, changsun: 10, yuchi: 5 }, feedback: '魏征家人无怨，但朝臣议论纷纷。' }
+          ]
+        },
+        {
+          id: 42, stage: 'late', storyline: 'harem', prerequisite: 26, historicalYear: '637', title: '武则天入宫',
+          desc: '武则天以才人身份入宫。她容貌出众，又工于心计，很快引起朝臣注意。',
+          options: [
+            { text: '宠幸武则天，封为昭仪', effects: { changsun: -10, weizheng: -15, fangxuanling: -10, yuchi: 5, stability: -10 }, feedback: '后宫暗流涌动，朝臣担忧女主干政。' },
+            { text: '保持距离，只封为才人', effects: { weizheng: 10, fangxuanling: 10, changsun: 5, stability: 5 }, feedback: '武则天表面上恭顺，心中暗藏野心。' },
+            { text: '将其遣出宫外', effects: { weizheng: 15, fangxuanling: 5, changsun: 5, yuchi: -5, stability: 5 }, feedback: '杜绝后患，但民间传说纷纷。' }
+          ]
+        },
+        {
+          id: 43, stage: 'late', storyline: 'harem', prerequisite: 42, historicalYear: '649', title: '后宫干政阴影',
+          desc: '武则天开始参与政务，借着你的宠爱干预人事。长孙无忌与魏征旧部联合上书反对。',
+          options: [
+            { text: '呵斥武则天，令其退回后宫', effects: { weizheng: 15, changsun: 15, fangxuanling: 10, yuchi: -5, stability: 10 }, feedback: '武则天表面认错，眼中闪过不甘。' },
+            { text: '默许，但限制其范围', effects: { changsun: -5, weizheng: -10, fangxuanling: -5, yuchi: 5 }, feedback: '后宫干政之门渐开，朝臣忧心忡忡。' },
+            { text: '让房玄龄出面调和', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: -5 }, feedback: '暂时平息，但隐患未除。' }
+          ]
+        },
+        {
+          id: 44, stage: 'late', storyline: null, historicalYear: '645', title: '征高丽之议',
+          desc: '高丽反复无常，你欲御驾亲征。房玄龄认为国力未复，尉迟敬德则跃跃欲试。',
+          options: [
+            { text: '御驾亲征，扬我国威', effects: { yuchi: 25, changsun: -10, weizheng: -15, fangxuanling: -20, stability: -15 }, feedback: '大军东征，但劳民伤财，战果未达预期。' },
+            { text: '派将领征讨，你不亲征', effects: { yuchi: 10, fangxuanling: 5, weizheng: -5, changsun: 5, stability: -5 }, feedback: '损失较小，但高丽未被彻底征服。' },
+            { text: '暂缓东征，先修内政', effects: { fangxuanling: 20, weizheng: 15, yuchi: -15, changsun: 10, stability: 10 }, feedback: '国库得以恢复，但武将集团颇有怨言。' }
+          ]
+        },
+        {
+          id: 45, stage: 'late', storyline: null, historicalYear: '649', title: '晚年感慨',
+          desc: '你夜读《隋书》，见炀帝败亡之迹，召房玄龄、长孙无忌等人议事，感慨治国之难。',
+          options: [
+            { text: '告诫后人以隋为鉴', effects: { fangxuanling: 15, weizheng: 10, changsun: 5, yuchi: -5, stability: 10 }, feedback: '群臣称颂，贞观之治的精神得以传承。' },
+            { text: '论功行赏，安抚老臣', effects: { yuchi: 15, changsun: 15, fangxuanling: 5, weizheng: -5 }, feedback: '老臣感激，但国库再受压力。' },
+            { text: '沉默不语，独坐良久', effects: { fangxuanling: 5, weizheng: 5, changsun: -5, yuchi: 5 }, feedback: '群臣退下，殿中只剩你一人与史书为伴。' }
+          ]
+        },
+        {
+          id: 46, stage: 'late', storyline: null, historicalYear: '643', title: '长孙无忌排挤房玄龄',
+          desc: '长孙无忌多次在奏对中暗示房玄龄"权柄过重"，建议分其权责。',
+          options: [
+            { text: '分房玄龄之权', effects: { changsun: 20, fangxuanling: -25, weizheng: -5, stability: -5 }, feedback: '房玄龄心灰意冷，魏征为你惋惜。' },
+            { text: '驳斥长孙，信任房玄龄', effects: { changsun: -20, fangxuanling: 25, weizheng: 10, stability: 5 }, feedback: '房玄龄感念知遇，长孙无忌悻悻而退。' },
+            { text: '令二人共理政务，互相牵制', effects: { changsun: 5, fangxuanling: 5, weizheng: 5, yuchi: -5 }, feedback: '朝堂再平衡，但效率略降。' }
+          ]
+        },
+        {
+          id: 47, stage: 'late', storyline: null, historicalYear: '643', title: '尉迟敬德请辞兵权',
+          desc: '尉迟敬德以年老为由请辞禁军统领，朝中有人建议顺水推舟，也有人认为会寒了功臣心。',
+          options: [
+            { text: '准辞，赐金还乡', effects: { yuchi: -20, changsun: 10, weizheng: 10, fangxuanling: 15, stability: 5 }, feedback: '尉迟敬德黯然离去，但皇权得以巩固。' },
+            { text: '挽留，仍掌兵权', effects: { yuchi: 20, changsun: -10, weizheng: -10, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激，但文官们忧心忡忡。' },
+            { text: '改任虚衔，另派亲信掌兵', effects: { yuchi: -5, changsun: 5, weizheng: -5, fangxuanling: 10 }, feedback: '房玄龄称此为上策，尉迟敬德虽不满但尚可接受。' }
+          ]
+        },
+        {
+          id: 48, stage: 'late', storyline: null, historicalYear: '643', title: '荧惑守心',
           desc: '钦天监奏报"荧惑守心"，魏征上书归咎朝政，房玄龄建议开坛祭天、大赦天下。',
           options: [
             { text: '大赦天下，减轻刑罚', effects: { weizheng: 15, fangxuanling: 15, yuchi: -10, changsun: -5, stability: 5 }, feedback: '民心稍安，但尉迟敬德认为此举示弱。' },
             { text: '斥责钦天监妖言惑众', effects: { weizheng: -20, fangxuanling: -10, yuchi: 10, changsun: 10, stability: -10 }, feedback: '朝野议论纷纷，以为你要掩盖过失。' },
             { text: '纳谏自省，下罪己诏', effects: { weizheng: 25, fangxuanling: 10, changsun: -5, yuchi: -5, stability: 10 }, feedback: '魏征与房玄龄皆称圣明，天下归心。' }
+          ]
+        },
+        {
+          id: 49, stage: 'late', storyline: null, historicalYear: '649', title: '长孙推荐太子党',
+          desc: '长孙无忌再次推荐几位亲信担任东宫属官，暗示这是为了"太子未来的班底"。',
+          options: [
+            { text: '全部批准', effects: { changsun: 30, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私，房玄龄默然不语。' },
+            { text: '拒绝，坚持任人唯贤', effects: { changsun: -20, weizheng: 20, fangxuanling: 10, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，长孙无忌心中不悦。' },
+            { text: '批准一半，留一半自己任命', effects: { changsun: 10, weizheng: 5, fangxuanling: 5 }, feedback: '两边都得了些好处，朝局维持平衡。' }
+          ]
+        },
+        {
+          id: 50, stage: 'late', storyline: null, historicalYear: '649', title: '文武两派当庭争执',
+          desc: '长孙无忌与尉迟敬德为一件军务互相攻讦，朝堂之上剑拔弩张。',
+          options: [
+            { text: '让房玄龄居中调停', effects: { fangxuanling: 20, changsun: 5, yuchi: 5, weizheng: -5, stability: 5 }, feedback: '房玄龄两边安抚，争端平息，魏征却觉得你在和稀泥。' },
+            { text: '各打五十大板', effects: { changsun: -10, yuchi: -10, weizheng: 10, fangxuanling: 5 }, feedback: '魏征称赞你公正，但两派首领皆感不快。' },
+            { text: '支持长孙，压制尉迟', effects: { changsun: 15, yuchi: -20, weizheng: -5, fangxuanling: -5, stability: -5 }, feedback: '文官得势，尉迟敬德怒目而退。' }
           ]
         }
       ]
@@ -586,6 +933,7 @@
         stability: config.stabilityInitial,
         eventIndex: 0,
         currentEvents: [],
+        triggeredEvents: [],
         lastMeetDay: {},
         adUsedToday: false,
         history: [],
@@ -616,8 +964,59 @@
       return copy;
     }
 
+    function getCurrentStage() {
+      return config.stages.find(s => gameState.day >= s.startDay && gameState.day <= s.endDay) || config.stages[config.stages.length - 1];
+    }
+
     function randomEvents(count) {
-      return shuffle(config.events).slice(0, count);
+      const currentStage = getCurrentStage();
+      const triggered = new Set(gameState.triggeredEvents);
+
+      // 1. 当前阶段未触发的事件池
+      let freshPool = config.events.filter(e => {
+        if (e.stage !== currentStage.id) return false;
+        if (triggered.has(e.id)) return false;
+        if (e.prerequisite && !triggered.has(e.prerequisite)) return false;
+        return true;
+      });
+
+      const selected = [];
+
+      // 优先保证剧情线连续性：每条线如果前置已触发，优先抽后续
+      const storylineFresh = freshPool.filter(e => e.storyline && e.prerequisite && triggered.has(e.prerequisite));
+      storylineFresh.sort((a, b) => a.prerequisite - b.prerequisite);
+      const seenStorylines = new Set();
+      for (const e of storylineFresh) {
+        if (!seenStorylines.has(e.storyline) && selected.length < count) {
+          selected.push(e);
+          seenStorylines.add(e.storyline);
+        }
+      }
+
+      // 2. 剩余位置用当前阶段普通事件填充
+      freshPool = freshPool.filter(e => !selected.includes(e));
+      const shuffledFresh = shuffle(freshPool);
+      while (selected.length < count && shuffledFresh.length > 0) {
+        selected.push(shuffledFresh.pop());
+      }
+
+      // 3. 仍不足，从当前阶段已触发事件中补充（允许重复）
+      if (selected.length < count) {
+        const repeatedPool = shuffle(config.events.filter(e => e.stage === currentStage.id && !selected.includes(e)));
+        while (selected.length < count && repeatedPool.length > 0) {
+          selected.push(repeatedPool.pop());
+        }
+      }
+
+      // 4. 极端情况：从全事件池补充
+      if (selected.length < count) {
+        const allPool = shuffle(config.events.filter(e => !selected.includes(e)));
+        while (selected.length < count && allPool.length > 0) {
+          selected.push(allPool.pop());
+        }
+      }
+
+      return shuffle(selected);
     }
 
     function getFavorColor(value) {
@@ -680,6 +1079,7 @@
         const saved = JSON.parse(raw);
         // 兼容性：补充新增字段
         if (!saved.characters.fangxuanling) return false;
+        if (!saved.triggeredEvents) saved.triggeredEvents = [];
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -716,6 +1116,7 @@
         localStorage.removeItem('lyg_save');
         localStorage.removeItem('lyg_logs');
         localStorage.removeItem('lyg_noads');
+        localStorage.removeItem('lyg_archive_unlocks');
       } catch (e) {}
       noAds = false;
       eventLogs = [];
@@ -804,6 +1205,13 @@
       document.getElementById('maxDayDisplay').textContent = gameState.maxDay;
       document.getElementById('stabilityValue').textContent = gameState.stability;
       document.getElementById('stabilityBar').style.width = gameState.stability + '%';
+
+      const stage = getCurrentStage();
+      const currentEvent = gameState.currentEvents[gameState.eventIndex];
+      const year = (currentEvent && currentEvent.historicalYear) ? currentEvent.historicalYear : stage.years.split('-')[0];
+      const stageDisplay = document.getElementById('stageDisplay');
+      stageDisplay.textContent = `${stage.name} · ${year}年`;
+      stageDisplay.style.color = stage.color || 'var(--gold)';
     }
 
     function renderCharacters() {
@@ -887,6 +1295,9 @@
         action: currentEvent.title,
         detail: option.text
       });
+      if (!gameState.triggeredEvents.includes(currentEvent.id)) {
+        gameState.triggeredEvents.push(currentEvent.id);
+      }
       saveGame();
 
       const nextBtn = document.createElement('button');
@@ -1147,6 +1558,7 @@
       const summary = generateSummary(ending, title);
 
       logEvent('ending_reached', { ending: ending.name, title: title.name, day: gameState.day, stability: gameState.stability });
+      unlockArchiveStories();
       playSound(isInstantEnding() ? 'fail' : 'success');
 
       let statsHtml = '';
@@ -1263,6 +1675,125 @@
     function closeHistory(e) {
       if (e && e.target !== document.getElementById('historyModal')) return;
       document.getElementById('historyModal').classList.add('hidden');
+    }
+
+    // ==================== 档案系统 ====================
+    let archiveTab = 'characters';
+
+    function openArchive() {
+      archiveTab = 'characters';
+      renderArchiveContent();
+      document.getElementById('archiveModal').classList.remove('hidden');
+    }
+
+    function closeArchive(e) {
+      if (e && e.target !== document.getElementById('archiveModal')) return;
+      document.getElementById('archiveModal').classList.add('hidden');
+    }
+
+    function switchArchiveTab(tab) {
+      archiveTab = tab;
+      document.querySelectorAll('.archive-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      renderArchiveContent();
+    }
+
+    function renderArchiveContent() {
+      const container = document.getElementById('archiveContent');
+      if (archiveTab === 'characters') container.innerHTML = renderArchiveCharacters();
+      else if (archiveTab === 'timeline') container.innerHTML = renderArchiveTimeline();
+      else if (archiveTab === 'history') container.innerHTML = renderArchiveHistory();
+    }
+
+    function isStoryUnlocked(story) {
+      if (story.condition(gameState)) return true;
+      try {
+        const unlocked = JSON.parse(localStorage.getItem('lyg_archive_unlocks') || '[]');
+        return unlocked.includes(story.id);
+      } catch (e) { return false; }
+    }
+
+    function renderArchiveCharacters() {
+      return Object.values(config.archives.characters).map(char => {
+        const hiddenHtml = char.hiddenStories.map(story => {
+          const unlocked = isStoryUnlocked(story);
+          return `
+            <div class="archive-section" style="margin-top:10px; padding-left:12px; border-left:3px solid var(--gold-light);">
+              <h4 style="font-size:0.95rem;">${unlocked ? '✦ ' + story.title : '🔒 隐藏故事'}</h4>
+              <p class="${unlocked ? '' : 'locked'}" style="font-size:0.85rem;">${unlocked ? story.content : '达成特定条件后可解锁此隐藏故事。'}</p>
+            </div>
+          `;
+        }).join('');
+        return `
+          <div class="character-archive fade-in">
+            <h4><span class="emoji">${char.emoji}</span>${char.name}</h4>
+            <p>${char.biography}</p>
+            ${hiddenHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderArchiveTimeline() {
+      const currentStage = getCurrentStage();
+      return config.archives.timeline.map(item => {
+        const stage = config.stages.find(s => s.id === item.stage);
+        const reached = gameState.day >= stage.startDay || archiveTab === 'timeline';
+        return `
+          <div class="timeline-item fade-in">
+            <div class="timeline-year">${item.year}</div>
+            <div class="timeline-content">
+              <h5>${item.title}</h5>
+              <p>${item.desc}</p>
+              <div class="timeline-stage" style="color:${stage.color}">${stage.name}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderArchiveHistory() {
+      if (gameState.history.length === 0) {
+        return '<p style="text-align:center; color:var(--text-light)">暂无本局记录</p>';
+      }
+      const currentStage = getCurrentStage();
+      const stageMap = {};
+      config.stages.forEach(s => { stageMap[s.id] = s; });
+      // 按阶段分组
+      const groups = {};
+      gameState.history.forEach(h => {
+        const stage = config.stages.find(s => h.day >= s.startDay && h.day <= s.endDay);
+        const key = stage ? stage.id : 'other';
+        if (!groups[key]) groups[key] = { stage, items: [] };
+        groups[key].items.push(h);
+      });
+
+      return Object.values(groups).map(g => `
+        <div class="archive-section fade-in">
+          <h4 style="color:${g.stage.color}">${g.stage.name} · ${g.stage.years}</h4>
+          ${g.items.map(h => `
+            <div class="history-item">
+              <span class="history-day">第${h.day}天 · ${h.phase}</span>
+              ${h.action}${h.detail ? '：' + h.detail : ''}
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    function unlockArchiveStories() {
+      const newUnlocks = [];
+      Object.values(config.archives.characters).forEach(char => {
+        char.hiddenStories.forEach(story => {
+          if (story.condition(gameState)) newUnlocks.push(story.id);
+        });
+      });
+      if (newUnlocks.length === 0) return;
+      try {
+        const existing = JSON.parse(localStorage.getItem('lyg_archive_unlocks') || '[]');
+        const merged = Array.from(new Set([...existing, ...newUnlocks]));
+        localStorage.setItem('lyg_archive_unlocks', JSON.stringify(merged));
+      } catch (e) {}
     }
 
     // ==================== 游戏控制 ====================
