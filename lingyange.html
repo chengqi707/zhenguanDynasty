@@ -111,12 +111,24 @@
       border: 1px solid rgba(201, 162, 39, 0.3); border-radius: 6px; pointer-events: none;
     }
 
-    .portrait {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
-      margin: 0 auto 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; border: 2px solid var(--gold); color: var(--gold);
+    .character-card.deceased {
+      opacity: 0.75;
+      background: #e8e4d8;
+      border-color: #999;
+    }
+    .character-card.deceased .portrait {
+      background: linear-gradient(135deg, #666, #444);
+      border-color: #999;
+    }
+    .deceased-tag {
+      display: inline-block;
+      background: #888;
+      color: #fff;
+      font-size: 0.55rem;
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: middle;
     }
     .character-name { font-weight: bold; font-size: 0.85rem; margin-bottom: 1px; color: var(--text); }
     .character-title { font-size: 0.6rem; color: var(--text-light); margin-bottom: 4px; }
@@ -969,6 +981,7 @@
         eventIndex: 0,
         currentEvents: [],
         triggeredEvents: [],
+        deceased: {},
         lastMeetDay: {},
         adUsedToday: false,
         history: [],
@@ -1115,6 +1128,7 @@
         // 兼容性：补充新增字段
         if (!saved.characters.fangxuanling) return false;
         if (!saved.triggeredEvents) saved.triggeredEvents = [];
+        if (!saved.deceased) saved.deceased = {};
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -1253,21 +1267,22 @@
       const panel = document.getElementById('charactersPanel');
       panel.innerHTML = '';
       Object.entries(gameState.characters).forEach(([key, char]) => {
+        const isDeceased = gameState.deceased[key];
         const favorWidth = clamp((char.favor + 100) / 2, 0, 100);
         const card = document.createElement('div');
-        card.className = 'character-card fade-in';
+        card.className = `character-card fade-in ${isDeceased ? 'deceased' : ''}`;
         card.id = `char-${key}`;
         card.innerHTML = `
-          <div class="portrait">${char.emoji}</div>
-          <div class="character-name">${char.name}</div>
-          <div class="character-title">${char.title}</div>
+          <div class="portrait">${isDeceased ? '🕯️' : char.emoji}</div>
+          <div class="character-name">${char.name}${isDeceased ? '<span class="deceased-tag">故</span>' : ''}</div>
+          <div class="character-title">${isDeceased ? '已故' : char.title}</div>
           <div class="stat">
-            <div class="stat-label"><span>好感度</span><span style="color:${getFavorColor(char.favor)}">${char.favor}</span></div>
-            <div class="stat-bar"><div class="stat-fill favor-fill" style="width:${favorWidth}%"></div></div>
+            <div class="stat-label"><span>好感度</span><span style="color:${isDeceased ? '#888' : getFavorColor(char.favor)}">${char.favor}</span></div>
+            <div class="stat-bar"><div class="stat-fill favor-fill" style="width:${favorWidth}%; ${isDeceased ? 'opacity:0.5' : ''}"></div></div>
           </div>
           <div class="stat">
-            <div class="stat-label"><span>影响力</span><span>${char.power}</span></div>
-            <div class="stat-bar"><div class="stat-fill power-fill" style="width:${char.power}%"></div></div>
+            <div class="stat-label"><span>影响力</span><span style="color:${isDeceased ? '#888' : ''}">${char.power}</span></div>
+            <div class="stat-bar"><div class="stat-fill power-fill" style="width:${char.power}%; ${isDeceased ? 'opacity:0.5' : ''}"></div></div>
           </div>
         `;
         panel.appendChild(card);
@@ -1333,6 +1348,13 @@
       if (!gameState.triggeredEvents.includes(currentEvent.id)) {
         gameState.triggeredEvents.push(currentEvent.id);
       }
+
+      // 角色死亡处理
+      if (currentEvent.id === 41 && !gameState.deceased.weizheng) {
+        gameState.deceased.weizheng = true;
+        logEvent('character_deceased', { character: 'weizheng', day: gameState.day });
+      }
+
       saveGame();
 
       const nextBtn = document.createElement('button');
@@ -1372,20 +1394,23 @@
       Object.entries(effects).forEach(([key, value]) => {
         if (key === 'stability') {
           gameState.stability = clamp(gameState.stability + value, 0, 100);
-        } else if (gameState.characters[key]) {
+        } else if (gameState.characters[key] && !gameState.deceased[key]) {
           gameState.characters[key].favor = clamp(gameState.characters[key].favor + value, -100, 100);
         }
       });
       Object.keys(gameState.characters).forEach(key => {
+        if (gameState.deceased[key]) return;
         const char = gameState.characters[key];
         if (char.favor > 50) char.power = clamp(char.power + 2, 0, 100);
         if (char.favor < -50) char.power = clamp(char.power - 2, 0, 100);
       });
-      const powers = Object.values(gameState.characters).map(c => c.power);
-      const maxPower = Math.max(...powers);
-      const minPower = Math.min(...powers);
-      if (maxPower >= 80 && minPower <= 20) {
-        gameState.stability = clamp(gameState.stability - 3, 0, 100);
+      const powers = Object.values(gameState.characters).filter((c, i) => !gameState.deceased[Object.keys(gameState.characters)[i]]).map(c => c.power);
+      if (powers.length > 0) {
+        const maxPower = Math.max(...powers);
+        const minPower = Math.min(...powers);
+        if (maxPower >= 80 && minPower <= 20) {
+          gameState.stability = clamp(gameState.stability - 3, 0, 100);
+        }
       }
     }
 
@@ -1438,6 +1463,7 @@
       menu.classList.remove('hidden');
       menu.innerHTML = '';
       Object.entries(gameState.characters).forEach(([key, char]) => {
+        if (gameState.deceased[key]) return;
         const daysSince = gameState.day - gameState.lastMeetDay[key];
         const canMeet = daysSince >= config.meetCooldown;
         const btn = document.createElement('button');
@@ -1452,6 +1478,10 @@
     }
 
     function handleMeet(key) {
+      if (gameState.deceased[key]) {
+        showToast(`${config.characters[key].name}已去世，无法召见`);
+        return;
+      }
       const others = Object.keys(gameState.characters).filter(k => k !== key);
       const oldValues = getCharacterValues();
       gameState.characters[key].favor = clamp(gameState.characters[key].favor + config.meetFavor, -100, 100);
