@@ -35,9 +35,16 @@
       max-width: 900px;
       margin: 0 auto;
       padding: 10px;
-      height: 100%;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 核心一屏适配：所有内容必须在视口内，禁止页面滚动 */
+    html, body, .container {
+      overflow: hidden;
     }
 
     /* 顶部 */
@@ -45,8 +52,8 @@
       background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
       border: 2px solid var(--gold);
       border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
       color: var(--gold-light);
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       flex-shrink: 0;
@@ -56,12 +63,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .title { font-size: 1.25rem; font-weight: bold; letter-spacing: 3px; color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .title { font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+
+    /* 横屏小屏时标题更紧凑 */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header { padding: 5px 8px; margin-bottom: 4px; }
+      .header-top { margin-bottom: 2px; }
+      .title { font-size: 0.9rem; letter-spacing: 1px; }
+    }
     .day-badge { background: var(--red); color: #fff; padding: 2px 10px; border-radius: 16px; font-size: 0.8rem; border: 1px solid var(--gold); }
 
     .header-actions { display: flex; gap: 6px; }
@@ -88,22 +102,34 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       flex-shrink: 0;
     }
 
     @media (max-width: 700px) {
-      .characters { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .characters { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+    }
+
+    /* 横屏手机/小平板：角色面板改为紧凑横向 */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .characters { grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 4px; }
+      .character-card { padding: 3px 2px; }
+      .character-name { font-size: 0.7rem; }
+      .character-title { font-size: 0.5rem; margin-bottom: 2px; }
+      .stat { margin-bottom: 2px; }
+      .stat-label { font-size: 0.55rem; }
+      .stat-bar { height: 3px; }
     }
 
     .character-card {
       background: var(--paper);
       border: 2px solid var(--gold);
       border-radius: 8px;
-      padding: 6px 4px;
+      padding: 5px 3px;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       position: relative;
+      flex-shrink: 0;
     }
     .character-card::before {
       content: "";
@@ -138,7 +164,8 @@
     .stat-bar { height: 5px; background: #e0d8c8; border-radius: 3px; overflow: hidden; }
     .stat-fill { height: 100%; transition: width 0.5s ease; }
     .favor-fill { background: linear-gradient(90deg, #8b1a1a, #c9a227); }
-    .power-fill { background: linear-gradient(90deg, #2c5aa0, #4a90d9); }
+    .ability-fill { background: linear-gradient(90deg, #2c5aa0, #4a90d9); }
+    .power-fill { background: linear-gradient(90deg, #6b4c2a, #8b6914); }
 
     /* 主游戏区 */
     .game-area {
@@ -163,19 +190,19 @@
       overflow: hidden;
     }
 
-    .phase-title { text-align: center; font-size: 1.1rem; color: var(--red); margin-bottom: 8px; font-weight: bold; letter-spacing: 2px; flex-shrink: 0; }
-    .event-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-    .event-title { font-size: 1rem; font-weight: bold; color: var(--red); margin-bottom: 6px; border-bottom: 1px solid var(--gold-light); padding-bottom: 6px; flex-shrink: 0; }
-    .event-desc { color: var(--text); font-size: 0.9rem; margin-bottom: 8px; line-height: 1.5; flex: 1; min-height: 0; overflow-y: auto; }
-    .options { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+    .phase-title { text-align: center; font-size: 1.1rem; color: var(--red); margin-bottom: 6px; font-weight: bold; letter-spacing: 2px; flex-shrink: 0; }
+    .event-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 8px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .event-title { font-size: 0.95rem; font-weight: bold; color: var(--red); margin-bottom: 4px; border-bottom: 1px solid var(--gold-light); padding-bottom: 4px; flex-shrink: 0; }
+    .event-desc { color: var(--text); font-size: 0.85rem; margin-bottom: 6px; line-height: 1.5; flex: 1; min-height: 0; overflow-y: auto; }
+    .options { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
 
     .btn {
-      padding: 8px 12px;
+      padding: 7px 10px;
       border: 2px solid var(--gold);
       border-radius: 4px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: all 0.2s ease;
       text-align: left;
       line-height: 1.4;
@@ -190,22 +217,22 @@
     .feedback { background: #fff8e1; border-left: 4px solid var(--gold); padding: 8px; margin-top: 8px; border-radius: 4px; font-size: 0.85rem; color: var(--text); flex-shrink: 0; }
 
     /* 晚间决策 */
-    .night-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; flex: 1; min-height: 0; overflow-y: auto; }
-    .action-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; text-align: center; }
-    .action-name { font-weight: bold; color: var(--red); margin-bottom: 4px; font-size: 0.85rem; }
-    .action-desc { font-size: 0.7rem; color: var(--text-light); margin-bottom: 8px; }
+    .night-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; flex: 1; min-height: 0; overflow-y: auto; }
+    .action-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 8px; text-align: center; }
+    .action-name { font-weight: bold; color: var(--red); margin-bottom: 3px; font-size: 0.8rem; }
+    .action-desc { font-size: 0.65rem; color: var(--text-light); margin-bottom: 6px; }
 
     /* 结局页 */
-    .ending-screen { text-align: center; padding: 6px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; }
-    .ending-title { font-size: 1.6rem; color: var(--red); margin-bottom: 8px; letter-spacing: 4px; }
-    .ending-subtitle { font-size: 1rem; color: var(--text-light); margin-bottom: 12px; }
-    .posthumous-title { font-size: 2.4rem; color: var(--gold); margin: 10px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: bold; }
-    .summary-text { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin: 10px 0; text-align: left; font-size: 0.9rem; line-height: 1.6; }
-    .final-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin: 10px 0; }
-    .final-stat { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 8px; }
-    .final-stat-value { font-size: 1rem; font-weight: bold; color: var(--red); }
-    .final-stat-label { font-size: 0.65rem; color: var(--text-light); }
-    .ending-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+    .ending-screen { text-align: center; padding: 4px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; }
+    .ending-title { font-size: 1.4rem; color: var(--red); margin-bottom: 6px; letter-spacing: 3px; }
+    .ending-subtitle { font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
+    .posthumous-title { font-size: 2rem; color: var(--gold); margin: 6px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: bold; }
+    .summary-text { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; margin: 6px 0; text-align: left; font-size: 0.85rem; line-height: 1.5; }
+    .final-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px; margin: 6px 0; }
+    .final-stat { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 6px; }
+    .final-stat-value { font-size: 0.9rem; font-weight: bold; color: var(--red); }
+    .final-stat-label { font-size: 0.6rem; color: var(--text-light); }
+    .ending-actions { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 
     /* 商业化 */
     .monetization-note { font-size: 0.72rem; color: var(--text-light); margin-top: 6px; }
@@ -215,21 +242,21 @@
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
-      z-index: 100; padding: 16px;
+      z-index: 100; padding: 12px;
     }
     .modal {
       background: var(--paper); border: 2px solid var(--gold); border-radius: 8px;
-      max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;
-      padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      max-width: 600px; width: 100%; max-height: 90vh; max-height: 90dvh; overflow-y: auto;
+      padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
-    .modal-title { font-size: 1.3rem; color: var(--red); margin-bottom: 16px; text-align: center; font-weight: bold; }
-    .modal-close { float: right; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
-    .modal-section { margin-bottom: 16px; }
-    .modal-section h4 { color: var(--red); margin-bottom: 8px; font-size: 1rem; }
-    .modal-section p, .modal-section li { font-size: 0.9rem; color: var(--text); margin-bottom: 6px; }
-    .modal-section ul { padding-left: 20px; }
-    .history-item { border-bottom: 1px dashed var(--gold-light); padding: 8px 0; font-size: 0.9rem; }
-    .history-day { color: var(--red); font-weight: bold; margin-right: 8px; }
+    .modal-title { font-size: 1.2rem; color: var(--red); margin-bottom: 12px; text-align: center; font-weight: bold; }
+    .modal-close { float: right; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-light); }
+    .modal-section { margin-bottom: 12px; }
+    .modal-section h4 { color: var(--red); margin-bottom: 6px; font-size: 0.95rem; }
+    .modal-section p, .modal-section li { font-size: 0.85rem; color: var(--text); margin-bottom: 4px; }
+    .modal-section ul { padding-left: 16px; }
+    .history-item { border-bottom: 1px dashed var(--gold-light); padding: 6px 0; font-size: 0.85rem; }
+    .history-day { color: var(--red); font-weight: bold; margin-right: 6px; }
 
     /* 档案标签页 */
     .archive-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--gold); }
@@ -317,39 +344,107 @@
     .fade-in { animation: fadeIn 0.4s ease; }
 
     .challenge-modal { max-width: 560px; }
-    .challenge-intro { font-size: 0.95rem; line-height: 1.6; color: var(--text); margin-bottom: 14px; }
-    .challenge-step { margin-bottom: 10px; }
-    .challenge-progress { font-size: 0.8rem; color: var(--gold); margin-bottom: 10px; text-align: center; }
-    .challenge-question { font-size: 1rem; font-weight: bold; color: var(--red); margin-bottom: 10px; }
-    .challenge-options { display: flex; flex-direction: column; gap: 8px; }
-    .challenge-option { text-align: left; padding: 10px 12px; }
-    .challenge-result { text-align: center; padding: 16px; background: rgba(201,162,39,0.08); border: 1px solid var(--gold-light); border-radius: 8px; }
-    .challenge-result h3 { color: var(--red); margin-bottom: 8px; font-size: 1.2rem; }
-    .challenge-result p { color: var(--text); font-size: 0.9rem; line-height: 1.6; margin-bottom: 12px; }
-    .challenge-score { font-size: 0.85rem; color: var(--gold); margin-bottom: 12px; }
+    .challenge-intro { font-size: 0.9rem; line-height: 1.5; color: var(--text); margin-bottom: 10px; }
+    .challenge-step { margin-bottom: 8px; }
+    .challenge-progress { font-size: 0.75rem; color: var(--gold); margin-bottom: 8px; text-align: center; }
+    .challenge-question { font-size: 0.95rem; font-weight: bold; color: var(--red); margin-bottom: 8px; }
+    .challenge-options { display: flex; flex-direction: column; gap: 6px; }
+    .challenge-option { text-align: left; padding: 8px 10px; font-size: 0.85rem; }
+    .challenge-result { text-align: center; padding: 12px; background: rgba(201,162,39,0.08); border: 1px solid var(--gold-light); border-radius: 8px; }
+    .challenge-result h3 { color: var(--red); margin-bottom: 6px; font-size: 1.1rem; }
+    .challenge-result p { color: var(--text); font-size: 0.85rem; line-height: 1.5; margin-bottom: 8px; }
+    .challenge-score { font-size: 0.8rem; color: var(--gold); margin-bottom: 8px; }
 
     .hidden { display: none !important; }
 
     @media (max-width: 600px) {
-      .container { padding: 6px; }
-      .title { font-size: 1rem; letter-spacing: 1px; }
-      .phase-title { font-size: 1rem; margin-bottom: 6px; }
-      .posthumous-title { font-size: 2rem; }
-      .ending-title { font-size: 1.4rem; }
+      .container { padding: 5px; }
+      .title { font-size: 0.95rem; letter-spacing: 1px; }
+      .phase-title { font-size: 0.95rem; margin-bottom: 5px; }
+      .posthumous-title { font-size: 1.8rem; }
+      .ending-title { font-size: 1.3rem; }
+      .game-area { padding: 6px; }
+      .night-actions { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+      .character-card { padding: 3px 2px; }
+      .portrait { width: 28px; height: 28px; font-size: 0.9rem; }
+      .character-name { font-size: 0.7rem; }
+      .character-title { font-size: 0.5rem; margin-bottom: 1px; }
+      .stat-label { font-size: 0.55rem; }
+      .stat-bar { height: 3px; }
+      .event-title { font-size: 0.85rem; }
+      .event-desc { font-size: 0.75rem; line-height: 1.3; }
+      .btn { padding: 5px 8px; font-size: 0.75rem; }
+      .header { padding: 5px 6px; }
+      .stability-label { font-size: 0.65rem; }
+      .icon-btn { padding: 2px 5px; font-size: 0.65rem; }
+    }
+
+    /* 横屏手机/小平板（矮视口） */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .container { padding: 4px; }
+      .header { padding: 4px 6px; margin-bottom: 4px; }
+      .header-top { margin-bottom: 2px; }
+      .title { font-size: 0.85rem; letter-spacing: 1px; }
+      .stability-bar { gap: 4px; }
+      .stability-label { font-size: 0.65rem; }
+      .progress-wrap { height: 6px; }
+      .stability-value { font-size: 0.7rem; }
+      .game-area { padding: 5px; }
+      .phase-title { font-size: 0.85rem; margin-bottom: 4px; }
+      .event-title { font-size: 0.8rem; margin-bottom: 3px; padding-bottom: 3px; }
+      .event-desc { font-size: 0.7rem; line-height: 1.3; margin-bottom: 4px; }
+      .btn { padding: 4px 6px; font-size: 0.7rem; }
+      .feedback { padding: 5px; font-size: 0.7rem; margin-top: 5px; }
+      .night-actions { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+      .action-card { padding: 5px; }
+      .action-name { font-size: 0.7rem; margin-bottom: 2px; }
+      .action-desc { font-size: 0.55rem; margin-bottom: 4px; }
+      .ending-title { font-size: 1.1rem; margin-bottom: 4px; }
+      .ending-subtitle { font-size: 0.8rem; margin-bottom: 6px; }
+      .posthumous-title { font-size: 1.6rem; margin: 4px 0; }
+      .summary-text { padding: 6px; font-size: 0.7rem; line-height: 1.4; margin: 4px 0; }
+      .final-stats { grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 4px 0; }
+      .final-stat { padding: 4px; }
+      .final-stat-value { font-size: 0.75rem; }
+      .final-stat-label { font-size: 0.5rem; }
+      .ending-actions { gap: 4px; margin-top: 6px; }
+      .modal { padding: 10px; max-height: 95vh; }
+      .modal-title { font-size: 1rem; margin-bottom: 8px; }
+      .challenge-intro { font-size: 0.75rem; margin-bottom: 6px; }
+      .challenge-question { font-size: 0.8rem; margin-bottom: 5px; }
+      .challenge-option { padding: 5px 8px; font-size: 0.7rem; }
+      .challenge-result { padding: 8px; }
+      .challenge-result h3 { font-size: 0.95rem; }
+      .challenge-result p { font-size: 0.7rem; }
+    }
+
+    /* 超小屏手机（如 iPhone SE / 小屏安卓） */
+    @media (max-width: 380px) {
+      .container { padding: 4px; }
+      .title { font-size: 0.85rem; }
+      .game-area { padding: 5px; }
+      .character-card { padding: 2px 1px; }
+      .character-name { font-size: 0.65rem; }
+      .character-title { font-size: 0.45rem; }
+      .stat-label { font-size: 0.5rem; }
+      .stat-bar { height: 3px; }
+      .btn { padding: 4px 6px; font-size: 0.7rem; }
+      .event-desc { font-size: 0.7rem; }
+      .night-actions { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+      .action-card { padding: 5px; }
+      .posthumous-title { font-size: 1.6rem; }
+      .final-stats { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    }
+
+    /* 平板横屏（中等高度） */
+    @media (min-width: 768px) and (max-height: 700px) and (orientation: landscape) {
+      .container { padding: 8px; }
+      .header { padding: 6px 10px; margin-bottom: 6px; }
+      .title { font-size: 1.1rem; }
       .game-area { padding: 8px; }
-      .night-actions { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .character-card { padding: 4px 2px; }
-      .portrait { width: 32px; height: 32px; font-size: 1rem; }
-      .character-name { font-size: 0.75rem; }
-      .character-title { font-size: 0.55rem; margin-bottom: 2px; }
-      .stat-label { font-size: 0.6rem; }
-      .stat-bar { height: 4px; }
-      .event-title { font-size: 0.9rem; }
-      .event-desc { font-size: 0.8rem; line-height: 1.4; }
+      .character-card { padding: 4px 3px; }
+      .event-desc { font-size: 0.8rem; }
       .btn { padding: 6px 10px; font-size: 0.8rem; }
-      .header { padding: 6px 8px; }
-      .stability-label { font-size: 0.7rem; }
-      .icon-btn { padding: 2px 6px; font-size: 0.7rem; }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -444,7 +539,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.2.3',
+      version: '1.2.4',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -456,10 +551,10 @@
       stabilityInitial: 50,
       powerInitial: 30,
       characters: {
-        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔' },
-        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️' },
-        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜' },
-        fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️' }
+        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔', abilityType: 'politics', abilityName: '政治' },
+        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', abilityType: 'military', abilityName: '军事' },
+        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜', abilityType: 'diplomacy', abilityName: '外交' },
+        fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️', abilityType: 'strategy', abilityName: '谋略' }
       },
       stages: [
         { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 5,  color: '#4a90d9' },
@@ -505,7 +600,7 @@
             const map = { military: 'yuchi', logistics: 'fangxuanling', diplomacy: 'weizheng', politics: 'changsun' };
             const k = map[opt.type];
             const c = s.characters[k];
-            let pts = Math.round((c.favor + c.power) / 2);
+            let pts = Math.round(c.ability * 0.6 + (c.favor + c.power) / 2 * 0.2);
             pts += Math.floor(Math.random() * 11) - 5;
             return clamp(pts, 5, 50);
           },
@@ -562,7 +657,14 @@
               ]
             }
           ],
-          scoreStep: (s, opt) => opt.balance,
+          scoreStep: (s, opt) => {
+            const map = { weizheng: 'weizheng', fangxuanling: 'fangxuanling', yuchi: 'yuchi', changsun: 'changsun' };
+            const k = map[opt.type] || 'fangxuanling';
+            const c = s.characters[k];
+            let pts = Math.round(c.ability * 0.6 + (c.favor + c.power) / 2 * 0.2);
+            pts += Math.floor(Math.random() * 11) - 5;
+            return clamp(pts, 5, 50);
+          },
           resolve: (s, score) => {
             if (score >= 45) return {
               rank: 'stable', name: '朝局稳定', desc: '太子收敛、魏王知退，储位之争暂告平息。',
@@ -612,7 +714,13 @@
               ]
             }
           ],
-          scoreStep: (s, opt) => opt.legacy,
+          scoreStep: (s, opt) => {
+            const avgAbility = Object.values(s.characters).reduce((a, b) => a + b.ability, 0) / 4;
+            const avgFavor = Object.values(s.characters).reduce((a, b) => a + b.favor, 0) / 4;
+            let pts = Math.round(avgAbility * 0.3 + avgFavor * 0.3 + opt.legacy * 0.4);
+            pts += Math.floor(Math.random() * 11) - 5;
+            return clamp(pts, 0, 50);
+          },
           resolve: (s, score) => {
             const avgFavor = Object.values(s.characters).reduce((a, b) => a + b.favor, 0) / 4;
             const total = score + Math.round(avgFavor / 5);
@@ -1179,7 +1287,8 @@
         state.characters[key] = {
           ...config.characters[key],
           favor: 0,
-          power: config.powerInitial
+          power: config.powerInitial,
+          ability: config.powerInitial
         };
       });
       return state;
@@ -1318,6 +1427,12 @@
         if (!saved.deceased) saved.deceased = {};
         if (!saved.completedChallenges) saved.completedChallenges = {};
         if (!saved.challengeResults) saved.challengeResults = {};
+        // V1.2.4: 补全 ability 字段
+        Object.keys(saved.characters).forEach(key => {
+          if (typeof saved.characters[key].ability !== 'number') {
+            saved.characters[key].ability = 30;
+          }
+        });
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -1471,6 +1586,10 @@
             <div class="stat-bar"><div class="stat-fill favor-fill" style="width:${favorWidth}%; ${isDeceased ? 'opacity:0.5' : ''}"></div></div>
           </div>
           <div class="stat">
+            <div class="stat-label"><span>能力·${char.abilityName}</span><span style="color:${isDeceased ? '#888' : ''}">${char.ability}</span></div>
+            <div class="stat-bar"><div class="stat-fill ability-fill" style="width:${char.ability}%; ${isDeceased ? 'opacity:0.5' : ''}"></div></div>
+          </div>
+          <div class="stat">
             <div class="stat-label"><span>影响力</span><span style="color:${isDeceased ? '#888' : ''}">${char.power}</span></div>
             <div class="stat-bar"><div class="stat-fill power-fill" style="width:${char.power}%; ${isDeceased ? 'opacity:0.5' : ''}"></div></div>
           </div>
@@ -1563,6 +1682,7 @@
       const values = { stability: gameState.stability };
       Object.keys(gameState.characters).forEach(key => {
         values[key] = gameState.characters[key].favor;
+        values[key + '_ability'] = gameState.characters[key].ability;
       });
       return values;
     }
@@ -1572,9 +1692,17 @@
       Object.entries(effects).forEach(([key, value]) => {
         if (key === 'stability') {
           showFloatingText(document.getElementById('stabilityBar'), value, value >= 0);
-        } else {
+        } else if (gameState.characters[key] && !gameState.deceased[key]) {
           const card = document.getElementById(`char-${key}`);
-          if (card) showFloatingText(card, value, value >= 0);
+          if (card) {
+            if (typeof value === 'number') {
+              showFloatingText(card, value, value >= 0);
+            } else if (typeof value === 'object') {
+              if (typeof value.favor === 'number') showFloatingText(card, value.favor, value.favor >= 0);
+              if (typeof value.ability === 'number') showFloatingText(card, value.ability, value.ability >= 0);
+              if (typeof value.power === 'number') showFloatingText(card, value.power, value.power >= 0);
+            }
+          }
         }
       });
     }
@@ -1585,7 +1713,13 @@
         if (key === 'stability') {
           gameState.stability = clamp(gameState.stability + value, 0, 100);
         } else if (gameState.characters[key] && !gameState.deceased[key]) {
-          gameState.characters[key].favor = clamp(gameState.characters[key].favor + value, -100, 100);
+          if (typeof value === 'number') {
+            gameState.characters[key].favor = clamp(gameState.characters[key].favor + value, -100, 100);
+          } else if (typeof value === 'object') {
+            if (typeof value.favor === 'number') gameState.characters[key].favor = clamp(gameState.characters[key].favor + value.favor, -100, 100);
+            if (typeof value.power === 'number') gameState.characters[key].power = clamp(gameState.characters[key].power + value.power, 0, 100);
+            if (typeof value.ability === 'number') gameState.characters[key].ability = clamp(gameState.characters[key].ability + value.ability, 0, 100);
+          }
         }
       });
       Object.keys(gameState.characters).forEach(key => {
@@ -1656,14 +1790,16 @@
         if (gameState.deceased[key]) return;
         const daysSince = gameState.day - gameState.lastMeetDay[key];
         const canMeet = daysSince >= config.meetCooldown;
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-secondary';
-        btn.style.width = '100%';
-        btn.style.marginBottom = '8px';
-        btn.disabled = !canMeet;
-        btn.innerHTML = `${char.name} ${canMeet ? '' : `<span class="monetization-note">（还需等待 ${config.meetCooldown - daysSince} 天）</span>`}`;
-        btn.onclick = () => handleMeet(key);
-        menu.appendChild(btn);
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'margin-bottom:8px; border:1px solid var(--gold-light); border-radius:6px; padding:6px; background:#fffef8;';
+        wrapper.innerHTML = `
+          <div style="font-weight:bold; font-size:0.85rem; margin-bottom:4px; color:var(--text);">${char.name} ${canMeet ? '' : '<span class="monetization-note">（还需等待 ' + (config.meetCooldown - daysSince) + ' 天）</span>'}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="flex:1; font-size:0.75rem; padding:4px;" ${canMeet ? '' : 'disabled'} onclick="handleMeet('${key}')">勉励（好感+15）</button>
+            <button class="btn btn-secondary" style="flex:1; font-size:0.75rem; padding:4px;" ${canMeet ? '' : 'disabled'} onclick="handleCultivate('${key}')">栽培（能力+10，好感+5）</button>
+          </div>
+        `;
+        menu.appendChild(wrapper);
       });
     }
 
@@ -1681,8 +1817,29 @@
       showChanges(oldValues, { [key]: config.meetFavor });
       others.forEach(k => showChanges(oldValues, { [k]: -config.meetPenalty }));
       gameState.lastMeetDay[key] = gameState.day;
-      gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name });
-      logEvent('night_action', { action: 'meet', target: key });
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name + '（勉励）' });
+      logEvent('night_action', { action: 'meet', target: key, type: 'encourage' });
+      playSound('success');
+      nextDay();
+    }
+
+    function handleCultivate(key) {
+      if (gameState.deceased[key]) {
+        showToast(`${config.characters[key].name}已去世，无法召见`);
+        return;
+      }
+      const others = Object.keys(gameState.characters).filter(k => k !== key);
+      const oldValues = getCharacterValues();
+      gameState.characters[key].ability = clamp(gameState.characters[key].ability + 10, 0, 100);
+      gameState.characters[key].favor = clamp(gameState.characters[key].favor + 5, -100, 100);
+      others.forEach(k => {
+        gameState.characters[k].favor = clamp(gameState.characters[k].favor - config.meetPenalty, -100, 100);
+      });
+      showChanges(oldValues, { [key]: 5 });
+      others.forEach(k => showChanges(oldValues, { [k]: -config.meetPenalty }));
+      gameState.lastMeetDay[key] = gameState.day;
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name + '（栽培）' });
+      logEvent('night_action', { action: 'meet', target: key, type: 'cultivate' });
       playSound('success');
       nextDay();
     }
@@ -1914,6 +2071,8 @@
       const avgFavor = favors.reduce((a, b) => a + b, 0) / favors.length;
       const variance = favors.reduce((sum, f) => sum + Math.pow(f - avgFavor, 2), 0) / favors.length;
       const stdDev = Math.sqrt(variance);
+      const abilities = Object.values(chars).map(c => c.ability);
+      const avgAbility = abilities.reduce((a, b) => a + b, 0) / abilities.length;
 
       let balanceText = '';
       if (stdDev < 25) balanceText = '你善于制衡朝堂，各方势力在你的调教下各安其位。';
@@ -1924,6 +2083,10 @@
       if (gameState.stability >= 70) stabilityText = '皇权稳固，乾纲独断。';
       else if (gameState.stability >= 40) stabilityText = '皇权尚可，但已有所松动。';
       else stabilityText = '皇权飘摇，政令难出宫门。';
+
+      let abilityText = '';
+      if (avgAbility >= 60) abilityText = '大臣各尽其能，朝堂人才济济。';
+      else if (avgAbility <= 30) abilityText = '朝中人才凋零，后继乏力。';
 
       const dominant = Object.entries(chars).sort((a, b) => b[1].power - a[1].power)[0];
       let dominantText = '';
@@ -1938,7 +2101,7 @@
         dominantText = `${nameMap[dominant[0]]}${descMap[dominant[0]]}`;
       }
 
-      return `${balanceText}${stabilityText}${dominantText ? dominantText : ''}最终，史官在凌烟阁记下你的结局——<strong>${ending.name}</strong>，并赐谥号<strong>${title.name}</strong>。`;
+      return `${balanceText}${stabilityText}${abilityText}${dominantText ? dominantText : ''}最终，史官在凌烟阁记下你的结局——<strong>${ending.name}</strong>，并赐谥号<strong>${title.name}</strong>。`;
     }
 
     function showEnding() {
@@ -2236,6 +2399,19 @@
       logEvent('game_start', { from: hasSaveData ? 'save' : 'new' });
       renderAll();
     };
+
+    // 监听窗口 resize 和 orientationchange，确保横竖屏切换后重新渲染
+    let resizeTimer = null;
+    function handleResize() {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        renderAll();
+      }, 150);
+    }
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleResize, 200);
+    });
   </script>
 </body>
 </html>
