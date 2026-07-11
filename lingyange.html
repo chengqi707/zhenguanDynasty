@@ -491,6 +491,17 @@
       <button class="modal-close" onclick="closeSettings()">×</button>
       <div class="modal-title">设置</div>
       <div class="modal-section">
+        <h4>音效设置</h4>
+        <div style="display:flex; gap:10px; margin-bottom:8px;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="soundToggle" checked onchange="toggleSound()"> 音效
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="bgmToggle" onchange="toggleBGM()"> 背景音乐
+          </label>
+        </div>
+      </div>
+      <div class="modal-section">
         <h4>存档</h4>
         <p>游戏会自动保存当前进度。你可以手动导出/导入存档或清空数据。</p>
         <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="exportSave()">导出存档</button>
@@ -539,7 +550,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.2.4',
+      version: '1.3.0',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -1470,8 +1481,13 @@
         localStorage.removeItem('lyg_logs');
         localStorage.removeItem('lyg_noads');
         localStorage.removeItem('lyg_archive_unlocks');
+        localStorage.removeItem('lyg_sound');
+        localStorage.removeItem('lyg_bgm');
       } catch (e) {}
       noAds = false;
+      soundEnabled = true;
+      bgmEnabled = false;
+      stopBGM();
       eventLogs = [];
       restartGame();
       alert('所有数据已清空');
@@ -1488,9 +1504,39 @@
 
     // ==================== 音效系统 ====================
     const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    let soundEnabled = true;
+    let bgmEnabled = false;
+    let bgmOscillators = [];
+    let bgmGain = null;
+
+    function loadSoundSettings() {
+      try {
+        soundEnabled = localStorage.getItem('lyg_sound') !== '0';
+        bgmEnabled = localStorage.getItem('lyg_bgm') === '1';
+      } catch (e) {}
+    }
+
+    function saveSoundSettings() {
+      try {
+        localStorage.setItem('lyg_sound', soundEnabled ? '1' : '0');
+        localStorage.setItem('lyg_bgm', bgmEnabled ? '1' : '0');
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = document.getElementById('soundToggle').checked;
+      saveSoundSettings();
+    }
+
+    function toggleBGM() {
+      bgmEnabled = document.getElementById('bgmToggle').checked;
+      saveSoundSettings();
+      if (bgmEnabled) startBGM();
+      else stopBGM();
+    }
 
     function playSound(type) {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
@@ -1523,8 +1569,92 @@
           gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'click') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'phase_shift') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(392, audioCtx.currentTime + 0.15);
+          osc.frequency.setValueAtTime(523, audioCtx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+        } else if (type === 'ending_fanfare') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+          osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.4);
+          osc.frequency.setValueAtTime(1047, audioCtx.currentTime + 0.7);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.0);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 1.0);
+        } else if (type === 'cultivate') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(740, audioCtx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'meet') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(523, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.2);
         }
       } catch (e) {}
+    }
+
+    function startBGM() {
+      if (!audioCtx || !bgmEnabled) return;
+      stopBGM();
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        bgmGain = audioCtx.createGain();
+        bgmGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        bgmGain.connect(audioCtx.destination);
+        const notes = [262, 294, 330, 349, 392, 349, 330, 294];
+        const interval = 1.0;
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * interval);
+          osc.connect(bgmGain);
+          osc.start(audioCtx.currentTime + i * interval);
+          osc.stop(audioCtx.currentTime + (i + 1) * interval - 0.05);
+          bgmOscillators.push(osc);
+        });
+        const loopOsc = audioCtx.createOscillator();
+        loopOsc.type = 'sine';
+        loopOsc.frequency.setValueAtTime(0, audioCtx.currentTime);
+        loopOsc.connect(bgmGain);
+        loopOsc.start(audioCtx.currentTime + notes.length * interval);
+        bgmOscillators.push(loopOsc);
+        setTimeout(() => {
+          if (bgmEnabled) startBGM();
+        }, notes.length * interval * 1000);
+      } catch (e) {}
+    }
+
+    function stopBGM() {
+      bgmOscillators.forEach(osc => {
+        try { osc.stop(); } catch (e) {}
+      });
+      bgmOscillators = [];
+      if (bgmGain) {
+        try { bgmGain.disconnect(); } catch (e) {}
+        bgmGain = null;
+      }
     }
 
     // ==================== 飘字动画 ====================
@@ -1819,7 +1949,7 @@
       gameState.lastMeetDay[key] = gameState.day;
       gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name + '（勉励）' });
       logEvent('night_action', { action: 'meet', target: key, type: 'encourage' });
-      playSound('success');
+      playSound('meet');
       nextDay();
     }
 
@@ -1840,7 +1970,7 @@
       gameState.lastMeetDay[key] = gameState.day;
       gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name + '（栽培）' });
       logEvent('night_action', { action: 'meet', target: key, type: 'cultivate' });
-      playSound('success');
+      playSound('cultivate');
       nextDay();
     }
 
@@ -1914,6 +2044,7 @@
       document.getElementById('challengeModal').classList.remove('hidden');
       renderChallengeIntro();
       logEvent('challenge_start', { challenge: challenge.id });
+      playSound('phase_shift');
     }
 
     function currentChallengeConfig() {
@@ -1927,7 +2058,7 @@
       content.innerHTML = `
         <div class="challenge-intro fade-in">${challenge.intro}</div>
         <div class="challenge-options fade-in">
-          <button class="btn btn-primary" style="width:100%;" onclick="renderChallengeStep()">开始决策</button>
+          <button class="btn btn-primary" style="width:100%;" onclick="playSound('click'); renderChallengeStep()">开始决策</button>
         </div>
       `;
     }
@@ -1941,7 +2072,7 @@
           <div class="challenge-progress">决策 ${gameState.currentChallenge.stepIndex + 1} / ${challenge.steps.length}</div>
           <div class="challenge-question">${step.question}</div>
           <div class="challenge-options" id="challengeOptions">${step.options.map((opt, i) => `
-            <button class="btn btn-secondary challenge-option" onclick="handleChallengeChoice(${i})">${opt.text}</button>
+            <button class="btn btn-secondary challenge-option" onclick="playSound('click'); handleChallengeChoice(${i})">${opt.text}</button>
           `).join('')}</div>
         </div>
       `;
@@ -1995,7 +2126,7 @@
           <h3>${result.name}</h3>
           <div class="challenge-score">本次评定：${gameState.currentChallenge.score} 分</div>
           <p>${result.desc}</p>
-          <button class="btn btn-primary" style="width:100%;" onclick="closeChallenge()">${isFinal ? '查看结局' : '继续理政'}</button>
+          <button class="btn btn-primary" style="width:100%;" onclick="playSound('click'); closeChallenge()">${isFinal ? '查看结局' : '继续理政'}</button>
         </div>
       `;
     }
@@ -2118,7 +2249,7 @@
 
       logEvent('ending_reached', { ending: ending.name, title: title.name, day: gameState.day, stability: gameState.stability });
       unlockArchiveStories();
-      playSound(isInstantEnding() ? 'fail' : 'success');
+      playSound(isInstantEnding() ? 'fail' : 'ending_fanfare');
 
       let statsHtml = '';
       Object.entries(gameState.characters).forEach(([key, char]) => {
@@ -2143,10 +2274,10 @@
             ${statsHtml}
           </div>
           <div class="ending-actions">
-            <button class="btn btn-primary" onclick="restartGame()">重新开始</button>
-            ${noAds ? '' : `<button class="btn btn-secondary" onclick="handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>`}
-            <button class="btn btn-secondary" onclick="handleShare()">分享结局</button>
-            ${noAds ? '' : `<button class="btn btn-secondary" onclick="handleRemoveAds()">¥6 永久去广告</button>`}
+            <button class="btn btn-primary" onclick="playSound('click'); restartGame()">重新开始</button>
+            ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>`}
+            <button class="btn btn-secondary" onclick="playSound('click'); handleShare()">分享结局</button>
+            ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleRemoveAds()">¥6 永久去广告</button>`}
           </div>
         </div>
       `;
@@ -2221,6 +2352,8 @@
 
     function openSettings() {
       document.getElementById('settingsModal').classList.remove('hidden');
+      document.getElementById('soundToggle').checked = soundEnabled;
+      document.getElementById('bgmToggle').checked = bgmEnabled;
     }
 
     function closeSettings(e) {
@@ -2392,10 +2525,12 @@
 
     window.onload = function() {
       checkVersion();
+      loadSoundSettings();
       const hasSaveData = loadGame();
       if (!hasSaveData) {
         gameState.currentEvents = randomEvents(config.eventsPerDay);
       }
+      if (bgmEnabled) startBGM();
       logEvent('game_start', { from: hasSaveData ? 'save' : 'new' });
       renderAll();
     };
