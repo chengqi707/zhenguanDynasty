@@ -550,7 +550,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.3.0',
+      version: '1.2.1',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -911,8 +911,8 @@
           id: 6, stage: 'early', storyline: 'weizheng', historicalYear: '627', title: '魏征直谏修宫殿',
           desc: '魏征上书反对修建洛阳宫，言辞激烈："隋炀帝前车之鉴，陛下不可重蹈覆辙！"',
           options: [
-            { text: '接受谏言，停工', effects: { weizheng: 30, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
-            { text: '驳回谏言，继续修建', effects: { weizheng: -30, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
+            { text: '接受谏言，停工', effects: { weizheng: 25, yuchi: -10, stability: 5 }, feedback: '魏征伏地叩首，称颂圣明；武将们却觉得丢了面子。' },
+            { text: '驳回谏言，继续修建', effects: { weizheng: -20, yuchi: 10, stability: -10 }, feedback: '宫殿继续修建，劳民伤财，朝野议论纷纷。' },
             { text: '缩减规模，折中处理', effects: { weizheng: 10, yuchi: 5, fangxuanling: 5 }, feedback: '房玄龄称此法可省国库，各方亦有台阶。' }
           ]
         },
@@ -930,7 +930,7 @@
           desc: '今科进士多出自寒门，世家大族不满，长孙无忌暗示应"照顾旧族"。',
           options: [
             { text: '坚持唯才是举，不论出身', effects: { weizheng: 20, changsun: -20, fangxuanling: 10, stability: 5 }, feedback: '寒门士子感恩戴德，世家怨气暗生，房玄龄称此乃长久之计。' },
-            { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -25, fangxuanling: -15, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车，房玄龄反对无效。' },
+            { text: '增加世家推荐名额', effects: { changsun: 25, weizheng: -20, fangxuanling: -15, stability: -5 }, feedback: '旧族满意，但清流痛斥开历史倒车，房玄龄反对无效。' },
             { text: '维持原榜，另设恩科', effects: { changsun: 10, weizheng: 5, fangxuanling: 15 }, feedback: '两边都有台阶下，风波暂时平息，房玄龄赞你折中得法。' }
           ]
         },
@@ -956,7 +956,7 @@
           id: 11, stage: 'early', storyline: null, historicalYear: '629', title: '尉迟争座',
           desc: '尉迟敬德在宴会上因座次排在长孙无忌之后，当众发怒："我有夺门之功，岂能让文官压一头！"',
           options: [
-            { text: '训斥尉迟，维护礼制', effects: { yuchi: -30, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
+            { text: '训斥尉迟，维护礼制', effects: { yuchi: -20, changsun: 20, weizheng: 10 }, feedback: '尉迟敬德悻悻退下，长孙无忌微微颔首，魏征眼中闪过赞许。' },
             { text: '安抚尉迟，给他更高座次', effects: { yuchi: 20, changsun: -20, weizheng: -20 }, feedback: '尉迟敬德得意洋洋，长孙无忌面色阴沉，魏征摇头叹息。' },
             { text: '和稀泥，各退一步', effects: { yuchi: 5, changsun: 5, weizheng: -10 }, feedback: '争端暂时平息，但魏征认为你软弱可欺。' }
           ]
@@ -975,7 +975,7 @@
           desc: '魏征上书弹劾一名皇亲国戚侵占民田，奏折中言辞激烈，甚至影射后宫。',
           options: [
             { text: '支持魏征，依法查办', effects: { weizheng: 25, changsun: -10, yuchi: -5, fangxuanling: 5, stability: -5 }, feedback: '民心大快，宗室对你颇有怨言，房玄龄认为此乃立威之机。' },
-            { text: '压下奏折，保全皇亲', effects: { weizheng: -30, changsun: 10, yuchi: 5, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"房玄龄摇头退朝。' },
+            { text: '压下奏折，保全皇亲', effects: { weizheng: -20, changsun: 10, yuchi: 5, fangxuanling: -10, stability: -10 }, feedback: '魏征当众叹息："陛下亦有私。"房玄龄摇头退朝。' },
             { text: '责令退还民田，不再追究', effects: { weizheng: 10, changsun: 5, yuchi: 5, fangxuanling: 10 }, feedback: '两边各退一步，民怨稍平，房玄龄赞你处事周全。' }
           ]
         },
@@ -1003,7 +1003,7 @@
           desc: '突厥骑兵犯边，边关告急。尉迟敬德请战，长孙无忌主张和谈，魏征认为应先整饬内政。',
           options: [
             { text: '派尉迟敬德出征', effects: { yuchi: 25, changsun: -10, weizheng: -5, stability: 5 }, feedback: '尉迟敬德得偿所愿，挥师北上，朝堂暂时安静。' },
-            { text: '派使者议和', effects: { changsun: 20, yuchi: -25, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
+            { text: '派使者议和', effects: { changsun: 20, yuchi: -20, weizheng: 10, stability: -5 }, feedback: '边境暂安，但尉迟敬德认为这是文官怯战。' },
             { text: '召房玄龄商议后发兵', effects: { yuchi: 10, fangxuanling: 15, changsun: -5, weizheng: -5, stability: 5 }, feedback: '房玄龄调拨粮草，尉迟敬德无后顾之忧，朝堂皆大欢喜。' }
           ]
         },
@@ -1013,7 +1013,7 @@
           options: [
             { text: '准奏，命李靖出征', effects: { yuchi: 20, fangxuanling: 10, changsun: -5, weizheng: -5, stability: 5 }, feedback: '李靖率精骑北上，朝堂拭目以待。' },
             { text: '以稳为主，先守后攻', effects: { changsun: 15, yuchi: -15, fangxuanling: 5, weizheng: 5 }, feedback: '边境稳固，但战机稍纵即逝，尉迟敬德不满。' },
-            { text: '让尉迟敬德与李靖分兵', effects: { yuchi: 15, fangxuanling: -5, changsun: -5, stability: -5 }, feedback: '两将争功， coordination 困难，战果平平。' }
+            { text: '让尉迟敬德与李靖分兵', effects: { yuchi: 15, fangxuanling: -5, changsun: -5, stability: -5 }, feedback: '两将争功，协调困难，战果平平。' }
           ]
         },
         {
@@ -1056,7 +1056,7 @@
           id: 27, stage: 'middle', storyline: null, historicalYear: '635', title: '尉迟私斗伤人',
           desc: '尉迟敬德在朝堂外与一名文官争执，一拳将其打伤。百官哗然，要求严惩。',
           options: [
-            { text: '杖责二十，以儆效尤', effects: { yuchi: -25, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
+            { text: '杖责二十，以儆效尤', effects: { yuchi: -20, changsun: 15, weizheng: 15, stability: 5 }, feedback: '尉迟敬德当众受辱，但朝纲得以整肃。' },
             { text: '口头训斥，从轻发落', effects: { yuchi: 10, changsun: -10, weizheng: -20, fangxuanling: -10, stability: -5 }, feedback: '尉迟敬德感激涕零，但清流与务实派都认为他恃功而骄。' },
             { text: '罚俸三月，令其闭门思过', effects: { yuchi: -5, changsun: 5, weizheng: 5, fangxuanling: 5 }, feedback: '处罚不痛不痒，各方皆有微词。' }
           ]
@@ -1138,7 +1138,7 @@
           desc: '兵部奏报军饷短缺，尉迟敬德要求加税，房玄龄主张裁撤老弱、精简开支。',
           options: [
             { text: '加征税赋，充实军饷', effects: { yuchi: 20, weizheng: -15, fangxuanling: -15, changsun: -5, stability: -10 }, feedback: '军队满意，但百姓负担加重。' },
-            { text: '按房玄龄之策裁军省饷', effects: { fangxuanling: 25, yuchi: -25, weizheng: 10, changsun: 10, stability: 5 }, feedback: '国库减压，但尉迟敬德认为你在削他根基。' },
+            { text: '按房玄龄之策裁军省饷', effects: { fangxuanling: 25, yuchi: -20, weizheng: 10, changsun: 10, stability: 5 }, feedback: '国库减压，但尉迟敬德认为你在削他根基。' },
             { text: '向关中世家借款应急', effects: { changsun: 15, yuchi: 10, weizheng: -10, fangxuanling: -5, stability: -5 }, feedback: '军饷得解，但世家借此要官。' }
           ]
         },
@@ -1174,9 +1174,9 @@
           id: 40, stage: 'late', storyline: 'weizheng', prerequisite: 35, historicalYear: '643', title: '魏征病危',
           desc: '魏征病重，上最后一道奏疏，直言你的十大过失。长孙无忌认为魏征不敬。',
           options: [
-            { text: '亲自探望，嘉纳谏言', effects: { weizheng: 30, fangxuanling: 15, changsun: -10, stability: 10 }, feedback: '魏征涕泪横流，朝野称颂圣明。' },
+            { text: '亲自探望，嘉纳谏言', effects: { weizheng: 25, fangxuanling: 15, changsun: -10, stability: 10 }, feedback: '魏征涕泪横流，朝野称颂圣明。' },
             { text: '嘉纳谏言但不去探望', effects: { weizheng: 15, fangxuanling: 5, changsun: 5 }, feedback: '魏征感激，但民间有微词。' },
-            { text: '斥责魏征临死不敬', effects: { weizheng: -30, changsun: 15, yuchi: 5, stability: -10 }, feedback: '魏征含恨而终，清流人心离散。' }
+            { text: '斥责魏征临死不敬', effects: { weizheng: -20, changsun: 15, yuchi: 5, stability: -10 }, feedback: '魏征含恨而终，清流人心离散。' }
           ]
         },
         {
@@ -1189,19 +1189,19 @@
           ]
         },
         {
-          id: 42, stage: 'late', storyline: 'harem', prerequisite: 26, historicalYear: '637', title: '武则天入宫',
-          desc: '武则天以才人身份入宫。她容貌出众，又工于心计，很快引起朝臣注意。',
+          id: 42, stage: 'late', storyline: 'harem', prerequisite: 26, historicalYear: '637', title: '武才人入宫',
+          desc: '武氏以才人身份入宫。她容貌出众，又工于心计，很快引起朝臣注意。',
           options: [
-            { text: '宠幸武则天，封为昭仪', effects: { changsun: -10, weizheng: -15, fangxuanling: -10, yuchi: 5, stability: -10 }, feedback: '后宫暗流涌动，朝臣担忧女主干政。' },
-            { text: '保持距离，只封为才人', effects: { weizheng: 10, fangxuanling: 10, changsun: 5, stability: 5 }, feedback: '武则天表面上恭顺，心中暗藏野心。' },
+            { text: '宠幸武氏，封为昭仪', effects: { changsun: -10, weizheng: -15, fangxuanling: -10, yuchi: 5, stability: -10 }, feedback: '后宫暗流涌动，朝臣担忧女主干政。' },
+            { text: '保持距离，只封为才人', effects: { weizheng: 10, fangxuanling: 10, changsun: 5, stability: 5 }, feedback: '武氏表面上恭顺，心中暗藏野心。' },
             { text: '将其遣出宫外', effects: { weizheng: 15, fangxuanling: 5, changsun: 5, yuchi: -5, stability: 5 }, feedback: '杜绝后患，但民间传说纷纷。' }
           ]
         },
         {
           id: 43, stage: 'late', storyline: 'harem', prerequisite: 42, historicalYear: '649', title: '后宫干政阴影',
-          desc: '武则天开始参与政务，借着你的宠爱干预人事。长孙无忌与魏征旧部联合上书反对。',
+          desc: '武氏开始参与政务，借着你的宠爱干预人事。长孙无忌与魏征旧部联合上书反对。',
           options: [
-            { text: '呵斥武则天，令其退回后宫', effects: { weizheng: 15, changsun: 15, fangxuanling: 10, yuchi: -5, stability: 10 }, feedback: '武则天表面认错，眼中闪过不甘。' },
+            { text: '呵斥武氏，令其退回后宫', effects: { weizheng: 15, changsun: 15, fangxuanling: 10, yuchi: -5, stability: 10 }, feedback: '武氏表面认错，眼中闪过不甘。' },
             { text: '默许，但限制其范围', effects: { changsun: -5, weizheng: -10, fangxuanling: -5, yuchi: 5 }, feedback: '后宫干政之门渐开，朝臣忧心忡忡。' },
             { text: '让房玄龄出面调和', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: -5 }, feedback: '暂时平息，但隐患未除。' }
           ]
@@ -1228,7 +1228,7 @@
           id: 46, stage: 'late', storyline: null, historicalYear: '643', title: '长孙无忌排挤房玄龄',
           desc: '长孙无忌多次在奏对中暗示房玄龄"权柄过重"，建议分其权责。',
           options: [
-            { text: '分房玄龄之权', effects: { changsun: 20, fangxuanling: -25, weizheng: -5, stability: -5 }, feedback: '房玄龄心灰意冷，魏征为你惋惜。' },
+            { text: '分房玄龄之权', effects: { changsun: 20, fangxuanling: -20, weizheng: -5, stability: -5 }, feedback: '房玄龄心灰意冷，魏征为你惋惜。' },
             { text: '驳斥长孙，信任房玄龄', effects: { changsun: -20, fangxuanling: 25, weizheng: 10, stability: 5 }, feedback: '房玄龄感念知遇，长孙无忌悻悻而退。' },
             { text: '令二人共理政务，互相牵制', effects: { changsun: 5, fangxuanling: 5, weizheng: 5, yuchi: -5 }, feedback: '朝堂再平衡，但效率略降。' }
           ]
@@ -1255,7 +1255,7 @@
           id: 49, stage: 'late', storyline: null, historicalYear: '649', title: '长孙推荐太子党',
           desc: '长孙无忌再次推荐几位亲信担任东宫属官，暗示这是为了"太子未来的班底"。',
           options: [
-            { text: '全部批准', effects: { changsun: 30, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私，房玄龄默然不语。' },
+            { text: '全部批准', effects: { changsun: 25, weizheng: -20, fangxuanling: -10, stability: -10 }, feedback: '长孙无忌势力大增，魏征怒斥结党营私，房玄龄默然不语。' },
             { text: '拒绝，坚持任人唯贤', effects: { changsun: -20, weizheng: 20, fangxuanling: 10, stability: 5 }, feedback: '魏征与房玄龄皆称赞圣明，长孙无忌心中不悦。' },
             { text: '批准一半，留一半自己任命', effects: { changsun: 10, weizheng: 5, fangxuanling: 5 }, feedback: '两边都得了些好处，朝局维持平衡。' }
           ]
@@ -1267,6 +1267,69 @@
             { text: '让房玄龄居中调停', effects: { fangxuanling: 20, changsun: 5, yuchi: 5, weizheng: -5, stability: 5 }, feedback: '房玄龄两边安抚，争端平息，魏征却觉得你在和稀泥。' },
             { text: '各打五十大板', effects: { changsun: -10, yuchi: -10, weizheng: 10, fangxuanling: 5 }, feedback: '魏征称赞你公正，但两派首领皆感不快。' },
             { text: '支持长孙，压制尉迟', effects: { changsun: 15, yuchi: -20, weizheng: -5, fangxuanling: -5, stability: -5 }, feedback: '文官得势，尉迟敬德怒目而退。' }
+          ]
+        },
+        {
+          id: 51, stage: 'late', storyline: 'prince', prerequisite: 39, historicalYear: '644', title: '太子李治年幼',
+          desc: '新太子李治年仅十五，性格仁弱。朝臣担忧他能否驾驭长孙无忌等重臣，有人建议提前培养太子班底。',
+          options: [
+            { text: '让房玄龄兼领太子太傅', effects: { fangxuanling: 20, changsun: -10, weizheng: 10, yuchi: -5, stability: 5 }, feedback: '房玄龄悉心教导，太子渐有明君气象，长孙无忌暗生警觉。' },
+            { text: '一切托付长孙无忌', effects: { changsun: 25, fangxuanling: -10, weizheng: -15, stability: -5 }, feedback: '长孙无忌权势更盛，魏征旧部忧心忡忡。' },
+            { text: '令太子旁听朝议，自行历练', effects: { weizheng: 10, fangxuanling: 10, changsun: 5, yuchi: 5, stability: 5 }, feedback: '太子耳濡目染，虽进展缓慢但根基扎实。' }
+          ]
+        },
+        {
+          id: 52, stage: 'late', storyline: 'harem', prerequisite: 43, historicalYear: '647', title: '武氏结交朝臣',
+          desc: '武氏借替你批阅奏折之机，暗中与几位年轻朝臣往来。密报传入长孙无忌耳中。',
+          options: [
+            { text: '严令武氏不得干政', effects: { weizheng: 10, changsun: 15, fangxuanling: 10, yuchi: 5, stability: 10 }, feedback: '武氏表面顺从，眼中寒意更甚。' },
+            { text: '不置可否，静观其变', effects: { changsun: -10, weizheng: -5, fangxuanling: -5, yuchi: 5 }, feedback: '后宫暗流涌动，朝臣纷纷猜测圣意。' },
+            { text: '借机敲打长孙无忌，不要多管后宫', effects: { changsun: -15, fangxuanling: 5, weizheng: -5, yuchi: -5, stability: -5 }, feedback: '长孙无忌面色铁青退朝，朝堂气氛骤然紧张。' }
+          ]
+        },
+        {
+          id: 53, stage: 'late', storyline: null, historicalYear: '644', title: '魏征碑毁',
+          desc: '你曾答应为魏征立碑，如今有人揭发魏征生前曾推荐过侯君集等人。你怒而推倒了魏征的墓碑。',
+          options: [
+            { text: '推倒墓碑，以儆效尤', effects: { weizheng: -20, changsun: 10, yuchi: 10, fangxuanling: -15, stability: -10 }, feedback: '朝野哗然，清流人心离散，房玄龄叹息不已。' },
+            { text: '恢复墓碑，承认冲动', effects: { weizheng: 15, fangxuanling: 15, changsun: -5, yuchi: -5, stability: 5 }, feedback: '你亲撰碑文重修，天下称颂你知过能改。' },
+            { text: '不恢复碑，但追谥如故', effects: { weizheng: 5, changsun: 5, fangxuanling: 5, yuchi: 5 }, feedback: '各方各退一步，但魏征之名已蒙尘埃。' }
+          ]
+        },
+        {
+          id: 54, stage: 'late', storyline: null, historicalYear: '645', title: '房玄龄病重',
+          desc: '房玄龄积劳成疾，上表请求致仕。朝堂之上，谁能接替他的位置，议论纷纷。',
+          options: [
+            { text: '极力挽留，赐药慰问', effects: { fangxuanling: 20, changsun: -5, weizheng: 10, yuchi: -5, stability: 5 }, feedback: '房玄龄带病理政，朝堂运转如常。' },
+            { text: '准其致仕，以长孙无忌兼理', effects: { changsun: 20, fangxuanling: -15, weizheng: -10, yuchi: 5, stability: -5 }, feedback: '长孙无忌权势更盛，朝堂天平再次倾斜。' },
+            { text: '令太子亲往探望，以示恩宠', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: 5, stability: 10 }, feedback: '太子与房玄龄情谊日深，为未来埋下伏笔。' }
+          ]
+        },
+        {
+          id: 55, stage: 'late', storyline: null, historicalYear: '646', title: '尉迟敬德闭门修道',
+          desc: '尉迟敬德彻底淡出朝堂，在家中炼丹修道。有人告发他私藏甲胄，意图不轨。',
+          options: [
+            { text: '亲自探望，以示不疑', effects: { yuchi: 20, changsun: -10, weizheng: 10, fangxuanling: 10, stability: 10 }, feedback: '尉迟敬德涕泪横流，交出甲胄，誓以余生报效。' },
+            { text: '派人查抄，以绝后患', effects: { yuchi: -20, changsun: 15, weizheng: 5, fangxuanling: -5, stability: -10 }, feedback: '尉迟敬德愤而绝食，旧部将校人人自危。' },
+            { text: '置之不理，听其自然', effects: { yuchi: 5, changsun: 5, weizheng: -5, fangxuanling: 5 }, feedback: '朝臣议论纷纷，有人说你念旧情，有人说你软弱。' }
+          ]
+        },
+        {
+          id: 56, stage: 'late', storyline: null, historicalYear: '647', title: '太子太师之争',
+          desc: '朝臣争论太子太师人选，长孙无忌推荐亲信，房玄龄旧部则主张选德高望重之臣。',
+          options: [
+            { text: '采纳长孙无忌所荐', effects: { changsun: 20, fangxuanling: -15, weizheng: -10, yuchi: -5, stability: -5 }, feedback: '太子身边尽是长孙党羽，魏征旧部忧心忡忡。' },
+            { text: '采纳房玄龄旧部所荐', effects: { fangxuanling: 15, changsun: -15, weizheng: 10, yuchi: 5, stability: 5 }, feedback: '太子太师德高望重，长孙无忌面色不悦。' },
+            { text: '令太子自选太师', effects: { weizheng: 10, fangxuanling: 10, changsun: 5, yuchi: 5, stability: 10 }, feedback: '太子选了魏征旧友，朝野称颂太子仁孝知贤。' }
+          ]
+        },
+        {
+          id: 57, stage: 'late', storyline: null, historicalYear: '648', title: '晚年求仙之议',
+          desc: '你身体日渐衰弱，有人献上丹药，声称可延年益寿。魏征旧部上书反对，长孙无忌却劝你一试。',
+          options: [
+            { text: '拒绝丹药，以魏征为鉴', effects: { weizheng: 15, fangxuanling: 15, changsun: -10, yuchi: 5, stability: 10 }, feedback: '你当众焚毁丹方，朝野称颂圣明。' },
+            { text: '私下服用，不令朝臣知', effects: { changsun: 15, yuchi: 10, weizheng: -15, fangxuanling: -10, stability: -10 }, feedback: '丹药毒性渐显，你精神恍惚，朝臣窃窃私语。' },
+            { text: '令太医验药后再定', effects: { fangxuanling: 15, changsun: 5, weizheng: 5, yuchi: -5, stability: 5 }, feedback: '太医验出丹药含汞，你惊出一身冷汗。' }
           ]
         }
       ]
