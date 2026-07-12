@@ -485,6 +485,14 @@
     </div>
   </div>
 
+  <!-- 难度选择弹窗 -->
+  <div id="difficultyModal" class="modal-overlay">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">选择难度</div>
+      <div id="difficultyContent"></div>
+    </div>
+  </div>
+
   <!-- 设置弹窗 -->
   <div id="settingsModal" class="modal-overlay hidden" onclick="closeSettings(event)">
     <div class="modal" onclick="event.stopPropagation()">
@@ -500,6 +508,10 @@
             <input type="checkbox" id="bgmToggle" onchange="toggleBGM()"> 背景音乐
           </label>
         </div>
+      </div>
+      <div class="modal-section">
+        <h4>存档位</h4>
+        <div id="saveSlotsContainer"></div>
       </div>
       <div class="modal-section">
         <h4>存档</h4>
@@ -550,7 +562,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.2.1',
+      version: '1.2.2',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -561,6 +573,11 @@
       adMeetFavor: 15,
       stabilityInitial: 50,
       powerInitial: 30,
+      difficulties: {
+        easy:   { id: 'easy',   name: '太宗之路', desc: '初始稳定度高，大臣更宽容，适合熟悉机制', stabilityInitial: 70, eventMultiplier: 0.8,  endingThreshold: 60, aiTolerance: 2 },
+        normal: { id: 'normal', name: '贞观之治', desc: '平衡的挑战，默认体验',                     stabilityInitial: 50, eventMultiplier: 1.0,  endingThreshold: 80, aiTolerance: 1 },
+        hard:   { id: 'hard',   name: '凌烟阁主', desc: '初始稳定度低，大臣更敏感，追求极限',       stabilityInitial: 30, eventMultiplier: 1.3,  endingThreshold: 90, aiTolerance: 0 }
+      },
       characters: {
         changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔', abilityType: 'politics', abilityName: '政治' },
         yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', abilityType: 'military', abilityName: '军事' },
@@ -1340,11 +1357,13 @@
     let noAds = loadNoAds();
     let eventLogs = loadLogs();
 
-    function createInitialState() {
+    function createInitialState(difficultyId = 'normal') {
+      const diff = config.difficulties[difficultyId] || config.difficulties.normal;
       const state = {
         day: 1,
         maxDay: config.maxDay,
-        stability: config.stabilityInitial,
+        difficulty: difficultyId,
+        stability: diff.stabilityInitial,
         eventIndex: 0,
         currentEvents: [],
         triggeredEvents: [],
@@ -1507,6 +1526,8 @@
             saved.characters[key].ability = 30;
           }
         });
+        // V1.2.2: 补全 difficulty 字段
+        if (!saved.difficulty) saved.difficulty = 'normal';
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -1552,6 +1573,7 @@
       bgmEnabled = false;
       stopBGM();
       eventLogs = [];
+      try { localStorage.removeItem('lyg_save_slots'); } catch (e) {}
       restartGame();
       alert('所有数据已清空');
     }
@@ -1757,7 +1779,8 @@
       const currentEvent = gameState.currentEvents[gameState.eventIndex];
       const year = (currentEvent && currentEvent.historicalYear) ? currentEvent.historicalYear : stage.years.split('-')[0];
       const stageDisplay = document.getElementById('stageDisplay');
-      stageDisplay.textContent = `${stage.name} · ${year}年`;
+      const diff = config.difficulties[gameState.difficulty] || config.difficulties.normal;
+      stageDisplay.textContent = `${stage.name} · ${year}年 · ${diff.name}`;
       stageDisplay.style.color = stage.color || 'var(--gold)';
     }
 
@@ -1902,15 +1925,25 @@
 
     function applyEffects(effects) {
       if (!effects) return;
+      const diff = config.difficulties[gameState.difficulty] || config.difficulties.normal;
+      const mult = diff.eventMultiplier || 1.0;
       Object.entries(effects).forEach(([key, value]) => {
         if (key === 'stability') {
-          gameState.stability = clamp(gameState.stability + value, 0, 100);
+          const adjusted = value > 0 ? Math.round(value * mult) : Math.round(value * (2 - mult));
+          gameState.stability = clamp(gameState.stability + adjusted, 0, 100);
         } else if (gameState.characters[key] && !gameState.deceased[key]) {
           if (typeof value === 'number') {
-            gameState.characters[key].favor = clamp(gameState.characters[key].favor + value, -100, 100);
+            const adjusted = value > 0 ? Math.round(value * mult) : Math.round(value * (2 - mult));
+            gameState.characters[key].favor = clamp(gameState.characters[key].favor + adjusted, -100, 100);
           } else if (typeof value === 'object') {
-            if (typeof value.favor === 'number') gameState.characters[key].favor = clamp(gameState.characters[key].favor + value.favor, -100, 100);
-            if (typeof value.power === 'number') gameState.characters[key].power = clamp(gameState.characters[key].power + value.power, 0, 100);
+            if (typeof value.favor === 'number') {
+              const adj = value.favor > 0 ? Math.round(value.favor * mult) : Math.round(value.favor * (2 - mult));
+              gameState.characters[key].favor = clamp(gameState.characters[key].favor + adj, -100, 100);
+            }
+            if (typeof value.power === 'number') {
+              const adj = value.power > 0 ? Math.round(value.power * mult) : Math.round(value.power * (2 - mult));
+              gameState.characters[key].power = clamp(gameState.characters[key].power + adj, 0, 100);
+            }
             if (typeof value.ability === 'number') gameState.characters[key].ability = clamp(gameState.characters[key].ability + value.ability, 0, 100);
           }
         }
@@ -2093,11 +2126,13 @@
     }
 
     function startDay() {
+      autoSaveDaily();
       gameState.currentEvents = randomEvents(config.eventsPerDay);
       saveGame();
       renderHeader();
       renderCharacters();
       renderEvent();
+      checkCrisisAlert();
     }
 
     // ==================== 阶段过渡挑战 ====================
@@ -2229,15 +2264,18 @@
     // ==================== 结局与谥号 ====================
     function getEnding() {
       const s = gameState;
+      const diff = config.difficulties[s.difficulty] || config.difficulties.normal;
+      const threshold = diff.endingThreshold || 80;
       if (isInstantEnding()) {
         return { name: '众叛亲离', desc: '政变爆发，你的统治结束了。' };
       }
       const favors = Object.values(s.characters);
-      if (s.stability >= 80 && favors.every(c => c.favor >= 20)) {
+      if (s.stability >= threshold && favors.every(c => c.favor >= 20)) {
         return { name: '贞观之治', desc: '你成功平衡了各方，开创了盛世。' };
       }
       const positiveCount = favors.filter(c => c.favor >= 0).length;
-      if (s.stability >= 60 && positiveCount >= 2) {
+      const passThreshold = Math.round(threshold * 0.75);
+      if (s.stability >= passThreshold && positiveCount >= 2) {
         return { name: '君臣相得', desc: '虽有波折，但总体平稳。' };
       }
       if (s.characters.yuchi.power >= 80) {
@@ -2338,6 +2376,7 @@
           </div>
           <div class="ending-actions">
             <button class="btn btn-primary" onclick="playSound('click'); restartGame()">重新开始</button>
+            <button class="btn btn-secondary" onclick="playSound('click'); loadFromSlot('auto')">回档到前一天</button>
             ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>`}
             <button class="btn btn-secondary" onclick="playSound('click'); handleShare()">分享结局</button>
             ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleRemoveAds()">¥6 永久去广告</button>`}
@@ -2417,6 +2456,7 @@
       document.getElementById('settingsModal').classList.remove('hidden');
       document.getElementById('soundToggle').checked = soundEnabled;
       document.getElementById('bgmToggle').checked = bgmEnabled;
+      renderSaveSlotsUI();
     }
 
     function closeSettings(e) {
@@ -2565,11 +2605,7 @@
 
     // ==================== 游戏控制 ====================
     function restartGame() {
-      gameState = createInitialState();
-      gameState.currentEvents = randomEvents(config.eventsPerDay);
-      try { localStorage.removeItem('lyg_save'); } catch (e) {}
-      logEvent('game_start', { from: 'restart' });
-      renderAll();
+      showDifficultySelect();
     }
 
     // ==================== 初始化 ====================
@@ -2591,12 +2627,158 @@
       loadSoundSettings();
       const hasSaveData = loadGame();
       if (!hasSaveData) {
+        showDifficultySelect();
+      } else {
         gameState.currentEvents = randomEvents(config.eventsPerDay);
+        if (bgmEnabled) startBGM();
+        logEvent('game_start', { from: 'save' });
+        renderAll();
       }
-      if (bgmEnabled) startBGM();
-      logEvent('game_start', { from: hasSaveData ? 'save' : 'new' });
-      renderAll();
     };
+
+    function showDifficultySelect() {
+      const modal = document.getElementById('difficultyModal');
+      const content = document.getElementById('difficultyContent');
+      const diffs = Object.values(config.difficulties);
+      content.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${diffs.map(d => `
+            <button class="btn btn-secondary" style="text-align:left; padding:12px;" onclick="selectDifficulty('${d.id}')">
+              <div style="font-weight:bold; font-size:1rem; color:var(--red); margin-bottom:4px;">${d.name}</div>
+              <div style="font-size:0.8rem; color:var(--text-light);">${d.desc}</div>
+              <div style="font-size:0.75rem; color:var(--text-light); margin-top:4px;">
+                初始稳定度 ${d.stabilityInitial} · 数值系数 ${d.eventMultiplier}x · 通关门槛 ${d.endingThreshold}
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function selectDifficulty(difficultyId) {
+      document.getElementById('difficultyModal').classList.add('hidden');
+      gameState = createInitialState(difficultyId);
+      gameState.currentEvents = randomEvents(config.eventsPerDay);
+      try { localStorage.removeItem('lyg_save'); } catch (e) {}
+      logEvent('game_start', { from: 'new', difficulty: difficultyId });
+      if (bgmEnabled) startBGM();
+      renderAll();
+    }
+
+    // ==================== 存档系统 V1.2.2 ====================
+    function getSaveSlots() {
+      try {
+        const raw = localStorage.getItem('lyg_save_slots');
+        return raw ? JSON.parse(raw) : { auto: null, slot1: null, slot2: null, slot3: null };
+      } catch (e) { return { auto: null, slot1: null, slot2: null, slot3: null }; }
+    }
+
+    function setSaveSlots(slots) {
+      try { localStorage.setItem('lyg_save_slots', JSON.stringify(slots)); } catch (e) {}
+    }
+
+    function saveToSlot(slotId, name) {
+      const slots = getSaveSlots();
+      const saveData = {
+        name: name || (slotId === 'auto' ? '自动存档' : '存档位 ' + slotId.replace('slot', '')),
+        state: JSON.parse(JSON.stringify(gameState)),
+        day: gameState.day,
+        difficulty: gameState.difficulty,
+        timestamp: new Date().toISOString()
+      };
+      slots[slotId] = saveData;
+      setSaveSlots(slots);
+      showToast('已保存到「' + saveData.name + '」');
+      renderSaveSlotsUI();
+    }
+
+    function loadFromSlot(slotId) {
+      const slots = getSaveSlots();
+      const slot = slots[slotId];
+      if (!slot) { showToast('该存档位为空'); return; }
+      if (!confirm('确定要读取「' + slot.name + '」（第' + slot.day + '天）吗？当前进度将被覆盖。')) return;
+      gameState = JSON.parse(JSON.stringify(slot.state));
+      saveGame();
+      renderAll();
+      showToast('已读取「' + slot.name + '」');
+      closeSettings();
+    }
+
+    function deleteSlot(slotId) {
+      const slots = getSaveSlots();
+      if (!slots[slotId]) return;
+      if (!confirm('确定要删除「' + slots[slotId].name + '」吗？')) return;
+      slots[slotId] = null;
+      setSaveSlots(slots);
+      renderSaveSlotsUI();
+      showToast('已删除');
+    }
+
+    function renderSaveSlotsUI() {
+      const container = document.getElementById('saveSlotsContainer');
+      if (!container) return;
+      const slots = getSaveSlots();
+      container.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${['auto', 'slot1', 'slot2', 'slot3'].map(id => {
+            const slot = slots[id];
+            const isAuto = id === 'auto';
+            return `
+              <div style="border:1px solid var(--gold-light); border-radius:6px; padding:8px; background:#fffef8;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-weight:bold; font-size:0.85rem;">${isAuto ? '🔄 自动存档' : '💾 存档位 ' + id.replace('slot', '')}</span>
+                  ${slot ? `<span style="font-size:0.7rem; color:var(--text-light);">第${slot.day}天 · ${config.difficulties[slot.difficulty]?.name || '未知'}</span>` : '<span style="font-size:0.7rem; color:var(--text-light);">空</span>'}
+                </div>
+                ${slot ? `
+                  <div style="font-size:0.75rem; color:var(--text-light); margin-bottom:6px;">${slot.name}</div>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-secondary" style="flex:1; font-size:0.75rem; padding:4px;" onclick="loadFromSlot('${id}')">读取</button>
+                    <button class="btn btn-secondary" style="flex:1; font-size:0.75rem; padding:4px;" onclick="deleteSlot('${id}')">删除</button>
+                  </div>
+                ` : `
+                  <button class="btn btn-secondary" style="width:100%; font-size:0.75rem; padding:4px;" onclick="saveToSlot('${id}', prompt('存档名称：', '第' + gameState.day + '天存档'))">保存当前进度</button>
+                `}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function autoSaveDaily() {
+      saveToSlot('auto', '第' + gameState.day + '天自动存档');
+    }
+
+    function checkCrisisAlert() {
+      const minFavor = Math.min(...Object.values(gameState.characters).filter(c => !gameState.deceased[Object.keys(gameState.characters).find(k => gameState.characters[k] === c)]).map(c => c.favor));
+      if (gameState.stability <= 10 || minFavor <= -80) {
+        showCrisisBar();
+      } else {
+        hideCrisisBar();
+      }
+    }
+
+    function showCrisisBar() {
+      let bar = document.getElementById('crisisBar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'crisisBar';
+        bar.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:var(--red); color:#fff; padding:8px; text-align:center; z-index:1000; font-size:0.85rem; display:flex; justify-content:center; align-items:center; gap:10px;';
+        document.body.appendChild(bar);
+      }
+      bar.innerHTML = `
+        <span>⚠️ 局势危急！</span>
+        <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:#fff; color:var(--red); border:none;" onclick="loadFromSlot('auto')">回档到自动存档</button>
+        <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:transparent; color:#fff; border:1px solid #fff;" onclick="hideCrisisBar()">无视风险</button>
+      `;
+      bar.style.display = 'flex';
+    }
+
+    function hideCrisisBar() {
+      const bar = document.getElementById('crisisBar');
+      if (bar) bar.style.display = 'none';
+    }
 
     // 监听窗口 resize 和 orientationchange，确保横竖屏切换后重新渲染
     let resizeTimer = null;
