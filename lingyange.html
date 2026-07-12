@@ -625,10 +625,182 @@
     @media (max-height: 500px) and (orientation: landscape) {
       .harem-panel-grid { grid-template-columns: repeat(3, 1fr); max-height: 50vh; }
     }
+    /* ==================== V2.1 事件编辑器样式 ==================== */
+    .editor-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--gold);
+    }
+    .editor-tab {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    .editor-tab.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+      font-weight: bold;
+    }
+    .editor-event-card {
+      background: #fffef8;
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .editor-event-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .editor-event-title {
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .editor-event-meta {
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+    .editor-event-actions {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .editor-btn-small {
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      background: var(--paper);
+      color: var(--text);
+    }
+    .editor-btn-small:hover {
+      background: var(--gold-light);
+    }
+    .editor-btn-small.danger {
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .editor-btn-small.danger:hover {
+      background: rgba(178,34,34,0.1);
+    }
+    .editor-option-row {
+      background: #fffef8;
+      border: 1px solid var(--gold-light);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 6px;
+    }
+    .editor-option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .editor-option-label {
+      font-weight: bold;
+      font-size: 0.8rem;
+      color: var(--red);
+    }
+    .editor-effects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+    .editor-effect-input {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+    }
+    .editor-effect-input input {
+      width: 50px;
+      padding: 3px;
+      border: 1px solid var(--gold-light);
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 0.75rem;
+    }
+    .editor-stage-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      margin-left: 6px;
+      background: var(--gold-light);
+      color: var(--text);
+    }
+    @media (max-width: 600px) {
+      .editor-effects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+  <!-- V2.1 事件编辑器弹窗 -->
+  <div id="editorModal" class="modal-overlay hidden">
+    <div class="modal" style="max-width:800px; max-height:90vh; max-height:90dvh; overflow-y:auto;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEditor()">×</button>
+      <div class="modal-title">📜 事件编辑器</div>
+
+      <!-- 标签页：朝堂事件 / 后宫事件 -->
+      <div class="editor-tabs">
+        <button class="editor-tab active" onclick="switchEditorTab('court')" id="editorTabCourt">朝堂事件</button>
+        <button class="editor-tab" onclick="switchEditorTab('harem')" id="editorTabHarem">后宫事件</button>
+      </div>
+
+      <!-- 事件列表 -->
+      <div id="editorEventList" style="max-height:45vh; overflow-y:auto; margin-bottom:10px;"></div>
+
+      <!-- 新增/编辑表单 -->
+      <div id="editorForm" style="border:1px solid var(--gold); border-radius:8px; padding:10px; background:#fffef8;">
+        <h4 style="margin-bottom:8px; color:var(--red); font-size:0.95rem;">新增/编辑事件</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+          <input type="text" id="edTitle" placeholder="事件标题" style="padding:6px; border:1px solid var(--gold); border-radius:4px; font-family:inherit; font-size:0.85rem;">
+          <select id="edStage" style="padding:6px; border:1px solid var(--gold); border-radius:4px; font-family:inherit; font-size:0.85rem;">
+            <option value="early">贞观初年</option>
+            <option value="middle">贞观中期</option>
+            <option value="late">贞观晚年</option>
+          </select>
+        </div>
+        <textarea id="edDesc" placeholder="事件描述（100字以内）" style="width:100%; padding:6px; border:1px solid var(--gold); border-radius:4px; font-family:inherit; font-size:0.85rem; margin-bottom:8px; resize:vertical;" rows="2"></textarea>
+
+        <!-- 选项编辑（2-3个选项） -->
+        <div id="edOptions"></div>
+        <button class="btn btn-secondary" style="font-size:0.8rem; margin-bottom:8px; width:100%; text-align:center;" onclick="addEditorOption()">+ 添加选项</button>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" style="flex:1; min-width:80px;" onclick="saveEditorEvent()">保存事件</button>
+          <button class="btn btn-secondary" style="flex:1; min-width:80px;" onclick="clearEditorForm()">清空</button>
+          <button class="btn btn-secondary" style="flex:1; min-width:80px;" onclick="testEditorEvent()">测试事件</button>
+        </div>
+      </div>
+
+      <!-- 导入/导出 -->
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-secondary" style="flex:1; min-width:100px; text-align:center;" onclick="exportEvents()">导出 JSON</button>
+        <button class="btn btn-secondary" style="flex:1; min-width:100px; text-align:center;" onclick="importEventsPrompt()">导入 JSON</button>
+        <button class="btn btn-secondary" style="flex:1; min-width:100px; text-align:center;" onclick="resetEvents()">恢复默认</button>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
     <!-- 顶部 -->
     <div class="header">
@@ -732,6 +904,10 @@
         <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="exportLogs()">导出日志</button>
         <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="clearLogs()">清空日志</button>
       </div>
+      <div class="modal-section">
+        <h4>内容创作</h4>
+        <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="openEditor()">📜 事件编辑器</button>
+      </div>
     </div>
   </div>
 
@@ -769,7 +945,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '2.0.0',
+      version: '2.1.0',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -1205,6 +1381,9 @@
           { year: '649', title: '李世民去世', desc: '李世民驾崩，享年五十二岁，谥号"文皇帝"，庙号太宗。', stage: 'late' }
         ]
       },
+      // ==================== V2.1 默认事件配置副本（用于恢复默认）====================
+      defaultEvents: null,
+      defaultHaremEvents: null,
       events: [
         // ==================== 贞观初年（627-629）====================
         {
@@ -1679,6 +1858,10 @@
         }
       ]
     };
+
+    // ==================== V2.1 保存默认事件配置副本 ====================
+    config.defaultEvents = JSON.parse(JSON.stringify(config.events));
+    config.defaultHaremEvents = JSON.parse(JSON.stringify(config.haremEvents));
 
     // ==================== 运行时状态 ====================
     let gameState = createInitialState();
@@ -3683,6 +3866,390 @@
     window.addEventListener('orientationchange', () => {
       setTimeout(handleResize, 200);
     });
+
+    // ==================== V2.1 事件编辑器系统 ====================
+    let editorTab = 'court';
+    let editorEditingId = null;
+
+    function openEditor() {
+      editorTab = 'court';
+      editorEditingId = null;
+      clearEditorForm();
+      renderEditorEventList();
+      updateEditorTabs();
+      document.getElementById('editorModal').classList.remove('hidden');
+    }
+
+    function closeEditor() {
+      document.getElementById('editorModal').classList.add('hidden');
+      editorEditingId = null;
+    }
+
+    function switchEditorTab(tab) {
+      editorTab = tab;
+      editorEditingId = null;
+      clearEditorForm();
+      updateEditorTabs();
+      renderEditorEventList();
+    }
+
+    function updateEditorTabs() {
+      document.getElementById('editorTabCourt').classList.toggle('active', editorTab === 'court');
+      document.getElementById('editorTabHarem').classList.toggle('active', editorTab === 'harem');
+    }
+
+    function getEditorEventsArray() {
+      return editorTab === 'court' ? config.events : config.haremEvents;
+    }
+
+    function renderEditorEventList() {
+      const container = document.getElementById('editorEventList');
+      const events = getEditorEventsArray();
+      const stages = { early: '贞观初年', middle: '贞观中期', late: '贞观晚年' };
+
+      // 按阶段分组
+      const groups = { early: [], middle: [], late: [] };
+      events.forEach(e => {
+        if (groups[e.stage]) groups[e.stage].push(e);
+      });
+
+      let html = '';
+      Object.entries(groups).forEach(([stageId, list]) => {
+        if (list.length === 0) return;
+        html += `<div style="font-weight:bold; font-size:0.85rem; color:var(--red); margin:8px 0 4px 0; padding-left:4px; border-left:3px solid var(--gold);">${stages[stageId]} (${list.length})</div>`;
+        list.forEach(event => {
+          html += `
+            <div class="editor-event-card">
+              <div class="editor-event-info">
+                <div class="editor-event-title">${escapeHtml(event.title)}<span class="editor-stage-badge">${stages[event.stage]}</span></div>
+                <div class="editor-event-meta">ID:${event.id} · ${event.options.length}个选项 · ${escapeHtml(event.desc.substring(0, 30))}${event.desc.length > 30 ? '...' : ''}</div>
+              </div>
+              <div class="editor-event-actions">
+                <button class="editor-btn-small" onclick="editEditorEvent(${event.id})">编辑</button>
+                <button class="editor-btn-small danger" onclick="deleteEditorEvent(${event.id})">删除</button>
+              </div>
+            </div>
+          `;
+        });
+      });
+
+      if (html === '') {
+        html = '<p style="text-align:center; color:var(--text-light); font-size:0.85rem; padding:10px;">暂无事件，请添加新事件</p>';
+      }
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addEditorOption() {
+      const container = document.getElementById('edOptions');
+      const idx = container.children.length;
+      if (idx >= 5) {
+        alert('最多5个选项');
+        return;
+      }
+      const isHarem = editorTab === 'harem';
+      const optionHtml = `
+        <div class="editor-option-row" data-idx="${idx}">
+          <div class="editor-option-header">
+            <span class="editor-option-label">选项 ${String.fromCharCode(65 + idx)}</span>
+            <button class="editor-btn-small danger" onclick="removeEditorOption(${idx})">移除</button>
+          </div>
+          <input type="text" class="ed-opt-text" placeholder="选项文本" style="width:100%; padding:5px; border:1px solid var(--gold-light); border-radius:4px; font-family:inherit; font-size:0.8rem; margin-bottom:4px;">
+          <input type="text" class="ed-opt-feedback" placeholder="反馈文本" style="width:100%; padding:5px; border:1px solid var(--gold-light); border-radius:4px; font-family:inherit; font-size:0.8rem; margin-bottom:4px;">
+          <div style="font-size:0.75rem; color:var(--text-light); margin-bottom:4px;">效果编辑：</div>
+          <div class="editor-effects-grid">
+            <div class="editor-effect-input"><span>长孙</span><input type="number" class="ed-eff-changsun" placeholder="0"></div>
+            <div class="editor-effect-input"><span>尉迟</span><input type="number" class="ed-eff-yuchi" placeholder="0"></div>
+            <div class="editor-effect-input"><span>魏征</span><input type="number" class="ed-eff-weizheng" placeholder="0"></div>
+            <div class="editor-effect-input"><span>房玄</span><input type="number" class="ed-eff-fangxuanling" placeholder="0"></div>
+            <div class="editor-effect-input"><span>稳定</span><input type="number" class="ed-eff-stability" placeholder="0"></div>
+            ${isHarem ? `
+            <div class="editor-effect-input"><span>皇后</span><input type="number" class="ed-eff-harem-empress" placeholder="0"></div>
+            <div class="editor-effect-input"><span>武氏</span><input type="number" class="ed-eff-harem-wushi" placeholder="0"></div>
+            <div class="editor-effect-input"><span>杨妃</span><input type="number" class="ed-eff-harem-yangfei" placeholder="0"></div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = optionHtml;
+      container.appendChild(wrapper.firstElementChild);
+    }
+
+    function removeEditorOption(idx) {
+      const container = document.getElementById('edOptions');
+      const rows = container.querySelectorAll('.editor-option-row');
+      if (rows[idx]) {
+        rows[idx].remove();
+      }
+      // 重新索引
+      const remaining = container.querySelectorAll('.editor-option-row');
+      remaining.forEach((row, i) => {
+        row.dataset.idx = i;
+        row.querySelector('.editor-option-label').textContent = '选项 ' + String.fromCharCode(65 + i);
+        const btn = row.querySelector('.editor-option-header button');
+        btn.setAttribute('onclick', `removeEditorOption(${i})`);
+      });
+    }
+
+    function clearEditorForm() {
+      editorEditingId = null;
+      document.getElementById('edTitle').value = '';
+      document.getElementById('edStage').value = 'early';
+      document.getElementById('edDesc').value = '';
+      document.getElementById('edOptions').innerHTML = '';
+      // 默认添加2个选项
+      addEditorOption();
+      addEditorOption();
+    }
+
+    function fillEditorForm(event) {
+      document.getElementById('edTitle').value = event.title;
+      document.getElementById('edStage').value = event.stage;
+      document.getElementById('edDesc').value = event.desc;
+      document.getElementById('edOptions').innerHTML = '';
+      event.options.forEach((opt, idx) => {
+        addEditorOption();
+        const row = document.getElementById('edOptions').children[idx];
+        row.querySelector('.ed-opt-text').value = opt.text || '';
+        row.querySelector('.ed-opt-feedback').value = opt.feedback || '';
+        const effects = opt.effects || {};
+        const setVal = (cls, val) => {
+          const el = row.querySelector(cls);
+          if (el) el.value = (val !== undefined && val !== null) ? val : '';
+        };
+        setVal('.ed-eff-changsun', effects.changsun);
+        setVal('.ed-eff-yuchi', effects.yuchi);
+        setVal('.ed-eff-weizheng', effects.weizheng);
+        setVal('.ed-eff-fangxuanling', effects.fangxuanling);
+        setVal('.ed-eff-stability', effects.stability);
+        if (effects.harem) {
+          setVal('.ed-eff-harem-empress', effects.harem.empress);
+          setVal('.ed-eff-harem-wushi', effects.harem.wushi);
+          setVal('.ed-eff-harem-yangfei', effects.harem.yangfei);
+        }
+      });
+    }
+
+    function editEditorEvent(id) {
+      const events = getEditorEventsArray();
+      const event = events.find(e => e.id === id);
+      if (!event) return;
+      editorEditingId = id;
+      fillEditorForm(event);
+      // 滚动到表单
+      document.getElementById('editorForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function saveEditorEvent() {
+      const title = document.getElementById('edTitle').value.trim();
+      const stage = document.getElementById('edStage').value;
+      const desc = document.getElementById('edDesc').value.trim();
+      if (!title) { alert('请输入事件标题'); return; }
+      if (!desc) { alert('请输入事件描述'); return; }
+
+      const rows = document.getElementById('edOptions').querySelectorAll('.editor-option-row');
+      if (rows.length < 2) { alert('至少需要2个选项'); return; }
+
+      const options = [];
+      const isHarem = editorTab === 'harem';
+      for (const row of rows) {
+        const text = row.querySelector('.ed-opt-text').value.trim();
+        const feedback = row.querySelector('.ed-opt-feedback').value.trim();
+        if (!text) { alert('请填写所有选项文本'); return; }
+        if (!feedback) { alert('请填写所有反馈文本'); return; }
+
+        const effects = {};
+        const getNum = (cls) => {
+          const el = row.querySelector(cls);
+          const v = el ? parseFloat(el.value) : NaN;
+          return isNaN(v) ? undefined : v;
+        };
+        const changsun = getNum('.ed-eff-changsun');
+        const yuchi = getNum('.ed-eff-yuchi');
+        const weizheng = getNum('.ed-eff-weizheng');
+        const fangxuanling = getNum('.ed-eff-fangxuanling');
+        const stability = getNum('.ed-eff-stability');
+        if (changsun !== undefined) effects.changsun = changsun;
+        if (yuchi !== undefined) effects.yuchi = yuchi;
+        if (weizheng !== undefined) effects.weizheng = weizheng;
+        if (fangxuanling !== undefined) effects.fangxuanling = fangxuanling;
+        if (stability !== undefined) effects.stability = stability;
+
+        if (isHarem) {
+          const haremEffects = {};
+          const empress = getNum('.ed-eff-harem-empress');
+          const wushi = getNum('.ed-eff-harem-wushi');
+          const yangfei = getNum('.ed-eff-harem-yangfei');
+          if (empress !== undefined) haremEffects.empress = empress;
+          if (wushi !== undefined) haremEffects.wushi = wushi;
+          if (yangfei !== undefined) haremEffects.yangfei = yangfei;
+          if (Object.keys(haremEffects).length > 0) {
+            effects.harem = haremEffects;
+          }
+        }
+
+        options.push({ text, feedback, effects });
+      }
+
+      const events = getEditorEventsArray();
+      if (editorEditingId) {
+        // 编辑现有事件
+        const idx = events.findIndex(e => e.id === editorEditingId);
+        if (idx >= 0) {
+          events[idx] = { ...events[idx], title, stage, desc, options };
+          alert('事件已更新');
+        }
+      } else {
+        // 新增事件
+        const baseId = editorTab === 'court' ? 1000 : 2000;
+        const existingIds = events.map(e => e.id).filter(id => id >= baseId && id < baseId + 1000);
+        const newId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : baseId;
+        events.push({ id: newId, stage, title, desc, options });
+        alert('事件已添加，ID: ' + newId);
+      }
+
+      editorEditingId = null;
+      clearEditorForm();
+      renderEditorEventList();
+    }
+
+    function deleteEditorEvent(id) {
+      if (!confirm('确定要删除此事件吗？')) return;
+      const events = getEditorEventsArray();
+      const idx = events.findIndex(e => e.id === id);
+      if (idx >= 0) {
+        events.splice(idx, 1);
+        if (editorEditingId === id) {
+          editorEditingId = null;
+          clearEditorForm();
+        }
+        renderEditorEventList();
+      }
+    }
+
+    function testEditorEvent() {
+      const title = document.getElementById('edTitle').value.trim();
+      const stage = document.getElementById('edStage').value;
+      const desc = document.getElementById('edDesc').value.trim();
+      if (!title || !desc) { alert('请先填写标题和描述'); return; }
+
+      const rows = document.getElementById('edOptions').querySelectorAll('.editor-option-row');
+      if (rows.length < 2) { alert('至少需要2个选项'); return; }
+
+      const options = [];
+      const isHarem = editorTab === 'harem';
+      for (const row of rows) {
+        const text = row.querySelector('.ed-opt-text').value.trim();
+        const feedback = row.querySelector('.ed-opt-feedback').value.trim();
+        if (!text || !feedback) continue;
+        const effects = {};
+        const getNum = (cls) => {
+          const el = row.querySelector(cls);
+          const v = el ? parseFloat(el.value) : NaN;
+          return isNaN(v) ? undefined : v;
+        };
+        const changsun = getNum('.ed-eff-changsun');
+        const yuchi = getNum('.ed-eff-yuchi');
+        const weizheng = getNum('.ed-eff-weizheng');
+        const fangxuanling = getNum('.ed-eff-fangxuanling');
+        const stability = getNum('.ed-eff-stability');
+        if (changsun !== undefined) effects.changsun = changsun;
+        if (yuchi !== undefined) effects.yuchi = yuchi;
+        if (weizheng !== undefined) effects.weizheng = weizheng;
+        if (fangxuanling !== undefined) effects.fangxuanling = fangxuanling;
+        if (stability !== undefined) effects.stability = stability;
+        if (isHarem) {
+          const haremEffects = {};
+          const empress = getNum('.ed-eff-harem-empress');
+          const wushi = getNum('.ed-eff-harem-wushi');
+          const yangfei = getNum('.ed-eff-harem-yangfei');
+          if (empress !== undefined) haremEffects.empress = empress;
+          if (wushi !== undefined) haremEffects.wushi = wushi;
+          if (yangfei !== undefined) haremEffects.yangfei = yangfei;
+          if (Object.keys(haremEffects).length > 0) effects.harem = haremEffects;
+        }
+        options.push({ text, feedback, effects });
+      }
+
+      if (options.length < 2) { alert('有效选项不足2个'); return; }
+
+      const testEvent = { id: -1, title, stage, desc, options };
+      closeEditor();
+
+      if (isHarem) {
+        gameState.currentHaremEvent = testEvent;
+        gameState.haremEventDone = false;
+        renderHaremEvent();
+      } else {
+        gameState.currentEvents = [testEvent];
+        gameState.eventIndex = 0;
+        renderEvent();
+      }
+      renderHeader();
+      renderCharacters();
+      alert('测试事件已触发！处理完此事件后可继续正常游戏。');
+    }
+
+    function exportEvents() {
+      const data = {
+        version: config.version,
+        exportTime: new Date().toISOString(),
+        events: config.events,
+        haremEvents: config.haremEvents
+      };
+      const text = JSON.stringify(data, null, 2);
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lingyange_events_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('事件配置已导出');
+    }
+
+    function importEventsPrompt() {
+      const text = prompt('请粘贴事件 JSON 内容（或使用文件输入）：');
+      if (!text) return;
+      try {
+        const data = JSON.parse(text);
+        if (data.events && Array.isArray(data.events)) {
+          if (confirm(`导入将覆盖 ${data.events.length} 个朝堂事件，确认吗？`)) {
+            config.events = data.events;
+          }
+        }
+        if (data.haremEvents && Array.isArray(data.haremEvents)) {
+          if (confirm(`导入将覆盖 ${data.haremEvents.length} 个后宫事件，确认吗？`)) {
+            config.haremEvents = data.haremEvents;
+          }
+        }
+        renderEditorEventList();
+        alert('导入完成');
+      } catch (e) {
+        alert('JSON 格式错误：' + e.message);
+      }
+    }
+
+    function resetEvents() {
+      if (!confirm('确定要恢复默认事件配置吗？所有自定义事件将丢失。')) return;
+      if (config.defaultEvents) {
+        config.events = JSON.parse(JSON.stringify(config.defaultEvents));
+      }
+      if (config.defaultHaremEvents) {
+        config.haremEvents = JSON.parse(JSON.stringify(config.defaultHaremEvents));
+      }
+      editorEditingId = null;
+      clearEditorForm();
+      renderEditorEventList();
+      alert('已恢复默认事件配置');
+    }
   </script>
 </body>
 </html>
