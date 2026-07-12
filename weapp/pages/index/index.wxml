@@ -1,0 +1,81 @@
+<!-- 首页：开始游戏、继续游戏、难度选择、排行榜 -->
+<view class="container index-container">
+  <!-- 标题区 -->
+  <view class="header">
+    <view class="title">凌烟阁密档</view>
+    <view class="subtitle">扮演李世民，书写你的贞观传奇</view>
+  </view>
+
+  <!-- 角色预览 -->
+  <view class="characters-preview">
+    <view class="char-item" wx:for="{{characters}}" wx:key="key">
+      <view class="char-emoji">{{item.emoji}}</view>
+      <view class="char-name">{{item.name}}</view>
+    </view>
+  </view>
+
+  <!-- 主操作区 -->
+  <view class="actions">
+    <button class="btn btn-primary action-btn" wx:if="{{hasSave}}" bindtap="continueGame">
+      继续朝政（第{{saveDay}}天）
+    </button>
+    <button class="btn btn-primary action-btn" bindtap="startNewGame">
+      {{hasSave ? '新开一局' : '开始朝政'}}
+    </button>
+    <button class="btn btn-secondary action-btn" bindtap="showLeaderboard">
+      排行榜
+    </button>
+    <button class="btn btn-secondary action-btn" bindtap="showSettings">
+      设置
+    </button>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version">v{{version}}</view>
+</view>
+
+<!-- 难度选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showDifficultyModal}}" bindtap="closeDifficultyModal">
+  <view class="modal" catchtap="preventBubble">
+    <view class="modal-title">选择难度</view>
+    <view class="difficulty-list">
+      <view 
+        class="difficulty-item {{selectedDifficulty === item.id ? 'selected' : ''}}"
+        wx:for="{{difficulties}}"
+        wx:key="id"
+        bindtap="selectDifficulty"
+        data-id="{{item.id}}"
+      >
+        <view class="diff-name">{{item.name}}</view>
+        <view class="diff-desc">{{item.desc}}</view>
+        <view class="diff-params">
+          初始稳定度 {{item.stabilityInitial}} · 数值系数 {{item.eventMultiplier}}x · 通关门槛 {{item.endingThreshold}}
+        </view>
+      </view>
+    </view>
+    <button class="btn btn-primary" style="width:100%; margin-top:20rpx;" bindtap="confirmStart">
+      确认开始
+    </button>
+  </view>
+</view>
+
+<!-- 设置弹窗 -->
+<view class="modal-overlay" wx:if="{{showSettingsModal}}" bindtap="closeSettingsModal">
+  <view class="modal" catchtap="preventBubble">
+    <view class="modal-title">设置</view>
+    <view class="setting-item">
+      <text>音效</text>
+      <switch checked="{{soundEnabled}}" bindchange="toggleSound"/>
+    </view>
+    <view class="setting-item">
+      <text>背景音乐</text>
+      <switch checked="{{bgmEnabled}}" bindchange="toggleBGM"/>
+    </view>
+    <view class="setting-item" wx:if="{{noAds}}">
+      <text class="ad-removed">已购买去广告</text>
+    </view>
+    <button class="btn btn-secondary" style="width:100%; margin-top:20rpx;" bindtap="clearAllData">
+      清空所有数据
+    </button>
+  </view>
+</view>

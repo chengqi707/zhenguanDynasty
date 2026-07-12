@@ -1,0 +1,256 @@
+<!-- 游戏主页面 -->
+<view class="container game-container">
+  <!-- 顶部状态栏 -->
+  <view class="header-bar">
+    <view class="day-info">
+      <text class="day-label">第</text>
+      <text class="day-number">{{gameState.day}}</text>
+      <text class="day-label">/ {{gameState.maxDay}} 天</text>
+    </view>
+    <view class="stage-info" style="color: {{currentStage.color}}">
+      {{currentStage.name}} · {{currentYear}}年 · {{difficultyName}}
+    </view>
+    <view class="stability-bar">
+      <text class="stability-label">皇权稳定度</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{gameState.stability}}%"></view>
+      </view>
+      <text class="stability-value">{{gameState.stability}}</text>
+    </view>
+  </view>
+
+  <!-- 角色面板 -->
+  <view class="characters-panel">
+    <view 
+      class="character-card {{char.deceased ? 'deceased' : ''}} {{selectedChar === key ? 'selected' : ''}}"
+      wx:for="{{characterList}}"
+      wx:for-item="char"
+      wx:for-index="key"
+      wx:key="key"
+      bindtap="selectCharacter"
+      data-key="{{char.key}}"
+    >
+      <view class="char-portrait" style="background: {{char.deceased ? 'linear-gradient(135deg, #666, #444)' : ''}}">
+        <text class="char-emoji">{{char.deceased ? '🕯️' : char.emoji}}</text>
+      </view>
+      <view class="char-info">
+        <view class="char-name">{{char.name}} {{char.deceased ? '「故」' : ''}}</view>
+        <view class="char-title">{{char.title}}</view>
+        <view class="stat-row">
+          <text class="stat-label">好感</text>
+          <view class="stat-bar">
+            <view class="stat-fill favor-fill" style="width: {{(char.favor + 100) / 2}}%"></view>
+          </view>
+          <text class="stat-value">{{char.favor}}</text>
+        </view>
+        <view class="stat-row">
+          <text class="stat-label">影响力</text>
+          <view class="stat-bar">
+            <view class="stat-fill power-fill" style="width: {{char.power}}%"></view>
+          </view>
+          <text class="stat-value">{{char.power}}</text>
+        </view>
+        <view class="stat-row">
+          <text class="stat-label">{{char.abilityName}}</text>
+          <view class="stat-bar">
+            <view class="stat-fill ability-fill" style="width: {{char.ability}}%"></view>
+          </view>
+          <text class="stat-value">{{char.ability}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 事件区域 -->
+  <view class="game-area" wx:if="{{!showEnding && !showChallenge && !showNight}}">
+    <view class="event-card" wx:if="{{currentEvent}}">
+      <view class="event-title">{{currentEvent.title}}</view>
+      <view class="event-desc">{{currentEvent.desc}}</view>
+      <view class="event-meta" wx:if="{{currentEvent.historicalYear}}">
+        <text class="year-badge">{{currentEvent.historicalYear}}年</text>
+        <text class="storyline-badge" wx:if="{{currentEvent.storyline}}" style="background: {{storylineColors[currentEvent.storyline]}}">
+          {{storylineNames[currentEvent.storyline]}}
+        </text>
+      </view>
+      <view class="options-list">
+        <button 
+          class="btn btn-secondary option-btn"
+          wx:for="{{currentEvent.options}}"
+          wx:for-index="index"
+          wx:key="index"
+          bindtap="chooseOption"
+          data-index="{{index}}"
+        >
+          {{item.text}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 晚间决策 -->
+  <view class="night-section" wx:if="{{showNight}}">
+    <view class="phase-title">🌙 晚间决策</view>
+    <view class="night-actions">
+      <view class="action-card">
+        <view class="action-name">单独召见</view>
+        <view class="action-desc">选择一位大臣密谈，提升其好感，但会冷落他人</view>
+        <button class="btn btn-primary" bindtap="openMeetMenu">选择召见对象</button>
+      </view>
+      <view class="action-card">
+        <view class="action-name">举办宴会</view>
+        <view class="action-desc">所有人好感度+{{config.banquetFavor}}，消耗{{config.banquetCost}}点皇权稳定</view>
+        <button class="btn btn-primary {{gameState.stability < config.banquetCost ? 'btn-disabled' : ''}}" bindtap="handleBanquet">
+          {{gameState.stability < config.banquetCost ? '稳定度不足' : '举办宴会'}}
+        </button>
+      </view>
+      <view class="action-card" wx:if="{{!noAds}}">
+        <view class="action-name">看广告召见心腹 <text class="ad-badge">广告</text></view>
+        <view class="action-desc">额外一次不占用限制的召见机会</view>
+        <button class="btn btn-secondary {{gameState.adUsedToday ? 'btn-disabled' : ''}}" bindtap="handleAdMeet">
+          {{gameState.adUsedToday ? '今日已使用' : '看广告获得'}}
+        </button>
+      </view>
+      <view class="action-card">
+        <view class="action-name">批阅奏折</view>
+        <view class="action-desc">无变化，进入下一天</view>
+        <button class="btn btn-secondary" bindtap="skipNight">跳过</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 召见菜单 -->
+  <view class="meet-menu" wx:if="{{showMeetMenu}}">
+    <view class="meet-menu-title">选择召见对象</view>
+    <view class="meet-options">
+      <view 
+        class="meet-option {{item.deceased ? 'disabled' : ''}}"
+        wx:for="{{meetOptions}}"
+        wx:key="key"
+        bindtap="handleMeet"
+        data-key="{{item.key}}"
+        data-type="{{item.type}}"
+      >
+        <view class="meet-char-name">{{item.name}} {{item.deceased ? '（已故）' : ''}}</view>
+        <view class="meet-char-status" wx:if="{{!item.deceased}}">
+          {{item.canMeet ? '' : '还需等待 ' + item.waitDays + ' 天'}}
+        </view>
+        <view class="meet-actions" wx:if="{{item.canMeet && !item.deceased}}">
+          <button class="btn btn-secondary mini-btn" bindtap="handleMeet" data-key="{{item.key}}" data-type="encourage">勉励（好感+15）</button>
+          <button class="btn btn-secondary mini-btn" bindtap="handleMeet" data-key="{{item.key}}" data-type="cultivate">栽培（能力+10，好感+5）</button>
+        </view>
+      </view>
+    </view>
+    <button class="btn btn-secondary" style="margin-top:20rpx;" bindtap="closeMeetMenu">取消</button>
+  </view>
+
+  <!-- 阶段挑战 -->
+  <view class="modal-overlay" wx:if="{{showChallenge}}">
+    <view class="modal challenge-modal">
+      <view class="modal-title">{{challengeTitle}}</view>
+      <view class="challenge-content">
+        <view class="challenge-intro fade-in" wx:if="{{challengeStep === -1}}">
+          <text>{{challengeIntro}}</text>
+          <button class="btn btn-primary" style="width:100%; margin-top:20rpx;" bindtap="startChallengeStep">开始决策</button>
+        </view>
+        <view class="challenge-step fade-in" wx:if="{{challengeStep >= 0 && challengeStep < challengeSteps.length}}">
+          <view class="challenge-progress">决策 {{challengeStep + 1}} / {{challengeSteps.length}}</view>
+          <view class="challenge-question">{{challengeSteps[challengeStep].question}}</view>
+          <view class="challenge-options">
+            <button 
+              class="btn btn-secondary challenge-option"
+              wx:for="{{challengeSteps[challengeStep].options}}"
+              wx:for-index="index"
+              wx:key="index"
+              bindtap="chooseChallengeOption"
+              data-index="{{index}}"
+            >
+              {{item.text}}
+            </button>
+          </view>
+        </view>
+        <view class="challenge-result fade-in" wx:if="{{challengeResult}}">
+          <view class="result-name">{{challengeResult.name}}</view>
+          <view class="result-score">本次评定：{{challengeScore}} 分</view>
+          <view class="result-desc">{{challengeResult.desc}}</view>
+          <button class="btn btn-primary" style="width:100%; margin-top:20rpx;" bindtap="closeChallenge">
+            {{challengeIsFinal ? '查看结局' : '继续理政'}}
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 结局页 -->
+  <view class="ending-section" wx:if="{{showEnding}}">
+    <view class="ending-screen fade-in">
+      <view class="ending-title">凌烟阁评定</view>
+      <view class="ending-subtitle">{{ending.name}}</view>
+      <view class="posthumous-title">{{posthumousTitle.name}}</view>
+      <view class="summary-text">{{summary}}</view>
+      <view class="final-stats">
+        <view class="final-stat">
+          <view class="final-stat-value">{{gameState.stability}}</view>
+          <view class="final-stat-label">皇权稳定度</view>
+        </view>
+        <view class="final-stat" wx:for="{{characterList}}" wx:for-item="char" wx:key="key">
+          <view class="final-stat-value">{{char.favor}}</view>
+          <view class="final-stat-label">{{char.name}}好感</view>
+        </view>
+      </view>
+      <view class="ending-actions">
+        <button class="btn btn-primary" bindtap="restartGame">重新开始</button>
+        <button class="btn btn-secondary" bindtap="loadAutoSave">回档到前一天</button>
+        <button class="btn btn-secondary" wx:if="{{!noAds}}" bindtap="handleAdRestart">
+          看广告重开 <text class="ad-badge">广告</text>
+        </button>
+        <button class="btn btn-secondary" open-type="share">分享结局</button>
+        <button class="btn btn-secondary" wx:if="{{!noAds}}" bindtap="goToShop">¥6 永久去广告</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷设置按钮 -->
+  <view class="quick-actions">
+    <button class="icon-btn" bindtap="showSettings">⚙️</button>
+    <button class="icon-btn" bindtap="showSaveSlots">💾</button>
+    <button class="icon-btn" bindtap="toggleFullscreen">⛶</button>
+  </view>
+
+  <!-- 设置弹窗 -->
+  <view class="modal-overlay" wx:if="{{showSettingsModal}}" bindtap="closeSettingsModal">
+    <view class="modal" catchtap="preventBubble">
+      <view class="modal-title">设置</view>
+      <view class="setting-item">
+        <text>音效</text>
+        <switch checked="{{soundEnabled}}" bindchange="toggleSound"/>
+      </view>
+      <view class="setting-item">
+        <text>背景音乐</text>
+        <switch checked="{{bgmEnabled}}" bindchange="toggleBGM"/>
+      </view>
+      <view class="modal-section">
+        <view class="section-title">存档位</view>
+        <view class="save-slots">
+          <view class="save-slot" wx:for="{{saveSlots}}" wx:for-item="slot" wx:for-index="id" wx:key="id">
+            <view class="slot-info">
+              <text class="slot-name">{{slot ? slot.name : '空存档位'}}</text>
+              <text class="slot-meta" wx:if="{{slot}}">第{{slot.day}}天 · {{slot.difficultyName}}</text>
+            </view>
+            <view class="slot-actions">
+              <button class="btn btn-secondary mini-btn" wx:if="{{slot}}" bindtap="loadSlot" data-id="{{id}}">读取</button>
+              <button class="btn btn-secondary mini-btn" wx:if="{{slot}}" bindtap="deleteSlot" data-id="{{id}}">删除</button>
+              <button class="btn btn-secondary mini-btn" wx:if="{{!slot}}" bindtap="saveSlot" data-id="{{id}}">保存</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 危机预警条 -->
+  <view class="crisis-bar" wx:if="{{showCrisis}}">
+    <text>⚠️ 局势危急！</text>
+    <button class="btn btn-primary mini-btn" bindtap="loadAutoSave">回档到自动存档</button>
+    <button class="btn btn-secondary mini-btn" bindtap="ignoreCrisis">无视风险</button>
+  </view>
+</view>

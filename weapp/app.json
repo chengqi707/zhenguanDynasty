@@ -1,0 +1,46 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/game/game",
+    "pages/shop/shop"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1a1a1a",
+    "navigationBarTitleText": "凌烟阁密档",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1a1a1a"
+  },
+  "tabBar": {
+    "color": "#6b5d4d",
+    "selectedColor": "#c9a227",
+    "backgroundColor": "#1a1a1a",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/tab-home.png",
+        "selectedIconPath": "assets/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/game/game",
+        "text": "朝政",
+        "iconPath": "assets/tab-game.png",
+        "selectedIconPath": "assets/tab-game-active.png"
+      },
+      {
+        "pagePath": "pages/shop/shop",
+        "text": "商铺",
+        "iconPath": "assets/tab-shop.png",
+        "selectedIconPath": "assets/tab-shop-active.png"
+      }
+    ]
+  },
+  "plugins": {},
+  "requiredBackgroundModes": [],
+  "permission": {},
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {}
+}
