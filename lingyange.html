@@ -558,6 +558,73 @@
         max-height: 50vh;
       }
     }
+
+    /* 后宫面板样式 V2.0 */
+    .harem-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .harem-card {
+      border: 2px solid #d8a7c8;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      background: linear-gradient(135deg, #fff8fb, #fcedf5);
+      box-shadow: 0 2px 8px rgba(142,68,173,0.15);
+    }
+    .harem-card.deceased {
+      opacity: 0.6;
+      background: #e8e4d8;
+      border-color: #999;
+    }
+    .harem-emoji {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+    .harem-name {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .harem-title {
+      font-size: 0.7rem;
+      color: #8e44ad;
+      margin-bottom: 8px;
+    }
+    .harem-stat {
+      margin-bottom: 6px;
+    }
+    .harem-stat-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      margin-bottom: 2px;
+      color: var(--text-light);
+    }
+    .harem-stat-bar {
+      height: 6px;
+      background: #e8d8e0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .harem-stat-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    .harem-favor-fill { background: linear-gradient(90deg, #e91e63, #f48fb1); }
+    .harem-influence-fill { background: linear-gradient(90deg, #8e44ad, #bb8fce); }
+    .harem-ambition-fill { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+    @media (max-width: 600px) {
+      .harem-panel-grid { grid-template-columns: repeat(1, 1fr); }
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+      .harem-panel-grid { grid-template-columns: repeat(3, 1fr); max-height: 50vh; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -568,6 +635,7 @@
       <div class="header-top">
         <div class="title">凌烟阁密档</div>
         <div class="header-actions">
+          <button class="icon-btn" onclick="openHaremPanel()">后宫</button>
           <button class="icon-btn" onclick="openArchive()">档案</button>
           <button class="icon-btn" onclick="openAchievements()">成就</button>
           <button class="icon-btn" onclick="openSettings()">设置</button>
@@ -612,6 +680,15 @@
         <button class="achievement-tab" onclick="switchAchievementTab('behavior')" id="tab-ach-behavior">行为</button>
       </div>
       <div id="achievementsContent"></div>
+    </div>
+  </div>
+
+  <!-- 后宫面板弹窗 V2.0 -->
+  <div id="haremPanelModal" class="modal-overlay hidden" onclick="closeHaremPanel(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeHaremPanel()">×</button>
+      <div class="modal-title">🌸 后宫</div>
+      <div id="haremPanelContent"></div>
     </div>
   </div>
 
@@ -692,7 +769,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.5.0',
+      version: '2.0.0',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -713,6 +790,11 @@
         yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', abilityType: 'military', abilityName: '军事' },
         weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜', abilityType: 'diplomacy', abilityName: '外交' },
         fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️', abilityType: 'strategy', abilityName: '谋略' }
+      },
+      haremCharacters: {
+        empress: { name: '长孙皇后', title: '正宫皇后', emoji: '👑', role: 'mediator', desc: '贤德皇后，善于调和朝臣矛盾' },
+        wushi: { name: '武氏', title: '才人', emoji: '💋', role: 'ambitious', desc: '工于心计，野心勃勃' },
+        yangfei: { name: '杨妃', title: '贵妃', emoji: '🌸', role: 'old_clan', desc: '隋炀帝女，代表旧族利益' }
       },
       stages: [
         { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 5,  color: '#4a90d9' },
@@ -980,6 +1062,94 @@
         { id: 'diligent_ruler', name: '勤政爱民', desc: '累计 5 天选择「批阅奏折」', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('diligent_ruler') && (s.achievementStats ? s.achievementStats.totalSkipNight : 0) >= 5, rarity: 1, reward: null },
         { id: 'banquet_king', name: '宴饮无度', desc: '累计举办 10 次宴会', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('banquet_king') && (s.achievementStats ? s.achievementStats.totalBanquet : 0) >= 10, rarity: 1, reward: null },
         { id: 'cultivate_heart', name: '栽培之心', desc: '累计栽培大臣 20 次', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('cultivate_heart') && (s.achievementStats ? s.achievementStats.totalCultivate : 0) >= 20, rarity: 1, reward: null }
+      ],
+      // ==================== V2.0 后宫事件池 ====================
+      haremEvents: [
+        {
+          id: 101, stage: 'early', title: '皇后劝谏',
+          desc: '长孙皇后以「牝鸡司晨」为由劝你平衡朝臣，不可偏废。',
+          options: [
+            { text: '接受劝谏，平衡各方', effects: { changsun: 5, yuchi: 5, weizheng: 5, fangxuanling: 5, harem: { empress: { favor: 10, influence: 5 } } }, feedback: '皇后欣慰，朝臣亦感圣意公允。' },
+            { text: '拒绝，朕自有主张', effects: { changsun: -5, weizheng: -5, harem: { empress: { favor: -10 } } }, feedback: '皇后默然退下，朝臣暗生疑虑。' }
+          ]
+        },
+        {
+          id: 102, stage: 'early', title: '武氏献媚',
+          desc: '武氏在御花园「偶遇」你，献诗一首，暗表仰慕。',
+          options: [
+            { text: '宠幸武氏，赐珠宝', effects: { harem: { wushi: { favor: 20 } }, weizheng: -15 }, feedback: '武氏得宠，魏征上书谏止「女色误国」。' },
+            { text: '拒绝，朕不喜谄媚', effects: { harem: { wushi: { ambition: 10 } }, weizheng: 5 }, feedback: '武氏低头退下，眼中闪过不甘。' }
+          ]
+        },
+        {
+          id: 103, stage: 'early', title: '杨妃请安',
+          desc: '杨妃前来请安，提及旧族近日困顿，似有求于你。',
+          options: [
+            { text: '关怀备至，赐她兄长官职', effects: { harem: { yangfei: { favor: 15, influence: 5 } }, changsun: -5 }, feedback: '杨妃感激涕零，旧族势力有所抬头。' },
+            { text: '冷落敷衍，让她退下', effects: { harem: { yangfei: { favor: -10 } } }, feedback: '杨妃黯然离去，旧族对你更加疏远。' }
+          ]
+        },
+        {
+          id: 104, stage: 'middle', title: '后宫争宠',
+          desc: '武氏与杨妃在御花园发生冲突，互相指责对方「狐媚惑主」。',
+          options: [
+            { text: '偏袒武氏', effects: { harem: { wushi: { favor: 15 }, yangfei: { favor: -10, ambition: 5 } } }, feedback: '武氏得意洋洋，杨妃含恨退下。' },
+            { text: '偏袒杨妃', effects: { harem: { yangfei: { favor: 15 }, wushi: { favor: -10, ambition: 10 } } }, feedback: '杨妃展颜，武氏眼中寒光一闪。' },
+            { text: '请皇后出面调和', effects: { harem: { empress: { favor: 5, influence: 5 }, wushi: { favor: 5 }, yangfei: { favor: 5 } } }, feedback: '皇后温言劝解，二人暂时偃旗息鼓。' }
+          ]
+        },
+        {
+          id: 105, stage: 'middle', title: '皇后病重',
+          desc: '长孙皇后突染风寒，卧床不起。太医说需静养，但皇后仍惦记朝堂。',
+          options: [
+            { text: '每日探望，暂缓朝政', effects: { harem: { empress: { favor: 20 } }, changsun: 3, yuchi: 3, weizheng: 3, fangxuanling: 3, stability: 5 }, feedback: '皇后感动不已，朝臣皆赞你情深义重。' },
+            { text: '遣人送药，不亲自探望', effects: { harem: { empress: { favor: -20 } }, stability: -10 }, feedback: '皇后病情恶化，朝堂人心浮动。' }
+          ]
+        },
+        {
+          id: 106, stage: 'middle', title: '武氏干政试探',
+          desc: '武氏借替你整理奏折之机，对朝政发表见解，暗示可为你分忧。',
+          options: [
+            { text: '默许，让她继续参与', effects: { harem: { wushi: { ambition: 20, influence: 10 } }, weizheng: -20 }, feedback: '武氏眼中光芒大盛，魏征旧部忧心忡忡。' },
+            { text: '严词制止，后宫不得干政', effects: { harem: { wushi: { favor: -15 } }, weizheng: 10 }, feedback: '武氏低头认错，但野心未减。' }
+          ]
+        },
+        {
+          id: 107, stage: 'late', title: '皇后去世',
+          desc: '长孙皇后病情急转直下，撒手人寰。临终前紧握你的手，请求善待长孙无忌但勿过度重用。',
+          prerequisite: (s) => s.day >= 11 && !s.haremDeceased?.empress,
+          options: [
+            { text: '痛哭失声，辍朝三日', effects: { changsun: 10, weizheng: 5, fangxuanling: 5, stability: -10, harem: { empress: { favor: -100 } } }, feedback: '朝野同悲，但国事堆积，人心惶惶。' },
+            { text: '强忍悲痛，照常理政', effects: { changsun: -5, weizheng: 10, fangxuanling: 10, stability: 5, harem: { empress: { favor: -100 } } }, feedback: '朝臣敬佩你的坚毅，但长孙无忌心生怨怼。' }
+          ]
+        },
+        {
+          id: 108, stage: 'late', title: '武氏野心膨胀',
+          desc: '武氏野心日盛，多次请求参与朝政议事。朝中已有大臣暗中依附于她。',
+          prerequisite: (s) => s.harem?.wushi?.ambition >= 60 && s.haremDeceased?.empress,
+          options: [
+            { text: '允许她参与朝政', effects: { harem: { wushi: { influence: 20, favor: 10 } }, weizheng: -15, changsun: -10, stability: -10 }, feedback: '武氏正式踏入朝堂，开启「后宫干政」线。' },
+            { text: '拒绝，警告她安守本分', effects: { harem: { wushi: { favor: -20, ambition: 10 } }, weizheng: 10 }, feedback: '武氏表面顺从，暗中更加紧布局。' }
+          ]
+        },
+        {
+          id: 109, stage: 'late', title: '杨妃旧族联络',
+          desc: '杨妃请求你为旧族子弟安排要职，称此乃「不忘根本」。',
+          options: [
+            { text: '允准，安排旧族子弟入仕', effects: { harem: { yangfei: { favor: 15, influence: 10 } }, changsun: -10 }, feedback: '杨妃喜形于色，旧族势力再度抬头。' },
+            { text: '拒绝，唯才是举', effects: { harem: { yangfei: { favor: -10 } }, weizheng: 10, changsun: 5 }, feedback: '杨妃失望，旧族对你更加疏远。' }
+          ]
+        },
+        {
+          id: 110, stage: 'late', title: '立后之争',
+          desc: '长孙皇后去世已久，后宫无主。武氏与杨妃各自拉拢朝臣，争立后位。',
+          prerequisite: (s) => s.haremDeceased?.empress,
+          options: [
+            { text: '立武氏为后', effects: { harem: { wushi: { favor: 30, influence: 20, ambition: 10 }, yangfei: { favor: -20 } }, weizheng: -20, changsun: -15, stability: -10 }, feedback: '武氏登上后位，权倾后宫，朝臣震恐。' },
+            { text: '立杨妃为后', effects: { harem: { yangfei: { favor: 30, influence: 20 }, wushi: { favor: -20, ambition: 15 } }, changsun: -10 }, feedback: '杨妃为后，旧族势力大增，武氏暗藏恨意。' },
+            { text: '暂不立后，维持现状', effects: { harem: { wushi: { favor: -10 }, yangfei: { favor: -10 } }, weizheng: 10, stability: 5 }, feedback: '后宫之争暂息，但隐患未除。' }
+          ]
+        }
       ],
       archives: {
         characters: {
@@ -1540,6 +1710,15 @@
         adUsedToday: false,
         history: [],
         characters: {},
+        // V2.0 后宫系统
+        harem: {
+          empress: { favor: 50, influence: 30, ambition: 0 },
+          wushi: { favor: 20, influence: 10, ambition: 30 },
+          yangfei: { favor: 40, influence: 20, ambition: 10 }
+        },
+        haremDeceased: {},
+        haremEventIndex: 0,
+        currentHaremEvent: null,
         // V1.5 成就统计
         achievementStats: {
           totalCultivate: 0,
@@ -1629,6 +1808,106 @@
       return shuffle(selected);
     }
 
+    // V2.0: 抽取后宫事件
+    function randomHaremEvent() {
+      const currentStage = getCurrentStage();
+      const triggered = new Set(gameState.triggeredEvents);
+      // 过滤当前阶段可用后宫事件
+      let pool = config.haremEvents.filter(e => {
+        if (e.stage !== currentStage.id) return false;
+        if (triggered.has(e.id)) return false;
+        // 检查 prerequisite 函数或 ID
+        if (e.prerequisite) {
+          if (typeof e.prerequisite === 'function') {
+            if (!e.prerequisite(gameState)) return false;
+          } else if (!triggered.has(e.prerequisite)) {
+            return false;
+          }
+        }
+        // 检查已故角色
+        if (e.id === 107 && gameState.haremDeceased && gameState.haremDeceased.empress) return false;
+        if (e.id === 108 && !(gameState.haremDeceased && gameState.haremDeceased.empress)) return false;
+        if (e.id === 110 && !(gameState.haremDeceased && gameState.haremDeceased.empress)) return false;
+        return true;
+      });
+      if (pool.length === 0) {
+        // 允许重复
+        pool = config.haremEvents.filter(e => e.stage === currentStage.id);
+      }
+      if (pool.length === 0) return null;
+      return shuffle(pool)[0];
+    }
+
+    // V2.0: 渲染后宫事件
+    function renderHaremEvent() {
+      const section = document.getElementById('eventSection');
+      const haremEvent = gameState.currentHaremEvent;
+      if (!haremEvent) {
+        startNightPhase();
+        return;
+      }
+      section.classList.remove('hidden');
+      document.getElementById('nightSection').classList.add('hidden');
+      document.getElementById('endingSection').classList.add('hidden');
+      section.innerHTML = `
+        <div class="phase-title" style="color:#8e44ad;">🌙 后宫 · ${haremEvent.title}</div>
+        <div class="event-card fade-in">
+          <div class="event-title" style="color:#8e44ad;">${haremEvent.title}</div>
+          <div class="event-desc">${haremEvent.desc}</div>
+          <div class="options" id="haremEventOptions"></div>
+        </div>
+      `;
+      const optionsDiv = document.getElementById('haremEventOptions');
+      haremEvent.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary';
+        btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + idx)}.</span>${opt.text}`;
+        btn.onclick = () => handleHaremEventChoice(idx);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    // V2.0: 处理后宫事件选择
+    function handleHaremEventChoice(optionIndex) {
+      const haremEvent = gameState.currentHaremEvent;
+      const option = haremEvent.options[optionIndex];
+      logEvent('harem_event_choice', { eventId: haremEvent.id, eventTitle: haremEvent.title, optionIndex, optionText: option.text });
+      const oldValues = getCharacterValues();
+      applyEffects(option.effects);
+      showChanges(oldValues, option.effects);
+      playSound('stamp');
+      const optionsDiv = document.getElementById('haremEventOptions');
+      optionsDiv.innerHTML = '';
+      const feedback = document.createElement('div');
+      feedback.className = 'feedback fade-in';
+      feedback.innerHTML = `<strong>圣意已决：</strong>${option.feedback}`;
+      optionsDiv.appendChild(feedback);
+      gameState.history.push({
+        day: gameState.day,
+        phase: '后宫',
+        action: haremEvent.title,
+        detail: option.text
+      });
+      if (!gameState.triggeredEvents.includes(haremEvent.id)) {
+        gameState.triggeredEvents.push(haremEvent.id);
+      }
+      // 皇后去世处理
+      if (haremEvent.id === 107 && !gameState.haremDeceased.empress) {
+        gameState.haremDeceased.empress = true;
+        gameState.harem.empress.favor = 0;
+        logEvent('harem_deceased', { character: 'empress', day: gameState.day });
+      }
+      gameState.haremEventDone = true;
+      saveGame();
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'btn btn-secondary';
+      nextBtn.textContent = '进入晚间决策';
+      nextBtn.onclick = () => {
+        startNightPhase();
+      };
+      optionsDiv.appendChild(nextBtn);
+    }
+
     function getFavorColor(value) {
       if (value >= 30) return '#2e7d32';
       if (value >= 0) return '#c9a227';
@@ -1710,6 +1989,16 @@
             maxWeizhengFavor: 0
           };
         }
+        // V2.0: 补全后宫字段
+        if (!saved.harem) {
+          saved.harem = {
+            empress: { favor: 50, influence: 30, ambition: 0 },
+            wushi: { favor: 20, influence: 10, ambition: 30 },
+            yangfei: { favor: 40, influence: 20, ambition: 10 }
+          };
+        }
+        if (!saved.haremDeceased) saved.haremDeceased = {};
+        if (typeof saved.haremEventIndex !== 'number') saved.haremEventIndex = 0;
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -1946,7 +2235,12 @@
       if (gameState.day > gameState.maxDay || isInstantEnding()) {
         showEnding();
       } else if (gameState.eventIndex >= config.eventsPerDay) {
-        startNightPhase();
+        // V2.0: 朝堂事件处理完后，进入后宫事件或晚间决策
+        if (gameState.currentHaremEvent && !gameState.haremEventDone) {
+          renderHaremEvent();
+        } else {
+          startNightPhase();
+        }
       } else {
         renderEvent();
       }
@@ -2067,12 +2361,24 @@
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'btn btn-secondary';
-      nextBtn.textContent = gameState.eventIndex < config.eventsPerDay - 1 ? '继续处理下一件事' : '退朝，进入晚间决策';
+      nextBtn.textContent = gameState.eventIndex < config.eventsPerDay - 1 ? '继续处理下一件事' : '退朝，处理后宫事务';
       nextBtn.onclick = () => {
         gameState.eventIndex++;
         renderHeader();
         renderCharacters();
-        renderEvent();
+        if (gameState.eventIndex >= config.eventsPerDay) {
+          // V2.0: 朝堂事件全部处理完，触发后宫事件
+          const haremEvent = randomHaremEvent();
+          if (haremEvent) {
+            gameState.currentHaremEvent = haremEvent;
+            gameState.haremEventDone = false;
+            renderHaremEvent();
+          } else {
+            startNightPhase();
+          }
+        } else {
+          renderEvent();
+        }
       };
       optionsDiv.appendChild(nextBtn);
     }
@@ -2114,6 +2420,17 @@
         if (key === 'stability') {
           const adjusted = value > 0 ? Math.round(value * mult) : Math.round(value * (2 - mult));
           gameState.stability = clamp(gameState.stability + adjusted, 0, 100);
+        } else if (key === 'harem') {
+          // V2.0: 后宫数值更新
+          if (!gameState.harem) return;
+          Object.entries(value).forEach(([hKey, hValue]) => {
+            if (!gameState.harem[hKey]) return;
+            if (typeof hValue === 'object') {
+              if (typeof hValue.favor === 'number') gameState.harem[hKey].favor = clamp(gameState.harem[hKey].favor + hValue.favor, 0, 100);
+              if (typeof hValue.influence === 'number') gameState.harem[hKey].influence = clamp(gameState.harem[hKey].influence + hValue.influence, 0, 100);
+              if (typeof hValue.ambition === 'number') gameState.harem[hKey].ambition = clamp(gameState.harem[hKey].ambition + hValue.ambition, 0, 100);
+            }
+          });
         } else if (gameState.characters[key] && !gameState.deceased[key]) {
           if (typeof value === 'number') {
             const adjusted = value > 0 ? Math.round(value * mult) : Math.round(value * (2 - mult));
@@ -2175,6 +2492,18 @@
             <button class="btn btn-primary" ${canBanquet ? '' : 'disabled'} onclick="handleBanquet()">举办宴会</button>
             ${!canBanquet ? `<div class="monetization-note">稳定度不足${config.banquetCost}，无法举办</div>` : ''}
           </div>
+          <div class="action-card">
+            <div class="action-name">临幸后宫</div>
+            <div class="action-desc">选择一位后宫宠幸，提升其宠爱，但会引起嫉妒</div>
+            <button class="btn btn-primary" onclick="openHaremMenu()">选择宠幸对象</button>
+            <div id="haremMenu" class="hidden" style="margin-top:10px"></div>
+          </div>
+          ${gameState.harem && gameState.harem.empress && !gameState.haremDeceased.empress ? `
+          <div class="action-card">
+            <div class="action-name">与皇后共商</div>
+            <div class="action-desc">长孙皇后为你调和朝臣，四方好感+3</div>
+            <button class="btn btn-primary" onclick="handleEmpressCouncil()">请皇后出面</button>
+          </div>` : ''}
           ${noAds ? '' : `
           <div class="action-card">
             <div class="action-name">看广告召见心腹<span class="ad-badge">广告</span></div>
@@ -2288,6 +2617,64 @@
       // V1.5: 累计批阅奏折次数
       if (!gameState.achievementStats) gameState.achievementStats = { totalCultivate: 0, totalBanquet: 0, totalSkipNight: 0, maxWeizhengFavor: 0 };
       gameState.achievementStats.totalSkipNight++;
+      nextDay();
+    }
+
+    // V2.0: 临幸后宫菜单
+    function openHaremMenu() {
+      const menu = document.getElementById('haremMenu');
+      if (!menu) return;
+      menu.classList.remove('hidden');
+      menu.innerHTML = '';
+      Object.entries(gameState.harem).forEach(([key, harem]) => {
+        if (gameState.haremDeceased[key]) return;
+        const cfg = config.haremCharacters[key];
+        if (!cfg) return;
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'margin-bottom:8px; border:1px solid #d8a7c8; border-radius:6px; padding:6px; background:#fff8fb;';
+        wrapper.innerHTML = `
+          <div style="font-weight:bold; font-size:0.85rem; margin-bottom:4px; color:var(--text);">${cfg.emoji} ${cfg.name} <span style="font-size:0.7rem; color:#8e44ad;">宠爱度 ${harem.favor}</span></div>
+          <div style="font-size:0.75rem; color:var(--text-light); margin-bottom:4px;">${cfg.desc}</div>
+          <button class="btn btn-secondary" style="width:100%; font-size:0.75rem; padding:4px;" onclick="handleHaremVisit('${key}')">临幸（宠爱+15，其他-5）</button>
+        `;
+        menu.appendChild(wrapper);
+      });
+    }
+
+    // V2.0: 临幸后宫处理
+    function handleHaremVisit(key) {
+      if (gameState.haremDeceased[key]) {
+        showToast(`${config.haremCharacters[key].name}已去世，无法临幸`);
+        return;
+      }
+      const others = Object.keys(gameState.harem).filter(k => k !== key && !gameState.haremDeceased[k]);
+      gameState.harem[key].favor = clamp(gameState.harem[key].favor + 15, 0, 100);
+      others.forEach(k => {
+        gameState.harem[k].favor = clamp(gameState.harem[k].favor - 5, 0, 100);
+      });
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '临幸', detail: config.haremCharacters[key].name });
+      logEvent('night_action', { action: 'harem_visit', target: key });
+      playSound('meet');
+      nextDay();
+    }
+
+    // V2.0: 与皇后共商
+    function handleEmpressCouncil() {
+      if (gameState.haremDeceased.empress) {
+        showToast('长孙皇后已去世，无法共商');
+        return;
+      }
+      const oldValues = getCharacterValues();
+      Object.keys(gameState.characters).forEach(k => {
+        if (!gameState.deceased[k]) {
+          gameState.characters[k].favor = clamp(gameState.characters[k].favor + 3, -100, 100);
+        }
+      });
+      gameState.harem.empress.influence = clamp(gameState.harem.empress.influence + 5, 0, 100);
+      showChanges(oldValues, { changsun: 3, yuchi: 3, weizheng: 3, fangxuanling: 3 });
+      gameState.history.push({ day: gameState.day, phase: '晚间', action: '共商', detail: '长孙皇后调和朝臣' });
+      logEvent('night_action', { action: 'empress_council' });
+      playSound('meet');
       nextDay();
     }
 
@@ -2469,6 +2856,15 @@
       const s = gameState;
       const diff = config.difficulties[s.difficulty] || config.difficulties.normal;
       const threshold = diff.endingThreshold || 80;
+      // V2.0: 后宫专权结局
+      if (s.harem && s.harem.wushi && s.harem.wushi.ambition >= 80 && s.haremDeceased && s.haremDeceased.empress) {
+        return { name: '武氏代唐', desc: '武氏逐步掌控朝政，你的子孙将承受她带来的动荡...' };
+      }
+      // V2.0: 后宫和睦结局
+      if (s.harem && s.harem.empress && !s.haremDeceased.empress &&
+          s.harem.empress.favor >= 50 && s.harem.wushi.favor >= 50 && s.harem.yangfei.favor >= 50) {
+        return { name: '后宫安宁', desc: '后宫和睦，三位佳人各得其所，朝堂亦因此安稳。' };
+      }
       if (isInstantEnding()) {
         return { name: '众叛亲离', desc: '政变爆发，你的统治结束了。' };
       }
@@ -2691,6 +3087,54 @@
     function closeAchievements(e) {
       if (e && e.target !== document.getElementById('achievementsModal')) return;
       document.getElementById('achievementsModal').classList.add('hidden');
+    }
+
+    // V2.0: 后宫面板
+    function openHaremPanel() {
+      const modal = document.getElementById('haremPanelModal');
+      renderHaremPanelContent();
+      modal.classList.remove('hidden');
+    }
+
+    function closeHaremPanel(e) {
+      if (e && e.target !== document.getElementById('haremPanelModal')) return;
+      document.getElementById('haremPanelModal').classList.add('hidden');
+    }
+
+    function renderHaremPanelContent() {
+      const container = document.getElementById('haremPanelContent');
+      if (!container) return;
+      let html = '<div class="harem-panel-grid">';
+      Object.entries(config.haremCharacters).forEach(([key, cfg]) => {
+        const harem = gameState.harem[key];
+        const isDeceased = gameState.haremDeceased[key];
+        const favorWidth = harem ? harem.favor : 0;
+        const influenceWidth = harem ? harem.influence : 0;
+        const ambitionWidth = harem ? harem.ambition : 0;
+        html += `
+          <div class="harem-card ${isDeceased ? 'deceased' : ''}">
+            <div class="harem-emoji">${isDeceased ? '🕯️' : cfg.emoji}</div>
+            <div class="harem-name">${cfg.name}${isDeceased ? '<span class="deceased-tag">故</span>' : ''}</div>
+            <div class="harem-title">${isDeceased ? '已故' : cfg.title}</div>
+            <div class="harem-stat">
+              <div class="harem-stat-label"><span>宠爱度</span><span>${harem ? harem.favor : 0}</span></div>
+              <div class="harem-stat-bar"><div class="harem-stat-fill harem-favor-fill" style="width:${favorWidth}%"></div></div>
+            </div>
+            <div class="harem-stat">
+              <div class="harem-stat-label"><span>影响力</span><span>${harem ? harem.influence : 0}</span></div>
+              <div class="harem-stat-bar"><div class="harem-stat-fill harem-influence-fill" style="width:${influenceWidth}%"></div></div>
+            </div>
+            ${cfg.role !== 'mediator' && !isDeceased ? `
+            <div class="harem-stat">
+              <div class="harem-stat-label"><span>野心值</span><span>${harem ? harem.ambition : 0}</span></div>
+              <div class="harem-stat-bar"><div class="harem-stat-fill harem-ambition-fill" style="width:${ambitionWidth}%"></div></div>
+            </div>` : ''}
+            <div style="font-size:0.7rem; color:var(--text-light); margin-top:4px;">${isDeceased ? '已故，不再参与后宫事务' : cfg.desc}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
     }
 
     function switchAchievementTab(tab) {
