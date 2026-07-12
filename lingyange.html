@@ -446,6 +446,118 @@
       .event-desc { font-size: 0.8rem; }
       .btn { padding: 6px 10px; font-size: 0.8rem; }
     }
+    /* 成就殿样式 V1.5 */
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .achievement-card {
+      border: 1px solid var(--gold-light);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+      background: #fffef8;
+      transition: all 0.2s ease;
+    }
+    .achievement-card.unlocked {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #fffef8, #f7f3e8);
+      box-shadow: 0 2px 8px rgba(201,162,39,0.2);
+    }
+    .achievement-card.locked {
+      border-color: #ccc;
+      background: #f0ece0;
+      opacity: 0.7;
+    }
+    .achievement-icon {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+    .achievement-name {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .achievement-card.unlocked .achievement-name {
+      color: var(--red);
+    }
+    .achievement-card.locked .achievement-name {
+      color: var(--text-light);
+    }
+    .achievement-desc {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .achievement-rarity {
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+    .achievement-meta {
+      font-size: 0.65rem;
+      color: var(--text-light);
+    }
+    .achievement-category-title {
+      font-size: 1rem;
+      color: var(--red);
+      margin: 12px 0 8px 0;
+      padding-left: 8px;
+      border-left: 3px solid var(--gold);
+    }
+    .achievement-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--gold);
+    }
+    .achievement-tab {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+    .achievement-tab.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .achievement-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .achievement-card {
+        padding: 6px;
+      }
+      .achievement-icon {
+        font-size: 1.3rem;
+      }
+      .achievement-name {
+        font-size: 0.75rem;
+      }
+      .achievement-desc {
+        font-size: 0.65rem;
+      }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .achievement-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-height: 50vh;
+      }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -457,6 +569,7 @@
         <div class="title">凌烟阁密档</div>
         <div class="header-actions">
           <button class="icon-btn" onclick="openArchive()">档案</button>
+          <button class="icon-btn" onclick="openAchievements()">成就</button>
           <button class="icon-btn" onclick="openSettings()">设置</button>
           <button class="icon-btn" onclick="toggleFullscreen()">全屏</button>
         </div>
@@ -482,6 +595,23 @@
       <div id="eventSection"></div>
       <div id="nightSection" class="hidden"></div>
       <div id="endingSection" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- 成就殿弹窗 V1.5 -->
+  <div id="achievementsModal" class="modal-overlay hidden" onclick="closeAchievements(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeAchievements()">×</button>
+      <div class="modal-title">🏆 成就殿</div>
+      <div class="achievement-tabs">
+        <button class="achievement-tab active" onclick="switchAchievementTab('all')" id="tab-ach-all">全部</button>
+        <button class="achievement-tab" onclick="switchAchievementTab('title')" id="tab-ach-title">谥号</button>
+        <button class="achievement-tab" onclick="switchAchievementTab('difficulty')" id="tab-ach-difficulty">难度</button>
+        <button class="achievement-tab" onclick="switchAchievementTab('collection')" id="tab-ach-collection">收集</button>
+        <button class="achievement-tab" onclick="switchAchievementTab('challenge')" id="tab-ach-challenge">挑战</button>
+        <button class="achievement-tab" onclick="switchAchievementTab('behavior')" id="tab-ach-behavior">行为</button>
+      </div>
+      <div id="achievementsContent"></div>
     </div>
   </div>
 
@@ -562,7 +692,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '1.2.2',
+      version: '1.5.0',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -822,6 +952,34 @@
           condition: () => true,
           summary: '你守住了祖宗基业，虽无赫赫之功，也算平稳度日。'
         }
+      ],
+      // ==================== V1.5 成就系统 ====================
+      achievements: [
+        // 谥号类
+        { id: 'taizong_first', name: '千古一帝', desc: '首次获得「太宗」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('taizong_first') && s.titleId === 'taizong', rarity: 3, reward: 'avatarFrame_golden' },
+        { id: 'yang_first', name: '乱世枭雄', desc: '首次获得「炀」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('yang_first') && s.titleId === 'yang', rarity: 2, reward: null },
+        { id: 'zhongzong_first', name: '守成之君', desc: '首次获得「中宗」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('zhongzong_first') && s.titleId === 'zhongzong', rarity: 1, reward: null },
+        { id: 'wudi_first', name: '武勋昭彰', desc: '首次获得「武帝」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('wudi_first') && s.titleId === 'wudi', rarity: 2, reward: null },
+        { id: 'wenzong_first', name: '文治天下', desc: '首次获得「文宗」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('wenzong_first') && s.titleId === 'wenzong', rarity: 2, reward: null },
+        { id: 'gaozong_first', name: '外戚之世', desc: '首次获得「高宗」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('gaozong_first') && s.titleId === 'gaozong', rarity: 2, reward: null },
+        { id: 'xuanzong_first', name: '宣室之明', desc: '首次获得「宣宗」谥号', category: 'title', condition: (s, ach) => !ach.unlocked.includes('xuanzong_first') && s.titleId === 'xuanzong', rarity: 2, reward: null },
+        // 难度类
+        { id: 'hard_clear', name: '凌烟阁主', desc: '首次在 hard 难度通关（任意结局）', category: 'difficulty', condition: (s, ach) => !ach.unlocked.includes('hard_clear') && s.difficulty === 'hard' && s.day >= s.maxDay, rarity: 3, reward: 'permanent_stability_5' },
+        { id: 'hard_taizong', name: '极限挑战', desc: '在 hard 难度获得「太宗」谥号', category: 'difficulty', condition: (s, ach) => !ach.unlocked.includes('hard_taizong') && s.difficulty === 'hard' && s.titleId === 'taizong', rarity: 4, reward: 'special_script' },
+        // 收集类
+        { id: 'shihou_collector', name: '谥号收藏家', desc: '收集全部 7 个谥号', category: 'collection', condition: (s, ach) => !ach.unlocked.includes('shihou_collector') && (ach.titlesSeen || []).length >= 7, rarity: 4, reward: 'free_mode' },
+        { id: 'ending_collector', name: '结局通览', desc: '触发全部 6 种结局', category: 'collection', condition: (s, ach) => !ach.unlocked.includes('ending_collector') && (ach.endingsSeen || []).length >= 6, rarity: 3, reward: 'hidden_character_duruhui' },
+        // 挑战类
+        { id: 'weizheng_friend', name: '魏征之友', desc: '魏征好感度达到 100', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('weizheng_friend') && s.characters.weizheng.favor >= 100, rarity: 2, reward: null },
+        { id: 'balance_master', name: '制衡大师', desc: '一局内四方好感度均 ≥ 0', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('balance_master') && Object.values(s.characters).every(c => c.favor >= 0), rarity: 3, reward: 'avatarFrame_balance' },
+        { id: 'lonely_king', name: '孤家寡人', desc: '一局内四方好感度均 ≤ -50', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('lonely_king') && Object.values(s.characters).every(c => c.favor <= -50), rarity: 2, reward: null },
+        { id: 'turkic_conqueror', name: '突厥征服者', desc: '决战突厥获得「大捷」', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('turkic_conqueror') && s.challengeResults && s.challengeResults.turkic_war === 'great', rarity: 2, reward: null },
+        { id: 'prince_guardian', name: '储位守护者', desc: '储位暗涌获得「朝局稳定」', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('prince_guardian') && s.challengeResults && s.challengeResults.prince_struggle === 'stable', rarity: 2, reward: null },
+        { id: 'zhenguan_legacy', name: '贞观遗风', desc: '凌烟阁终评获得「贞观遗风」', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('zhenguan_legacy') && s.challengeResults && s.challengeResults.final_review === 'legend', rarity: 3, reward: 'bgm_lingyange' },
+        // 行为类
+        { id: 'diligent_ruler', name: '勤政爱民', desc: '累计 5 天选择「批阅奏折」', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('diligent_ruler') && (s.achievementStats ? s.achievementStats.totalSkipNight : 0) >= 5, rarity: 1, reward: null },
+        { id: 'banquet_king', name: '宴饮无度', desc: '累计举办 10 次宴会', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('banquet_king') && (s.achievementStats ? s.achievementStats.totalBanquet : 0) >= 10, rarity: 1, reward: null },
+        { id: 'cultivate_heart', name: '栽培之心', desc: '累计栽培大臣 20 次', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('cultivate_heart') && (s.achievementStats ? s.achievementStats.totalCultivate : 0) >= 20, rarity: 1, reward: null }
       ],
       archives: {
         characters: {
@@ -1359,11 +1517,19 @@
 
     function createInitialState(difficultyId = 'normal') {
       const diff = config.difficulties[difficultyId] || config.difficulties.normal;
+      // V1.5: 读取永久加成
+      let bonusStability = 0;
+      try {
+        const achData = JSON.parse(localStorage.getItem('lyg_achievements') || '{}');
+        if (achData.rewards && achData.rewards.permanentBonus && achData.rewards.permanentBonus.stability) {
+          bonusStability = achData.rewards.permanentBonus.stability;
+        }
+      } catch (e) {}
       const state = {
         day: 1,
         maxDay: config.maxDay,
         difficulty: difficultyId,
-        stability: diff.stabilityInitial,
+        stability: clamp(diff.stabilityInitial + bonusStability, 0, 100),
         eventIndex: 0,
         currentEvents: [],
         triggeredEvents: [],
@@ -1373,7 +1539,14 @@
         lastMeetDay: {},
         adUsedToday: false,
         history: [],
-        characters: {}
+        characters: {},
+        // V1.5 成就统计
+        achievementStats: {
+          totalCultivate: 0,
+          totalBanquet: 0,
+          totalSkipNight: 0,
+          maxWeizhengFavor: 0
+        }
       };
       Object.keys(config.characters).forEach(key => {
         state.lastMeetDay[key] = -99;
@@ -1528,6 +1701,15 @@
         });
         // V1.2.2: 补全 difficulty 字段
         if (!saved.difficulty) saved.difficulty = 'normal';
+        // V1.5: 补全 achievementStats 字段
+        if (!saved.achievementStats) {
+          saved.achievementStats = {
+            totalCultivate: 0,
+            totalBanquet: 0,
+            totalSkipNight: 0,
+            maxWeizhengFavor: 0
+          };
+        }
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -1567,6 +1749,7 @@
         localStorage.removeItem('lyg_archive_unlocks');
         localStorage.removeItem('lyg_sound');
         localStorage.removeItem('lyg_bgm');
+        localStorage.removeItem('lyg_achievements'); // V1.5: 清空成就数据
       } catch (e) {}
       noAds = false;
       soundEnabled = true;
@@ -2002,7 +2185,7 @@
           <div class="action-card">
             <div class="action-name">批阅奏折</div>
             <div class="action-desc">不采取行动，直接进入下一天</div>
-            <button class="btn btn-secondary" onclick="nextDay()">批阅奏折</button>
+            <button class="btn btn-secondary" onclick="handleSkipNight()">批阅奏折</button>
           </div>
         </div>
       `;
@@ -2065,6 +2248,9 @@
       others.forEach(k => showChanges(oldValues, { [k]: -config.meetPenalty }));
       gameState.lastMeetDay[key] = gameState.day;
       gameState.history.push({ day: gameState.day, phase: '晚间', action: '召见', detail: gameState.characters[key].name + '（栽培）' });
+      // V1.5: 累计栽培次数
+      if (!gameState.achievementStats) gameState.achievementStats = { totalCultivate: 0, totalBanquet: 0, totalSkipNight: 0, maxWeizhengFavor: 0 };
+      gameState.achievementStats.totalCultivate++;
       logEvent('night_action', { action: 'meet', target: key, type: 'cultivate' });
       playSound('cultivate');
       nextDay();
@@ -2090,8 +2276,18 @@
       showChanges(oldValues, { stability: -config.banquetCost });
       Object.keys(gameState.characters).forEach(k => showChanges(oldValues, { [k]: config.banquetFavor }));
       gameState.history.push({ day: gameState.day, phase: '晚间', action: '宴会' });
+      // V1.5: 累计宴会次数
+      if (!gameState.achievementStats) gameState.achievementStats = { totalCultivate: 0, totalBanquet: 0, totalSkipNight: 0, maxWeizhengFavor: 0 };
+      gameState.achievementStats.totalBanquet++;
       logEvent('night_action', { action: 'banquet' });
       playSound('success');
+      nextDay();
+    }
+
+    function handleSkipNight() {
+      // V1.5: 累计批阅奏折次数
+      if (!gameState.achievementStats) gameState.achievementStats = { totalCultivate: 0, totalBanquet: 0, totalSkipNight: 0, maxWeizhengFavor: 0 };
+      gameState.achievementStats.totalSkipNight++;
       nextDay();
     }
 
@@ -2099,6 +2295,13 @@
       if (isInstantEnding()) {
         showEnding();
         return;
+      }
+
+      // V1.5: 更新魏征最高好感度
+      if (!gameState.achievementStats) gameState.achievementStats = { totalCultivate: 0, totalBanquet: 0, totalSkipNight: 0, maxWeizhengFavor: 0 };
+      const currentWeizhengFavor = gameState.characters.weizheng ? gameState.characters.weizheng.favor : 0;
+      if (currentWeizhengFavor > gameState.achievementStats.maxWeizhengFavor) {
+        gameState.achievementStats.maxWeizhengFavor = currentWeizhengFavor;
       }
 
       gameState.day++;
@@ -2346,7 +2549,13 @@
 
       const ending = getEnding();
       const title = getPosthumousTitle();
+      // V1.5: 记录结局和谥号到 gameState 用于成就检查
+      gameState.endingName = ending.name;
+      gameState.titleId = title.id;
       const summary = generateSummary(ending, title);
+
+      // V1.5: 检查并解锁成就
+      const newlyUnlocked = checkAndUnlockAchievements();
 
       logEvent('ending_reached', { ending: ending.name, title: title.name, day: gameState.day, stability: gameState.stability });
       unlockArchiveStories();
@@ -2361,6 +2570,23 @@
           </div>`;
       });
 
+      // V1.5: 本次解锁成就展示
+      let newAchievementsHtml = '';
+      if (newlyUnlocked.length > 0) {
+        newAchievementsHtml = `
+          <div style="margin:10px 0; padding:10px; background:linear-gradient(135deg, #2d2418, #1a1a1a); border:1px solid var(--gold); border-radius:8px;">
+            <div style="font-size:0.9rem; color:var(--gold); margin-bottom:8px; font-weight:bold;">🏆 本次解锁成就</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center;">
+              ${newlyUnlocked.map(a => `
+                <div style="background:rgba(201,162,39,0.15); border:1px solid var(--gold-light); border-radius:6px; padding:6px 10px; font-size:0.8rem; color:var(--gold-light);">
+                  ${'⭐'.repeat(a.rarity)} ${a.name}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       endingSection.innerHTML = `
         <div class="ending-screen fade-in">
           <div class="ending-title">凌烟阁评定</div>
@@ -2374,6 +2600,7 @@
             </div>
             ${statsHtml}
           </div>
+          ${newAchievementsHtml}
           <div class="ending-actions">
             <button class="btn btn-primary" onclick="playSound('click'); restartGame()">重新开始</button>
             <button class="btn btn-secondary" onclick="playSound('click'); loadFromSlot('auto')">回档到前一天</button>
@@ -2450,6 +2677,94 @@
       } catch (e) {
         console.log('全屏API不支持');
       }
+    }
+
+    // ==================== V1.5 成就殿 UI ====================
+    let achievementTab = 'all';
+
+    function openAchievements() {
+      achievementTab = 'all';
+      renderAchievements();
+      document.getElementById('achievementsModal').classList.remove('hidden');
+    }
+
+    function closeAchievements(e) {
+      if (e && e.target !== document.getElementById('achievementsModal')) return;
+      document.getElementById('achievementsModal').classList.add('hidden');
+    }
+
+    function switchAchievementTab(tab) {
+      achievementTab = tab;
+      document.querySelectorAll('.achievement-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-ach-${tab}`).classList.add('active');
+      renderAchievements();
+    }
+
+    function renderAchievements() {
+      const container = document.getElementById('achievementsContent');
+      const achData = loadAchievements();
+      const categories = {
+        title: '谥号类',
+        difficulty: '难度类',
+        collection: '收集类',
+        challenge: '挑战类',
+        behavior: '行为类'
+      };
+
+      let achievementsToShow = config.achievements;
+      if (achievementTab !== 'all') {
+        achievementsToShow = config.achievements.filter(a => a.category === achievementTab);
+      }
+
+      let html = '';
+      const grouped = {};
+      achievementsToShow.forEach(a => {
+        if (!grouped[a.category]) grouped[a.category] = [];
+        grouped[a.category].push(a);
+      });
+
+      Object.keys(grouped).forEach(cat => {
+        if (achievementTab === 'all') {
+          html += `<div class="achievement-category-title">${categories[cat] || cat}</div>`;
+        }
+        html += '<div class="achievement-grid">';
+        grouped[cat].forEach(ach => {
+          const isUnlocked = achData.unlocked.includes(ach.id);
+          const unlockTime = achData.firstUnlockTime[ach.id];
+          const progress = achData.progress[ach.id];
+          let metaText = '';
+          if (isUnlocked && unlockTime) {
+            const d = new Date(unlockTime);
+            metaText = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          } else if (progress && progress.target > 1) {
+            metaText = `进度 ${progress.current} / ${progress.target}`;
+          }
+          const icon = isUnlocked ? (ach.rarity >= 3 ? '🏆' : '✨') : '🔒';
+          html += `
+            <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+              <div class="achievement-icon">${icon}</div>
+              <div class="achievement-name">${ach.name}</div>
+              <div class="achievement-desc">${ach.desc}</div>
+              <div class="achievement-rarity">${'⭐'.repeat(ach.rarity)}</div>
+              ${metaText ? `<div class="achievement-meta">${metaText}</div>` : ''}
+            </div>
+          `;
+        });
+        html += '</div>';
+      });
+
+      // 统计概览
+      const total = config.achievements.length;
+      const unlocked = achData.unlocked.length;
+      html += `
+        <div style="text-align:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--gold-light); font-size:0.85rem; color:var(--text-light);">
+          已解锁 ${unlocked} / ${total} 个成就
+          ${achData.rewards.avatarFrames.length > 0 ? ' · 头像框：' + achData.rewards.avatarFrames.join('、') : ''}
+          ${achData.rewards.permanentBonus && achData.rewards.permanentBonus.stability ? ' · 永久稳定度+' + achData.rewards.permanentBonus.stability : ''}
+        </div>
+      `;
+
+      container.innerHTML = html;
     }
 
     function openSettings() {
@@ -2603,6 +2918,136 @@
       } catch (e) {}
     }
 
+    // ==================== V1.5 成就系统 ====================
+    function loadAchievements() {
+      try {
+        const raw = localStorage.getItem('lyg_achievements');
+        if (!raw) return {
+          unlocked: [],
+          progress: {},
+          firstUnlockTime: {},
+          bestScores: {},
+          rewards: { avatarFrames: [], permanentBonus: {} },
+          endingsSeen: [],
+          titlesSeen: [],
+          difficultiesCleared: []
+        };
+        const data = JSON.parse(raw);
+        // 补全缺省字段
+        if (!data.unlocked) data.unlocked = [];
+        if (!data.progress) data.progress = {};
+        if (!data.firstUnlockTime) data.firstUnlockTime = {};
+        if (!data.bestScores) data.bestScores = {};
+        if (!data.rewards) data.rewards = { avatarFrames: [], permanentBonus: {} };
+        if (!data.endingsSeen) data.endingsSeen = [];
+        if (!data.titlesSeen) data.titlesSeen = [];
+        if (!data.difficultiesCleared) data.difficultiesCleared = [];
+        return data;
+      } catch (e) {
+        return {
+          unlocked: [],
+          progress: {},
+          firstUnlockTime: {},
+          bestScores: {},
+          rewards: { avatarFrames: [], permanentBonus: {} },
+          endingsSeen: [],
+          titlesSeen: [],
+          difficultiesCleared: []
+        };
+      }
+    }
+
+    function saveAchievements(data) {
+      try {
+        localStorage.setItem('lyg_achievements', JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function checkAndUnlockAchievements() {
+      const achData = loadAchievements();
+      const newlyUnlocked = [];
+
+      // 更新本局统计到存档
+      if (gameState.endingName && !achData.endingsSeen.includes(gameState.endingName)) {
+        achData.endingsSeen.push(gameState.endingName);
+      }
+      if (gameState.titleId && !achData.titlesSeen.includes(gameState.titleId)) {
+        achData.titlesSeen.push(gameState.titleId);
+      }
+      if (gameState.difficulty && !achData.difficultiesCleared.includes(gameState.difficulty)) {
+        achData.difficultiesCleared.push(gameState.difficulty);
+      }
+
+      // 更新 bestScores
+      const diff = gameState.difficulty || 'normal';
+      const currentScore = {
+        stability: gameState.stability,
+        title: gameState.titleId || '',
+        day: gameState.day
+      };
+      const existing = achData.bestScores[diff];
+      let shouldUpdate = false;
+      if (!existing) {
+        shouldUpdate = true;
+      } else if (gameState.stability > existing.stability) {
+        shouldUpdate = true;
+      }
+      if (shouldUpdate) {
+        achData.bestScores[diff] = currentScore;
+      }
+
+      // 遍历所有成就检查条件
+      for (const ach of config.achievements) {
+        if (achData.unlocked.includes(ach.id)) continue;
+        const progressKey = ach.id;
+        let isUnlocked = false;
+        try {
+          isUnlocked = ach.condition(gameState, achData);
+        } catch (e) {
+          isUnlocked = false;
+        }
+        if (isUnlocked) {
+          achData.unlocked.push(ach.id);
+          achData.firstUnlockTime[ach.id] = new Date().toISOString();
+          // 处理奖励
+          if (ach.reward) {
+            if (ach.reward.startsWith('avatarFrame_')) {
+              const frameId = ach.reward.replace('avatarFrame_', '');
+              if (!achData.rewards.avatarFrames.includes(frameId)) {
+                achData.rewards.avatarFrames.push(frameId);
+              }
+            } else if (ach.reward.startsWith('permanent_')) {
+              const bonusParts = ach.reward.replace('permanent_', '').split('_');
+              if (bonusParts.length >= 2) {
+                const stat = bonusParts[0];
+                const val = parseInt(bonusParts[1], 10) || 0;
+                if (!achData.rewards.permanentBonus[stat]) achData.rewards.permanentBonus[stat] = 0;
+                achData.rewards.permanentBonus[stat] += val;
+              }
+            }
+          }
+          newlyUnlocked.push(ach);
+          logEvent('achievement_unlocked', { id: ach.id, name: ach.name });
+        } else {
+          // 更新进度（针对收集类成就）
+          if (ach.id === 'shihou_collector') {
+            achData.progress[progressKey] = { current: (achData.titlesSeen || []).length, target: 7 };
+          } else if (ach.id === 'ending_collector') {
+            achData.progress[progressKey] = { current: (achData.endingsSeen || []).length, target: 6 };
+          } else if (ach.id === 'diligent_ruler') {
+            achData.progress[progressKey] = { current: gameState.achievementStats ? gameState.achievementStats.totalSkipNight : 0, target: 5 };
+          } else if (ach.id === 'banquet_king') {
+            achData.progress[progressKey] = { current: gameState.achievementStats ? gameState.achievementStats.totalBanquet : 0, target: 10 };
+          } else if (ach.id === 'cultivate_heart') {
+            achData.progress[progressKey] = { current: gameState.achievementStats ? gameState.achievementStats.totalCultivate : 0, target: 20 };
+          }
+        }
+      }
+
+      saveAchievements(achData);
+      return newlyUnlocked;
+    }
+
     // ==================== 游戏控制 ====================
     function restartGame() {
       showDifficultySelect();
@@ -2616,8 +3061,10 @@
           localStorage.removeItem('lyg_save');
           localStorage.removeItem('lyg_logs');
           localStorage.removeItem('lyg_archive_unlocks');
+          // V1.5: 成就数据跨版本保留
+          // localStorage.removeItem('lyg_achievements');
           localStorage.setItem('lyg_version', config.version);
-          console.log(`版本已更新：${savedVersion || '无'} → ${config.version}，旧存档已清除`);
+          console.log(`版本已更新：${savedVersion || '无'} → ${config.version}，旧存档已清除（成就数据保留）`);
         }
       } catch (e) {}
     }
