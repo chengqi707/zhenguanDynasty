@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>凌烟阁密档</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --gold: #c9a227;
@@ -25,7 +26,7 @@
     }
 
     body {
-      font-family: "Noto Serif SC", "SimSun", "STSong", serif;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "SimSun", "STSong", serif;
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2418 50%, #1a1a1a 100%);
       color: var(--text);
       line-height: 1.5;
@@ -49,14 +50,22 @@
 
     /* 顶部 */
     .header {
-      background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
+      background: linear-gradient(180deg, #2a2520 0%, #1a1510 100%);
       border: 2px solid var(--gold);
       border-radius: 8px;
       padding: 8px 10px;
       margin-bottom: 6px;
       color: var(--gold-light);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
       flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::after {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
     }
 
     .header-top {
@@ -68,7 +77,7 @@
       gap: 4px;
     }
 
-    .title { font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .title { font-size: 1.2rem; font-weight: 900; letter-spacing: 4px; color: var(--gold); text-shadow: 0 0 8px rgba(201,162,39,0.4), 2px 2px 4px rgba(0,0,0,0.6); font-family: "Noto Serif SC", serif; }
 
     /* 横屏小屏时标题更紧凑 */
     @media (max-height: 500px) and (orientation: landscape) {
@@ -122,19 +131,32 @@
     }
 
     .character-card {
-      background: var(--paper);
+      background: linear-gradient(135deg, #f7f3e8 0%, #ede8d8 100%);
       border: 2px solid var(--gold);
       border-radius: 8px;
       padding: 5px 3px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
       position: relative;
       flex-shrink: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+    .character-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5), 0 0 12px rgba(201,162,39,0.2);
     }
     .character-card::before {
       content: "";
       position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px;
-      border: 1px solid rgba(201, 162, 39, 0.3); border-radius: 6px; pointer-events: none;
+      border: 1px solid rgba(201, 162, 39, 0.4); border-radius: 6px; pointer-events: none;
+    }
+    .character-card::after {
+      content: "";
+      position: absolute; top: 0; left: -50%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: skewX(-20deg);
+      pointer-events: none;
     }
 
     .character-card.deceased {
@@ -143,6 +165,35 @@
       border-color: #999;
     }
     .character-card.deceased .portrait {
+      background: linear-gradient(135deg, #666, #444);
+      border-color: #999;
+    }
+
+    /* V3.2: 角色立绘 */
+    .portrait {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a227 0%, #8b6914 100%);
+      border: 2px solid var(--gold);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin: 0 auto 4px;
+      position: relative; overflow: hidden;
+    }
+    .portrait img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .portrait::after {
+      content: "";
+      position: absolute; top: 0; left: -50%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: skewX(-20deg);
+      pointer-events: none;
+    }
+
+    .deceased-tag {
       background: linear-gradient(135deg, #666, #444);
       border-color: #999;
     }
@@ -191,7 +242,7 @@
     }
 
     .phase-title { text-align: center; font-size: 1.1rem; color: var(--red); margin-bottom: 6px; font-weight: bold; letter-spacing: 2px; flex-shrink: 0; }
-    .event-card { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 8px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .event-card { background: linear-gradient(135deg, #fffef8 0%, #faf6e8 100%); border: 1px solid var(--gold); border-radius: 8px; padding: 8px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); position: relative; }
     .event-title { font-size: 0.95rem; font-weight: bold; color: var(--red); margin-bottom: 4px; border-bottom: 1px solid var(--gold-light); padding-bottom: 4px; flex-shrink: 0; }
     .event-desc { color: var(--text); font-size: 0.85rem; margin-bottom: 6px; line-height: 1.5; flex: 1; min-height: 0; overflow-y: auto; }
     .options { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
@@ -203,9 +254,22 @@
       cursor: pointer;
       font-family: inherit;
       font-size: 0.85rem;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       text-align: left;
       line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn-ink {
+      position: absolute; border-radius: 50%; background: rgba(201,162,39,0.3);
+      transform: scale(0); animation: inkSpread 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes inkSpread {
+      to { transform: scale(4); opacity: 0; }
     }
     .btn-primary { background: linear-gradient(180deg, #8b1a1a, var(--red)); color: #fff; }
     .btn-primary:hover { background: linear-gradient(180deg, var(--red), #d32f2f); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(178,34,34,0.4); }
@@ -223,10 +287,10 @@
     .action-desc { font-size: 0.65rem; color: var(--text-light); margin-bottom: 6px; }
 
     /* 结局页 */
-    .ending-screen { text-align: center; padding: 4px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; }
-    .ending-title { font-size: 1.4rem; color: var(--red); margin-bottom: 6px; letter-spacing: 3px; }
-    .ending-subtitle { font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
-    .posthumous-title { font-size: 2rem; color: var(--gold); margin: 6px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: bold; }
+    .ending-screen { text-align: center; padding: 4px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    .ending-title { font-size: 1.6rem; color: var(--red); margin-bottom: 6px; letter-spacing: 4px; font-weight: 900; font-family: "Noto Serif SC", serif; text-shadow: 0 0 12px rgba(178,34,34,0.3); }
+    .ending-subtitle { font-size: 0.95rem; color: var(--text-light); margin-bottom: 8px; }
+    .posthumous-title { font-size: 2.4rem; color: var(--gold); margin: 6px 0; text-shadow: 0 0 20px rgba(201,162,39,0.3), 3px 3px 6px rgba(0,0,0,0.3); font-weight: 900; font-family: "Noto Serif SC", serif; letter-spacing: 6px; }
     .summary-text { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; margin: 6px 0; text-align: left; font-size: 0.85rem; line-height: 1.5; }
     .final-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px; margin: 6px 0; }
     .final-stat { background: #fffef8; border: 1px solid var(--gold); border-radius: 8px; padding: 6px; }
@@ -243,11 +307,22 @@
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
       z-index: 100; padding: 12px;
+      opacity: 0; animation: modalFadeIn 0.3s ease forwards;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes modalZoomIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
     }
     .modal {
-      background: var(--paper); border: 2px solid var(--gold); border-radius: 8px;
+      background: linear-gradient(135deg, #f7f3e8 0%, #ede8d8 100%); border: 2px solid var(--gold); border-radius: 8px;
       max-width: 600px; width: 100%; max-height: 90vh; max-height: 90dvh; overflow-y: auto;
-      padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 20px rgba(201,162,39,0.1);
+      animation: modalZoomIn 0.3s ease forwards;
+      position: relative;
     }
     .modal-title { font-size: 1.2rem; color: var(--red); margin-bottom: 12px; text-align: center; font-weight: bold; }
     .modal-close { float: right; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-light); }
@@ -322,16 +397,19 @@
 
     /* 飘字动画 */
     @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-30px); }
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      50% { opacity: 1; transform: translateY(-15px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
     }
     .float-text {
       position: absolute;
-      font-weight: bold;
-      font-size: 1rem;
+      font-weight: 900;
+      font-size: 1.1rem;
       pointer-events: none;
-      animation: floatUp 1s ease forwards;
+      animation: floatUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
       z-index: 50;
+      text-shadow: 0 0 4px rgba(0,0,0,0.3);
+      font-family: "Noto Serif SC", serif;
     }
     .float-positive { color: #2e7d32; }
     .float-negative { color: var(--red); }
@@ -366,7 +444,28 @@
       .game-area { padding: 6px; }
       .night-actions { grid-template-columns: repeat(2, 1fr); gap: 5px; }
       .character-card { padding: 3px 2px; }
-      .portrait { width: 28px; height: 28px; font-size: 0.9rem; }
+      .portrait {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a227 0%, #8b6914 100%);
+      border: 2px solid var(--gold);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin: 0 auto 4px;
+      position: relative; overflow: hidden;
+    }
+    .portrait img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .portrait::after {
+      content: "";
+      position: absolute; top: 0; left: -50%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: skewX(-20deg);
+      pointer-events: none;
+    }
       .character-name { font-size: 0.7rem; }
       .character-title { font-size: 0.5rem; margin-bottom: 1px; }
       .stat-label { font-size: 0.55rem; }
@@ -585,6 +684,23 @@
       font-size: 2rem;
       margin-bottom: 4px;
     }
+    .harem-portrait {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 4px;
+      border: 2px solid #d8a7c8;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .harem-portrait img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .harem-name {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
     .harem-name {
       font-weight: bold;
       font-size: 0.9rem;
@@ -749,10 +865,391 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
+    /* ==================== V3.2 UI/UX 精致化 ==================== */
+    /* 粒子特效层 */
+    #particleCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    /* 角色卡片 3D 精致化 */
+    .character-card {
+      transform-style: preserve-3d;
+      perspective: 600px;
+    }
+    .character-card:hover {
+      transform: translateY(-3px) rotateX(2deg) rotateY(-2deg);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 16px rgba(201,162,39,0.3), inset 0 0 0 1px rgba(201,162,39,0.2);
+    }
+    .character-card .portrait {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .character-card:hover .portrait {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(201,162,39,0.4);
+    }
+
+    /* 边框光晕脉冲 */
+    @keyframes borderGlow {
+      0%, 100% { box-shadow: 0 0 4px rgba(201,162,39,0.2); }
+      50% { box-shadow: 0 0 12px rgba(201,162,39,0.5); }
+    }
+    .character-card.glow-pulse {
+      animation: borderGlow 2s ease-in-out infinite;
+    }
+
+    /* 事件卡片卷轴展开 */
+    @keyframes scrollUnroll {
+      from { opacity: 0; transform: scaleY(0.92) translateY(8px); }
+      to { opacity: 1; transform: scaleY(1) translateY(0); }
+    }
+    .event-card.scroll-in {
+      animation: scrollUnroll 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      transform-origin: top center;
+    }
+
+    /* 场景切换遮罩 */
+    .scene-transition {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--black);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .scene-transition.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .scene-transition-text {
+      font-size: 1.4rem;
+      color: var(--gold);
+      letter-spacing: 6px;
+      font-weight: 900;
+      font-family: "Noto Serif SC", serif;
+      text-shadow: 0 0 20px rgba(201,162,39,0.4);
+      animation: fadeIn 0.6s ease forwards;
+    }
+    .scene-transition-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      animation: fadeIn 0.4s ease 0.1s both;
+    }
+
+    /* 数值闪光 */
+    @keyframes statFlash {
+      0% { filter: brightness(1); }
+      30% { filter: brightness(1.5); }
+      100% { filter: brightness(1); }
+    }
+    .stat-flash {
+      animation: statFlash 0.5s ease;
+    }
+
+    /* 按钮水波纹增强 */
+    .btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      background: radial-gradient(circle, rgba(201,162,39,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .btn:active::before {
+      width: 300px; height: 300px;
+      opacity: 1;
+    }
+
+    /* VIP/商业化边框 */
+    .vip-border {
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, #f7f3e8, #ede8d8) padding-box,
+                  linear-gradient(135deg, var(--gold), #fff, var(--gold)) border-box;
+      animation: borderGlow 3s ease-in-out infinite;
+    }
+    .lock-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .lock-overlay span {
+      font-size: 1.5rem;
+      color: var(--gold);
+      text-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    /* 成就解锁特效 */
+    @keyframes achievementUnlock {
+      0% { transform: scale(0.8); opacity: 0; }
+      40% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .achievement-unlock {
+      animation: achievementUnlock 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* 选项按钮悬停提示 */
+    .btn-hint {
+      position: absolute;
+      bottom: 100%; left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--black);
+      color: var(--gold-light);
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 10;
+      border: 1px solid var(--gold);
+    }
+    .btn:hover .btn-hint {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    /* ==================== V3.2 场景氛围系统 ==================== */
+    .game-area.scene-court {
+      background: linear-gradient(135deg, #f7f3e8 0%, #ede8d8 100%);
+      border-color: var(--gold);
+    }
+    .game-area.scene-harem {
+      background: linear-gradient(135deg, #fdf5f8 0%, #f5e6f0 100%);
+      border-color: #d8a7c8;
+    }
+    .game-area.scene-harem .phase-title {
+      color: #8e44ad;
+    }
+    .game-area.scene-harem .event-title {
+      color: #8e44ad;
+      border-bottom-color: #d8a7c8;
+    }
+    .game-area.scene-war {
+      background: linear-gradient(135deg, #f0e8e0 0%, #e8ddd0 100%);
+      border-color: #b22222;
+    }
+    .game-area.scene-war .phase-title {
+      color: var(--red-dark);
+    }
+    .game-area.scene-war .event-title {
+      color: var(--red-dark);
+      border-bottom-color: #c9a227;
+    }
+    .game-area.scene-folk {
+      background: linear-gradient(135deg, #f8f5e8 0%, #f0ecd8 100%);
+      border-color: #8b6914;
+    }
+    .game-area.scene-folk .phase-title {
+      color: #6b4c2a;
+    }
+    .game-area.scene-folk .event-title {
+      color: #6b4c2a;
+      border-bottom-color: #c9a227;
+    }
+    .game-area.scene-diplomacy {
+      background: linear-gradient(135deg, #e8f0f8 0%, #d8e4f0 100%);
+      border-color: #2c5aa0;
+    }
+    .game-area.scene-diplomacy .phase-title {
+      color: #2c5aa0;
+    }
+    .game-area.scene-diplomacy .event-title {
+      color: #2c5aa0;
+      border-bottom-color: #4a90d9;
+    }
+
+    /* 场景切换过渡 */
+    .game-area {
+      transition: background 0.6s ease, border-color 0.6s ease;
+    }
+    .game-area .phase-title,
+    .game-area .event-title {
+      transition: color 0.4s ease, border-color 0.4s ease;
+    }
+    .premium-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(180deg, transparent, rgba(26,26,26,0.95));
+      padding: 12px 16px 8px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      z-index: 50;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .premium-bar.visible {
+      transform: translateY(0);
+    }
+    .premium-bar .btn {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+    }
+
+    /* ==================== V3.2 启动画面 ==================== */
+    .splash-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1510 50%, #0a0a0a 100%);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .splash-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.05);
+    }
+    .splash-screen .splash-title {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px rgba(201,162,39,0.4), 2px 2px 4px rgba(0,0,0,0.6);
+      font-family: "Noto Serif SC", serif;
+      opacity: 0;
+      animation: splashTitleIn 1.2s ease 0.3s forwards;
+      margin-bottom: 8px;
+    }
+    .splash-screen .splash-subtitle {
+      font-size: 1rem;
+      color: var(--gold-light);
+      letter-spacing: 4px;
+      opacity: 0;
+      animation: splashFadeIn 1s ease 0.8s forwards;
+      margin-bottom: 32px;
+    }
+    .splash-screen .splash-scroll-line {
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin-bottom: 32px;
+      animation: splashScrollExpand 1.5s ease 1.2s forwards;
+    }
+    .splash-screen .splash-enter {
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      padding: 12px 32px;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      background: rgba(201,162,39,0.05);
+      opacity: 0;
+      animation: splashFadeIn 1s ease 1.8s forwards;
+      transition: all 0.3s ease;
+    }
+    .splash-screen:hover .splash-enter {
+      background: rgba(201,162,39,0.15);
+      box-shadow: 0 0 20px rgba(201,162,39,0.3);
+    }
+    .splash-screen .splash-version {
+      position: absolute;
+      bottom: 24px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      opacity: 0;
+      animation: splashFadeIn 1s ease 2.2s forwards;
+    }
+    @keyframes splashTitleIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes splashFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes splashScrollExpand {
+      from { width: 0; }
+      to { width: 200px; }
+    }
+    @media (max-width: 600px) {
+      .splash-screen .splash-title { font-size: 2rem; letter-spacing: 4px; }
+      .splash-screen .splash-subtitle { font-size: 0.85rem; }
+      .splash-screen .splash-enter { font-size: 0.85rem; padding: 10px 24px; }
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+      .splash-screen .splash-title { font-size: 1.6rem; letter-spacing: 3px; margin-bottom: 4px; }
+      .splash-screen .splash-subtitle { font-size: 0.75rem; margin-bottom: 16px; }
+      .splash-screen .splash-scroll-line { margin-bottom: 16px; }
+    }
+
+    /* ==================== V3.2 Toast 精致化 ==================== */
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.92); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+    @keyframes toastSlideOut {
+      from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+      to { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.95); }
+    }
+    .game-toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 25, 18, 0.92);
+      color: var(--gold-light);
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      z-index: 2000;
+      pointer-events: none;
+      border: 1px solid var(--gold);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 12px rgba(201,162,39,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+      white-space: nowrap;
+      font-family: "Noto Serif SC", serif;
+      letter-spacing: 1px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: toastSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .game-toast.hiding {
+      animation: toastSlideOut 0.25s ease forwards;
+    }
+    .game-toast-success { border-color: #2e7d32; color: #a5d6a7; box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 12px rgba(46,125,50,0.2); }
+    .game-toast-error { border-color: var(--red); color: #ef9a9a; box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 12px rgba(178,34,34,0.2); }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+  <!-- V3.2 启动画面 -->
+  <div id="splashScreen" class="splash-screen" onclick="enterGame()">
+    <div class="splash-title">凌烟阁密档</div>
+    <div class="splash-subtitle">贞观年间 · 风云诡谲</div>
+    <div class="splash-scroll-line"></div>
+    <div class="splash-enter" id="splashEnterText">点击进入</div>
+    <div class="splash-version">V3.2.0</div>
+  </div>
   <!-- V2.1 事件编辑器弹窗 -->
   <div id="editorModal" class="modal-overlay hidden">
     <div class="modal" style="max-width:800px; max-height:90vh; max-height:90dvh; overflow-y:auto;" onclick="event.stopPropagation()">
@@ -872,11 +1369,29 @@
     </div>
   </div>
 
+  <!-- V3.0: 剧本选择弹窗 -->
+  <div id="scriptSelectModal" class="modal-overlay hidden">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">选择开局剧本</div>
+      <div id="scriptSelectContent" style="max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+  </div>
+  
+  <!-- V3.0: 名臣卡选择弹窗 -->
+  <div id="nameCardSelectModal" class="modal-overlay hidden">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">选择名臣卡</div>
+      <div id="nameCardSelectContent" style="max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+  </div>
+
   <!-- 设置弹窗 -->
   <div id="settingsModal" class="modal-overlay hidden" onclick="closeSettings(event)">
     <div class="modal" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeSettings()">×</button>
       <div class="modal-title">设置</div>
+      <!-- V3.0: 周目信息 -->
+      <div id="settingsCycleInfo" style="margin-bottom:12px; padding:10px; background:linear-gradient(135deg, #2d2418, #1a1a1a); border:1px solid var(--gold); border-radius:8px; font-size:0.85rem; color:var(--gold-light);"></div>
       <div class="modal-section">
         <h4>音效设置</h4>
         <div style="display:flex; gap:10px; margin-bottom:8px;">
@@ -897,6 +1412,7 @@
         <p>游戏会自动保存当前进度。你可以手动导出/导入存档或清空数据。</p>
         <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="exportSave()">导出存档</button>
         <button class="btn btn-secondary" style="width:100%; margin-bottom:8px; text-align:center;" onclick="importSavePrompt()">导入存档</button>
+        <input type="file" id="importFileInput" accept=".json,application/json" style="display:none" onchange="handleImportFile(this)">
         <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="clearAllData()">清空所有数据</button>
       </div>
       <div class="modal-section">
@@ -907,6 +1423,50 @@
       <div class="modal-section">
         <h4>内容创作</h4>
         <button class="btn btn-secondary" style="width:100%; text-align:center;" onclick="openEditor()">📜 事件编辑器</button>
+      </div>
+      <!-- V3.2: 商店入口 -->
+      <div class="modal-section">
+        <h4>🏪 商店</h4>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn btn-secondary vip-border" style="text-align:left;" onclick="handleBuyNameCard()">
+            <span style="font-weight:bold; color:var(--red);">🎴 名臣卡</span>
+            <span style="float:right; color:var(--gold);">¥12</span>
+            <div style="font-size:0.75rem; color:var(--text-light);">立即解锁杜如晦、李靖、褚遂良三位名臣</div>
+          </button>
+          <button class="btn btn-secondary vip-border" style="text-align:left;" onclick="handleBuyScriptPack()">
+            <span style="font-weight:bold; color:var(--red);">📜 剧本包</span>
+            <span style="float:right; color:var(--gold);">¥18</span>
+            <div style="font-size:0.75rem; color:var(--text-light);">解锁玄武门/突厥已灭/太子已废/魏征早逝4个剧本</div>
+          </button>
+          <button class="btn btn-primary vip-border" style="text-align:left;" onclick="handleBuyVIP()">
+            <span style="font-weight:bold;">👑 VIP会员</span>
+            <span style="float:right;">¥30</span>
+            <div style="font-size:0.75rem; color:rgba(255,255,255,0.8);">永久去广告 + 全名臣卡 + 全剧本 + 专属头像框</div>
+          </button>
+          <button id="settingsRemoveAdsBtn" class="btn btn-secondary" style="text-align:left;" onclick="handleRemoveAds()">
+            <span style="font-weight:bold; color:var(--text);">🚫 永久去广告</span>
+            <span style="float:right; color:var(--gold);">¥6</span>
+            <div style="font-size:0.75rem; color:var(--text-light);">移除所有广告，纯净游戏体验</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  <!-- V3.2: 购买确认弹窗 -->
+  <div id="purchaseModal" class="modal-overlay hidden" onclick="closePurchaseModal(event)">
+    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closePurchaseModal()">×</button>
+      <div class="modal-title" id="purchaseTitle">购买确认</div>
+      <div id="purchaseContent" style="text-align:center; margin-bottom:12px;"></div>
+      <div id="purchaseActions" style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-primary" id="purchaseConfirmBtn" onclick="confirmPurchase()">
+          <span style="font-weight:bold;">✨ 立即解锁</span>
+        </button>
+        <div style="text-align:center; font-size:0.75rem; color:var(--text-light); padding:10px; border:1px dashed var(--gold); border-radius:6px; background:rgba(201,162,39,0.05);">
+          <div style="margin-bottom:4px; color:var(--gold); font-weight:bold;">📱 微信小程序用户</div>
+          <div>搜索「凌烟阁密档」进行真实购买</div>
+          <div style="font-size:0.65rem; margin-top:4px; opacity:0.7;">Web端为模拟体验，数据仅在本地保存</div>
+        </div>
       </div>
     </div>
   </div>
@@ -945,7 +1505,7 @@
   <script>
     // ==================== 配置数据 ====================
     const config = {
-      version: '2.1.0',
+      version: '3.2.0',
       maxDay: 15,
       eventsPerDay: 3,
       meetCooldown: 3,
@@ -962,15 +1522,15 @@
         hard:   { id: 'hard',   name: '凌烟阁主', desc: '初始稳定度低，大臣更敏感，追求极限',       stabilityInitial: 30, eventMultiplier: 1.3,  endingThreshold: 90, aiTolerance: 0 }
       },
       characters: {
-        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔', abilityType: 'politics', abilityName: '政治' },
-        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', abilityType: 'military', abilityName: '军事' },
-        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜', abilityType: 'diplomacy', abilityName: '外交' },
-        fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️', abilityType: 'strategy', abilityName: '谋略' }
+        changsun: { name: '长孙无忌', title: '外戚文官', emoji: '👔', portrait: 'assets/portraits/changsun_wuji.jpg', abilityType: 'politics', abilityName: '政治' },
+        yuchi:    { name: '尉迟敬德', title: '武将功臣', emoji: '⚔️', portrait: 'assets/portraits/yuchi_jingde.jpg', abilityType: 'military', abilityName: '军事' },
+        weizheng: { name: '魏征',     title: '谏臣清流', emoji: '📜', portrait: 'assets/portraits/weizheng.jpg', abilityType: 'diplomacy', abilityName: '外交' },
+        fangxuanling: { name: '房玄龄', title: '谋臣务实', emoji: '🏛️', portrait: 'assets/portraits/fangxuanling.jpg', abilityType: 'strategy', abilityName: '谋略' }
       },
       haremCharacters: {
-        empress: { name: '长孙皇后', title: '正宫皇后', emoji: '👑', role: 'mediator', desc: '贤德皇后，善于调和朝臣矛盾' },
-        wushi: { name: '武氏', title: '才人', emoji: '💋', role: 'ambitious', desc: '工于心计，野心勃勃' },
-        yangfei: { name: '杨妃', title: '贵妃', emoji: '🌸', role: 'old_clan', desc: '隋炀帝女，代表旧族利益' }
+        empress: { name: '长孙皇后', title: '正宫皇后', emoji: '👑', portrait: 'assets/portraits/empress.jpg', role: 'mediator', desc: '贤德皇后，善于调和朝臣矛盾' },
+        wushi: { name: '武氏', title: '才人', emoji: '💋', portrait: 'assets/portraits/wushi.jpg', role: 'ambitious', desc: '工于心计，野心勃勃' },
+        yangfei: { name: '杨妃', title: '贵妃', emoji: '🌸', portrait: 'assets/portraits/yangfei.jpg', role: 'old_clan', desc: '隋炀帝女，代表旧族利益' }
       },
       stages: [
         { id: 'early',  name: '贞观初年', years: '627-629', startDay: 1,  endDay: 5,  color: '#4a90d9' },
@@ -1155,6 +1715,19 @@
           }
         }
       ],
+      // ==================== V3.0 名臣卡与开局剧本 ====================
+      nameCards: {
+        duruohui: { id: 'duruohui', name: '杜如晦', emoji: '🏛️', portrait: 'assets/portraits/duruhui.jpg', desc: '房玄龄初始能力+15', unlockDesc: '触发全部6种结局后解锁', effect: { target: 'fangxuanling', ability: 15 } },
+        lijing: { id: 'lijing', name: '李靖', emoji: '⚔️', portrait: 'assets/portraits/lijing.jpg', desc: '尉迟敬德初始能力+15', unlockDesc: '决战突厥获「大捷」5次后解锁', effect: { target: 'yuchi', ability: 15 } },
+        chusuliang: { id: 'chusuliang', name: '褚遂良', emoji: '📜', portrait: 'assets/portraits/chusuiliang.jpg', desc: '魏征初始能力+15', unlockDesc: '魏征好感达100通关后解锁', effect: { target: 'weizheng', ability: 15 } }
+      },
+      scripts: {
+        normal: { id: 'normal', name: '正常开局', emoji: '🏯', desc: '标准开局，无特殊效果', unlockCondition: null, effects: {} },
+        xuanwumen: { id: 'xuanwumen', name: '玄武门刚结束', emoji: '🗡️', desc: '初始稳定度-20，尉迟好感+30', unlockCondition: 'hard_taizong', effects: { stability: -20, changsun: { favor: 0 }, yuchi: { favor: 30 }, weizheng: { favor: 0 }, fangxuanling: { favor: 0 } } },
+        turkic_defeated: { id: 'turkic_defeated', name: '突厥已灭', emoji: '🏇', desc: '跳过「决战突厥」挑战', unlockCondition: 'turkic_great_3', effects: { skipChallenge: 'turkic_war' } },
+        prince_deposed: { id: 'prince_deposed', name: '太子已废', emoji: '👑', desc: '跳过「储位暗涌」挑战', unlockCondition: 'prince_stable_3', effects: { skipChallenge: 'prince_struggle' } },
+        weizheng_early: { id: 'weizheng_early', name: '魏征早逝', emoji: '🕯️', desc: '魏征初始 deceased', unlockCondition: 'weizheng_hate_clear', effects: { deceased: ['weizheng'] } }
+      },
       storylines: {
         reform:    { name: '制度改革', color: '#c9a227' },
         turkic:    { name: '突厥战争', color: '#b22222' },
@@ -1237,7 +1810,11 @@
         // 行为类
         { id: 'diligent_ruler', name: '勤政爱民', desc: '累计 5 天选择「批阅奏折」', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('diligent_ruler') && (s.achievementStats ? s.achievementStats.totalSkipNight : 0) >= 5, rarity: 1, reward: null },
         { id: 'banquet_king', name: '宴饮无度', desc: '累计举办 10 次宴会', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('banquet_king') && (s.achievementStats ? s.achievementStats.totalBanquet : 0) >= 10, rarity: 1, reward: null },
-        { id: 'cultivate_heart', name: '栽培之心', desc: '累计栽培大臣 20 次', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('cultivate_heart') && (s.achievementStats ? s.achievementStats.totalCultivate : 0) >= 20, rarity: 1, reward: null }
+        { id: 'cultivate_heart', name: '栽培之心', desc: '累计栽培大臣 20 次', category: 'behavior', condition: (s, ach) => !ach.unlocked.includes('cultivate_heart') && (s.achievementStats ? s.achievementStats.totalCultivate : 0) >= 20, rarity: 1, reward: null },
+        // V3.0 周目类
+        { id: 'five_cycles', name: '五世其昌', desc: '累计通关 5 周目', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('five_cycles') && (() => { const ng = loadNewgamePlus(); return ng && ng.cycleCount >= 5; })(), rarity: 3, reward: null },
+        { id: 'ten_cycles', name: '十朝元老', desc: '累计通关 10 周目', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('ten_cycles') && (() => { const ng = loadNewgamePlus(); return ng && ng.cycleCount >= 10; })(), rarity: 4, reward: null },
+        { id: 'versatile_monarch', name: '百变君主', desc: '用全部 4 个剧本各通关 1 次', category: 'challenge', condition: (s, ach) => !ach.unlocked.includes('versatile_monarch') && (() => { const ng = loadNewgamePlus(); if (!ng || !ng.scripts) return false; return ['xuanwumen','turkic_defeated','prince_deposed','weizheng_early'].every(k => ng.scripts[k] && ng.scripts[k].clearedCount > 0); })(), rarity: 5, reward: null }
       ],
       // ==================== V2.0 后宫事件池 ====================
       haremEvents: [
@@ -1868,8 +2445,11 @@
     let noAds = loadNoAds();
     let eventLogs = loadLogs();
 
-    function createInitialState(difficultyId = 'normal') {
+    function createInitialState(difficultyId = 'normal', scriptId = 'normal', nameCardId = null) {
       const diff = config.difficulties[difficultyId] || config.difficulties.normal;
+      const script = config.scripts[scriptId] || config.scripts.normal;
+      const nameCard = nameCardId ? config.nameCards[nameCardId] : null;
+      
       // V1.5: 读取永久加成
       let bonusStability = 0;
       try {
@@ -1878,10 +2458,23 @@
           bonusStability = achData.rewards.permanentBonus.stability;
         }
       } catch (e) {}
+      
+      // V3.0: 周目加成（每3周目大臣初始能力+5，上限30）
+      let cycleBonusAbility = 0;
+      try {
+        const ng = loadNewgamePlus();
+        if (ng && ng.cycleCount > 0) {
+          cycleBonusAbility = Math.min(Math.floor(ng.cycleCount / 3) * 5, 30);
+        }
+      } catch (e) {}
+      
       const state = {
         day: 1,
         maxDay: config.maxDay,
         difficulty: difficultyId,
+        scriptId: scriptId,
+        nameCardId: nameCardId,
+        cycleCounted: false,
         stability: clamp(diff.stabilityInitial + bonusStability, 0, 100),
         eventIndex: 0,
         currentEvents: [],
@@ -1910,13 +2503,45 @@
           maxWeizhengFavor: 0
         }
       };
+      
+      // V3.0: 应用剧本效果
+      if (script.effects.stability) {
+        state.stability = clamp(state.stability + script.effects.stability, 0, 100);
+      }
+      if (script.effects.deceased) {
+        script.effects.deceased.forEach(k => { state.deceased[k] = true; });
+      }
+      if (script.effects.skipChallenge) {
+        state.completedChallenges[script.effects.skipChallenge] = true;
+      }
+      
       Object.keys(config.characters).forEach(key => {
         state.lastMeetDay[key] = -99;
+        let favor = 0;
+        let power = config.powerInitial;
+        let ability = config.powerInitial + cycleBonusAbility;
+        
+        // V3.0: 应用剧本中的人物初始值变化
+        if (script.effects[key] && typeof script.effects[key].favor === 'number') {
+          favor += script.effects[key].favor;
+        }
+        if (script.effects[key] && typeof script.effects[key].power === 'number') {
+          power += script.effects[key].power;
+        }
+        if (script.effects[key] && typeof script.effects[key].ability === 'number') {
+          ability += script.effects[key].ability;
+        }
+        
+        // V3.0: 应用名臣卡效果
+        if (nameCard && nameCard.effect.target === key) {
+          ability += nameCard.effect.ability;
+        }
+        
         state.characters[key] = {
           ...config.characters[key],
-          favor: 0,
-          power: config.powerInitial,
-          ability: config.powerInitial
+          favor: clamp(favor, -100, 100),
+          power: clamp(power, 0, 100),
+          ability: clamp(ability, 0, 100)
         };
       });
       return state;
@@ -1938,6 +2563,99 @@
 
     function getCurrentStage() {
       return config.stages.find(s => gameState.day >= s.startDay && gameState.day <= s.endDay) || config.stages[config.stages.length - 1];
+    }
+    
+    // ==================== V3.1 交互增强 ====================
+    function hapticFeedback(type = 'light') {
+      if (navigator.vibrate) {
+        const patterns = { light: 15, medium: 30, heavy: 50, success: [20, 50, 20], error: [40, 30, 40] };
+        navigator.vibrate(patterns[type] || patterns.light);
+      }
+    }
+    
+    function showToast(message, duration = 2000) {
+      let toast = document.getElementById('gameToast');
+      if (toast) {
+        toast.classList.add('hiding');
+        setTimeout(() => { if (toast && toast.parentNode) toast.parentNode.removeChild(toast); }, 250);
+      }
+      toast = document.createElement('div');
+      toast.id = 'gameToast';
+      toast.className = 'game-toast';
+      if (message.includes('成功')) toast.classList.add('game-toast-success');
+      if (message.includes('失败') || message.includes('错误')) toast.classList.add('game-toast-error');
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        if (toast && toast.parentNode) {
+          toast.classList.add('hiding');
+          setTimeout(() => { if (toast && toast.parentNode) toast.parentNode.removeChild(toast); }, 250);
+        }
+      }, duration);
+    }
+    
+    // ==================== V3.1 新手引导 ====================
+    let tutorialStep = 0;
+    const tutorialSteps = [
+      { el: '#charactersPanel', text: '👆 这是四位大臣，好感度决定他们的忠诚度，点击可查看详情', position: 'bottom' },
+      { el: '#stabilityBar', text: '👆 皇权稳定度是核心指标，低于 0 游戏失败', position: 'bottom' },
+      { el: '#eventSection', text: '👆 每天处理 3 个朝堂事件，选择会影响各方势力', position: 'top' },
+      { el: '#dayDisplay', text: '👆 共 15 天，第 15 天进行凌烟阁终评', position: 'bottom' }
+    ];
+    
+    function checkTutorial() {
+      try {
+        const seen = localStorage.getItem('lyg_tutorial_seen');
+        if (seen || gameState.day > 1) return;
+        tutorialStep = 0;
+        showTutorialStep();
+      } catch (e) {}
+    }
+    
+    function showTutorialStep() {
+      if (tutorialStep >= tutorialSteps.length) {
+        localStorage.setItem('lyg_tutorial_seen', '1');
+        dismissTutorial();
+        return;
+      }
+      const step = tutorialSteps[tutorialStep];
+      const target = document.querySelector(step.el);
+      if (!target) { tutorialStep++; showTutorialStep(); return; }
+      
+      dismissTutorial();
+      const rect = target.getBoundingClientRect();
+      const highlight = document.createElement('div');
+      highlight.id = 'tutorialHighlight';
+      highlight.style.cssText = `position:fixed; left:${rect.left-4}px; top:${rect.top-4}px; width:${rect.width+8}px; height:${rect.height+8}px; border:2px solid var(--gold); border-radius:8px; box-shadow:0 0 20px rgba(201,162,39,0.4), 0 0 0 9999px rgba(0,0,0,0.5); z-index:3000; pointer-events:none; animation:tutorialPulse 1.5s ease infinite;`;
+      
+      const tip = document.createElement('div');
+      tip.id = 'tutorialTip';
+      const tipTop = step.position === 'top' ? rect.top - 50 : rect.bottom + 10;
+      tip.style.cssText = `position:fixed; left:50%; top:${tipTop}px; transform:translateX(-50%); background:var(--paper); color:var(--text); padding:10px 16px; border-radius:8px; border:1px solid var(--gold); font-size:0.85rem; z-index:3001; max-width:280px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.3);`;
+      tip.innerHTML = step.text + '<br><span style="color:var(--gold); font-size:0.75rem; margin-top:6px; display:block;">点击任意处继续</span>';
+      
+      document.body.appendChild(highlight);
+      document.body.appendChild(tip);
+      
+      const next = () => { tutorialStep++; showTutorialStep(); };
+      setTimeout(() => {
+        document.addEventListener('click', next, { once: true });
+      }, 100);
+    }
+    
+    function dismissTutorial() {
+      const h = document.getElementById('tutorialHighlight');
+      const t = document.getElementById('tutorialTip');
+      if (h) h.remove();
+      if (t) t.remove();
+    }
+    
+    // Add tutorial pulse animation to CSS via style injection
+    if (!document.getElementById('tutorialStyle')) {
+      const s = document.createElement('style');
+      s.id = 'tutorialStyle';
+      s.textContent = '@keyframes tutorialPulse { 0%,100% { box-shadow:0 0 20px rgba(201,162,39,0.4), 0 0 0 9999px rgba(0,0,0,0.5); } 50% { box-shadow:0 0 30px rgba(201,162,39,0.6), 0 0 0 9999px rgba(0,0,0,0.5); } }';
+      document.head.appendChild(s);
     }
 
     function randomEvents(count) {
@@ -2118,6 +2836,19 @@
     function saveLogs() {
       try { localStorage.setItem('lyg_logs', JSON.stringify(eventLogs)); } catch (e) {}
     }
+    
+    let sessionId = null;
+    function getSessionId() {
+      if (!sessionId) {
+        sessionId = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+      }
+      return sessionId;
+    }
+    
+    function pushToAnalytics(entry) {
+      // V3.1: Analytics placeholder - ready for WeChat analytics or third-party SDK
+      console.log('[Analytics]', entry);
+    }
 
     function loadLogs() {
       try {
@@ -2182,6 +2913,11 @@
         }
         if (!saved.haremDeceased) saved.haremDeceased = {};
         if (typeof saved.haremEventIndex !== 'number') saved.haremEventIndex = 0;
+        // V3.0: 补全剧本与名臣卡字段
+        if (!saved.scriptId) saved.scriptId = 'normal';
+        if (!saved.nameCardId) saved.nameCardId = null;
+        // V3.0: 补全周目结算标记（已完结的旧存档视为已结算，防止刷新重复计数）
+        if (typeof saved.cycleCounted !== 'boolean') saved.cycleCounted = saved.day > saved.maxDay;
         gameState = saved;
         return true;
       } catch (e) { return false; }
@@ -2192,28 +2928,78 @@
     }
 
     function exportSave() {
-      const text = JSON.stringify(gameState);
-      navigator.clipboard.writeText(text).then(() => alert('存档已复制到剪贴板'));
+      try {
+        const now = new Date();
+        const ts = now.getFullYear() +
+          String(now.getMonth()+1).padStart(2,'0') +
+          String(now.getDate()).padStart(2,'0') + '_' +
+          String(now.getHours()).padStart(2,'0') +
+          String(now.getMinutes()).padStart(2,'0') +
+          String(now.getSeconds()).padStart(2,'0');
+        const filename = 'lyg_save_' + ts + '.json';
+        const blob = new Blob([JSON.stringify(gameState, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        logEvent('save_exported');
+        showToast('存档已下载：' + filename);
+      } catch (e) {
+        showToast('导出失败：' + e.message);
+      }
     }
 
     function importSavePrompt() {
-      const text = prompt('请粘贴存档字符串：');
-      if (!text) return;
-      try {
-        const saved = JSON.parse(text);
-        if (!saved.characters || !saved.day) throw new Error('格式错误');
-        gameState = saved;
-        saveGame();
-        logEvent('save_imported');
-        renderAll();
-        alert('存档导入成功');
-      } catch (e) {
-        alert('存档格式错误：' + e.message);
+      document.getElementById('importFileInput').click();
+    }
+
+    function handleImportFile(input) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return;
+      if (!file.name.endsWith('.json')) {
+        showToast('请选择 .json 格式的存档文件');
+        return;
       }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const saved = JSON.parse(e.target.result);
+          validateSaveData(saved);
+          if (hasSave() || (gameState && gameState.day > 1)) {
+            if (!confirm('导入将覆盖当前游戏进度，是否继续？')) return;
+          }
+          gameState = saved;
+          saveGame();
+          logEvent('save_imported');
+          renderAll();
+          showToast('存档导入成功：' + file.name);
+        } catch (err) {
+          showToast('导入失败：' + err.message);
+        }
+      };
+      reader.onerror = function() {
+        showToast('文件读取失败');
+      };
+      reader.readAsText(file);
+    }
+
+    function validateSaveData(data) {
+      if (!data || typeof data !== 'object') throw new Error('存档格式不正确');
+      if (!Array.isArray(data.characters)) throw new Error('缺少角色数据（characters）');
+      if (typeof data.day !== 'number') throw new Error('缺少天数数据（day）');
+      if (typeof data.stability !== 'number') throw new Error('缺少稳定度数据（stability）');
+      if (typeof data.phase !== 'string') throw new Error('缺少阶段数据（phase）');
+      return true;
     }
 
     function clearAllData() {
       if (!confirm('确定要清空所有存档、日志和设置吗？此操作不可恢复。')) return;
+      const clearNg = confirm('是否同时清空多周目进度（周目数、名臣卡解锁、剧本解锁）？点击「确定」清空全部，点击「取消」保留周目进度。');
       try {
         localStorage.removeItem('lyg_save');
         localStorage.removeItem('lyg_logs');
@@ -2222,6 +3008,9 @@
         localStorage.removeItem('lyg_sound');
         localStorage.removeItem('lyg_bgm');
         localStorage.removeItem('lyg_achievements'); // V1.5: 清空成就数据
+        if (clearNg) {
+          localStorage.removeItem('lyg_newgame_plus'); // V3.0: 清空周目数据
+        }
       } catch (e) {}
       noAds = false;
       soundEnabled = true;
@@ -2230,7 +3019,7 @@
       eventLogs = [];
       try { localStorage.removeItem('lyg_save_slots'); } catch (e) {}
       restartGame();
-      alert('所有数据已清空');
+      alert('所有数据已清空' + (clearNg ? '（含周目进度）' : '（保留周目进度）'));
     }
 
     // ==================== 去广告 ====================
@@ -2361,28 +3150,45 @@
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         bgmGain = audioCtx.createGain();
-        bgmGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        bgmGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
         bgmGain.connect(audioCtx.destination);
-        const notes = [262, 294, 330, 349, 392, 349, 330, 294];
-        const interval = 1.0;
-        notes.forEach((freq, i) => {
+        // V3.2: 古琴五声音阶 + 滤波器模拟共鸣
+        const pentatonic = [262, 294, 330, 392, 440, 392, 330, 294];
+        const interval = 1.2;
+        pentatonic.forEach((freq, i) => {
           const osc = audioCtx.createOscillator();
-          osc.type = 'sine';
+          osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * interval);
-          osc.connect(bgmGain);
+          // 低通滤波器模拟古琴共鸣
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1200, audioCtx.currentTime + i * interval);
+          filter.Q.setValueAtTime(2, audioCtx.currentTime + i * interval);
+          // 轻微颤音
+          const lfo = audioCtx.createOscillator();
+          lfo.type = 'sine';
+          lfo.frequency.setValueAtTime(3, audioCtx.currentTime + i * interval);
+          const lfoGain = audioCtx.createGain();
+          lfoGain.gain.setValueAtTime(2, audioCtx.currentTime + i * interval);
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+          lfo.start(audioCtx.currentTime + i * interval);
+          lfo.stop(audioCtx.currentTime + (i + 1) * interval);
+          osc.connect(filter);
+          filter.connect(bgmGain);
           osc.start(audioCtx.currentTime + i * interval);
           osc.stop(audioCtx.currentTime + (i + 1) * interval - 0.05);
-          bgmOscillators.push(osc);
+          bgmOscillators.push(osc, lfo, filter);
         });
         const loopOsc = audioCtx.createOscillator();
         loopOsc.type = 'sine';
         loopOsc.frequency.setValueAtTime(0, audioCtx.currentTime);
         loopOsc.connect(bgmGain);
-        loopOsc.start(audioCtx.currentTime + notes.length * interval);
+        loopOsc.start(audioCtx.currentTime + pentatonic.length * interval);
         bgmOscillators.push(loopOsc);
         setTimeout(() => {
           if (bgmEnabled) startBGM();
-        }, notes.length * interval * 1000);
+        }, pentatonic.length * interval * 1000);
       } catch (e) {}
     }
 
@@ -2453,8 +3259,12 @@
         const card = document.createElement('div');
         card.className = `character-card fade-in ${isDeceased ? 'deceased' : ''}`;
         card.id = `char-${key}`;
+        const cfg = config.characters[key];
+        const portraitHtml = cfg && cfg.portrait
+          ? `<img src="${cfg.portrait}" alt="${char.name}" onerror="this.style.display='none'; this.parentNode.textContent='${isDeceased ? '🕯️' : char.emoji}'">`
+          : (isDeceased ? '🕯️' : char.emoji);
         card.innerHTML = `
-          <div class="portrait">${isDeceased ? '🕯️' : char.emoji}</div>
+          <div class="portrait">${portraitHtml}</div>
           <div class="character-name">${char.name}${isDeceased ? '<span class="deceased-tag">故</span>' : ''}</div>
           <div class="character-title">${isDeceased ? '已故' : char.title}</div>
           <div class="stat">
@@ -2472,6 +3282,28 @@
         `;
         panel.appendChild(card);
       });
+      // V3.2: 更新角色光晕效果
+      setTimeout(() => updateCharacterGlow(), 50);
+    }
+
+    // V3.2: 场景氛围推断
+    function inferScene(event) {
+      const text = (event.title + ' ' + event.desc).toLowerCase();
+      const haremKw = '后宫|妃|皇后|太子|储位|公主|宫女|侍寝|宠幸|嫔|妾|淑妃|贤妃|德妃|贵妃|美人|昭仪|婕妤|才人|贵人';
+      const warKw = '突厥|高昌|战|军|出征|征伐|兵|将|攻城|防守|边疆|敌|匈奴|入侵|铁骑|军功|武|征|灭|俘|颉利|可汗';
+      const folkKw = '灾|旱|蝗|民|赋税|均田|饥荒|赈灾|水利|开垦|农|商|市集|百姓|流民|田亩|租庸调|谷|粮';
+      const diplKw = '使|吐蕃|外交|和亲|朝贡|使节|西域|高句丽|百济|新罗|遣唐|远嫁|松赞干布|文成|可汗|诸蕃|天可汗';
+      if (new RegExp(haremKw).test(text)) return 'harem';
+      if (new RegExp(warKw).test(text)) return 'war';
+      if (new RegExp(folkKw).test(text)) return 'folk';
+      if (new RegExp(diplKw).test(text)) return 'diplomacy';
+      return 'court';
+    }
+
+    function applyScene(gameArea, scene) {
+      const allScenes = ['scene-court', 'scene-harem', 'scene-war', 'scene-folk', 'scene-diplomacy'];
+      allScenes.forEach(s => gameArea.classList.remove(s));
+      if (scene && scene !== 'court') gameArea.classList.add('scene-' + scene);
     }
 
     function renderEvent() {
@@ -2487,14 +3319,21 @@
       document.getElementById('nightSection').classList.add('hidden');
       document.getElementById('endingSection').classList.add('hidden');
 
+      // V3.2: 场景氛围切换
+      const gameArea = document.querySelector('.game-area');
+      if (gameArea) applyScene(gameArea, inferScene(currentEvent));
+
       section.innerHTML = `
         <div class="phase-title">☀️ 早朝 · 第 ${gameState.eventIndex + 1} / ${config.eventsPerDay} 件事务</div>
-        <div class="event-card fade-in">
+        <div class="event-card scroll-in">
           <div class="event-title">${currentEvent.title}</div>
           <div class="event-desc">${currentEvent.desc}</div>
           <div class="options" id="eventOptions"></div>
         </div>
       `;
+
+      // V3.2: 增强事件卡片入场
+      setTimeout(() => enhanceEventCard(), 10);
 
       const optionsDiv = document.getElementById('eventOptions');
       currentEvent.options.forEach((opt, idx) => {
@@ -2657,6 +3496,10 @@
       eventSection.classList.add('hidden');
       nightSection.classList.remove('hidden');
       document.getElementById('endingSection').classList.add('hidden');
+
+      // V3.2: 晚间决策切换到后宫氛围
+      const gameArea = document.querySelector('.game-area');
+      if (gameArea) applyScene(gameArea, 'harem');
 
       const canBanquet = gameState.stability >= config.banquetCost;
 
@@ -3126,12 +3969,19 @@
       nightSection.classList.add('hidden');
       endingSection.classList.remove('hidden');
 
+      // V3.2: 结局重置场景氛围
+      const gameArea = document.querySelector('.game-area');
+      if (gameArea) applyScene(gameArea, 'court');
+
       const ending = getEnding();
       const title = getPosthumousTitle();
       // V1.5: 记录结局和谥号到 gameState 用于成就检查
       gameState.endingName = ending.name;
       gameState.titleId = title.id;
       const summary = generateSummary(ending, title);
+
+      // V3.0: 周目结算（先于成就检查，保证周目成就按本次通关计数；幂等，重复触发不会重复计数）
+      incrementCycleAndUnlocks();
 
       // V1.5: 检查并解锁成就
       const newlyUnlocked = checkAndUnlockAchievements();
@@ -3186,11 +4036,18 @@
             ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleAdRestart()">看广告重开<span class="ad-badge">广告</span></button>`}
             <button class="btn btn-secondary" onclick="playSound('click'); handleShare()">分享结局</button>
             ${noAds ? '' : `<button class="btn btn-secondary" onclick="playSound('click'); handleRemoveAds()">¥6 永久去广告</button>`}
+            <button class="btn btn-secondary vip-border" onclick="playSound('click'); handleBuyNameCard()">🎴 名臣卡 ¥12</button>
+            <button class="btn btn-secondary vip-border" onclick="playSound('click'); handleBuyScriptPack()">📜 剧本包 ¥18</button>
+            <button class="btn btn-primary vip-border" onclick="playSound('click'); handleBuyVIP()">👑 开通VIP ¥30</button>
           </div>
+          <!-- V3.0: 周目信息展示 -->
+          <div id="cycleInfo" style="margin-top:10px; font-size:0.8rem; color:var(--gold-light);"></div>
         </div>
       `;
 
       saveGame();
+      // V3.0: 展示周目信息（结算已在上方完成，此处仅刷新文案）
+      renderCycleInfo(loadNewgamePlus());
     }
 
     // ==================== 商业化占位 ====================
@@ -3235,14 +4092,120 @@
       }
     }
 
-    function handleRemoveAds() {
-      logEvent('purchase_click', { product: 'remove_ads' });
-      if (confirm('MVP占位：点击确认模拟购买「¥6永久去广告」。')) {
+    // ==================== V3.2 商业化购买弹窗系统 ====================
+    let pendingPurchaseProduct = null;
+
+    const PURCHASE_PRODUCTS = {
+      remove_ads: {
+        title: '永久去广告',
+        icon: '🚫',
+        price: '¥6',
+        desc: '移除所有广告，享受纯净游戏体验',
+        benefits: ['广告永久隐藏', '界面更清爽']
+      },
+      name_card_pack: {
+        title: '名臣卡包',
+        icon: '🎴',
+        price: '¥12',
+        desc: '立即解锁三位历史名臣',
+        benefits: ['杜如晦 - 谋断无双', '李靖 - 军神再临', '褚遂良 - 书法辅政']
+      },
+      script_pack: {
+        title: '剧本包',
+        icon: '📜',
+        price: '¥18',
+        desc: '解锁4个特殊开局剧本',
+        benefits: ['玄武门刚结束', '突厥已灭', '太子已废', '魏征早逝']
+      },
+      vip_membership: {
+        title: 'VIP会员',
+        icon: '👑',
+        price: '¥30',
+        desc: '尊享全部特权，永久有效',
+        benefits: ['永久去广告', '全名臣卡解锁', '全剧本解锁', '专属VIP头像框']
+      }
+    };
+
+    function handleRemoveAds() { openPurchaseModal('remove_ads'); }
+    function handleBuyNameCard() { openPurchaseModal('name_card_pack'); }
+    function handleBuyScriptPack() { openPurchaseModal('script_pack'); }
+    function handleBuyVIP() { openPurchaseModal('vip_membership'); }
+
+    function openPurchaseModal(productId) {
+      const product = PURCHASE_PRODUCTS[productId];
+      if (!product) return;
+      pendingPurchaseProduct = productId;
+      logEvent('purchase_click', { product: productId });
+
+      const modal = document.getElementById('purchaseModal');
+      document.getElementById('purchaseTitle').textContent = product.icon + ' ' + product.title;
+
+      const benefitsHtml = product.benefits.map(b => `<div style="padding:4px 0; font-size:0.85rem; color:var(--text);">✓ ${b}</div>`).join('');
+      document.getElementById('purchaseContent').innerHTML = `
+        <div style="font-size:1.3rem; font-weight:900; color:var(--gold); margin-bottom:8px;">${product.price}</div>
+        <div style="font-size:0.9rem; color:var(--text-light); margin-bottom:12px;">${product.desc}</div>
+        <div style="text-align:left; background:rgba(201,162,39,0.05); border:1px solid var(--gold-light); border-radius:6px; padding:10px; margin-bottom:8px;">
+          <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:6px;">包含内容：</div>
+          ${benefitsHtml}
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closePurchaseModal(e) {
+      if (e && e.target !== document.getElementById('purchaseModal')) return;
+      document.getElementById('purchaseModal').classList.add('hidden');
+      pendingPurchaseProduct = null;
+    }
+
+    function confirmPurchase() {
+      if (!pendingPurchaseProduct) return;
+      const productId = pendingPurchaseProduct;
+      const product = PURCHASE_PRODUCTS[productId];
+
+      if (productId === 'remove_ads') {
         noAds = true;
         saveNoAds();
-        alert('购买成功！广告已隐藏。');
-        renderAll();
+        showToast('🚫 广告已永久隐藏');
+      } else if (productId === 'name_card_pack') {
+        const ng = loadNewgamePlus();
+        ng.nameCards.duruohui.unlocked = true;
+        ng.nameCards.lijing.unlocked = true;
+        ng.nameCards.chusuliang.unlocked = true;
+        saveNewgamePlus(ng);
+        showToast('🎴 名臣卡包已解锁');
+      } else if (productId === 'script_pack') {
+        const ng = loadNewgamePlus();
+        ng.scripts.xuanwumen.unlocked = true;
+        ng.scripts.turkic_defeated.unlocked = true;
+        ng.scripts.prince_deposed.unlocked = true;
+        ng.scripts.weizheng_early.unlocked = true;
+        saveNewgamePlus(ng);
+        showToast('📜 剧本包已解锁');
+      } else if (productId === 'vip_membership') {
+        noAds = true;
+        saveNoAds();
+        const ng = loadNewgamePlus();
+        ng.nameCards.duruohui.unlocked = true;
+        ng.nameCards.lijing.unlocked = true;
+        ng.nameCards.chusuliang.unlocked = true;
+        ng.scripts.xuanwumen.unlocked = true;
+        ng.scripts.turkic_defeated.unlocked = true;
+        ng.scripts.prince_deposed.unlocked = true;
+        ng.scripts.weizheng_early.unlocked = true;
+        saveNewgamePlus(ng);
+        const achData = loadAchievements();
+        if (!achData.rewards.avatarFrames.includes('vip')) {
+          achData.rewards.avatarFrames.push('vip');
+          saveAchievements(achData);
+        }
+        showToast('👑 VIP权益已激活');
       }
+
+      logEvent('purchase_success', { product: productId });
+      closePurchaseModal();
+      renderAll();
     }
 
     // ==================== 设置与编年史 ====================
@@ -3262,24 +4225,28 @@
     let achievementTab = 'all';
 
     function openAchievements() {
+      playSound('click');
       achievementTab = 'all';
       renderAchievements();
       document.getElementById('achievementsModal').classList.remove('hidden');
     }
 
     function closeAchievements(e) {
+      playSound('click');
       if (e && e.target !== document.getElementById('achievementsModal')) return;
       document.getElementById('achievementsModal').classList.add('hidden');
     }
 
     // V2.0: 后宫面板
     function openHaremPanel() {
+      playSound('click');
       const modal = document.getElementById('haremPanelModal');
       renderHaremPanelContent();
       modal.classList.remove('hidden');
     }
 
     function closeHaremPanel(e) {
+      playSound('click');
       if (e && e.target !== document.getElementById('haremPanelModal')) return;
       document.getElementById('haremPanelModal').classList.add('hidden');
     }
@@ -3294,9 +4261,12 @@
         const favorWidth = harem ? harem.favor : 0;
         const influenceWidth = harem ? harem.influence : 0;
         const ambitionWidth = harem ? harem.ambition : 0;
+        const portraitHtml = cfg.portrait
+          ? `<div class="harem-portrait"><img src="${cfg.portrait}" alt="${cfg.name}" onerror="this.style.display='none'; this.parentNode.textContent='${isDeceased ? '🕯️' : cfg.emoji}'"></div>`
+          : `<div class="harem-emoji">${isDeceased ? '🕯️' : cfg.emoji}</div>`;
         html += `
           <div class="harem-card ${isDeceased ? 'deceased' : ''}">
-            <div class="harem-emoji">${isDeceased ? '🕯️' : cfg.emoji}</div>
+            ${portraitHtml}
             <div class="harem-name">${cfg.name}${isDeceased ? '<span class="deceased-tag">故</span>' : ''}</div>
             <div class="harem-title">${isDeceased ? '已故' : cfg.title}</div>
             <div class="harem-stat">
@@ -3395,10 +4365,31 @@
     }
 
     function openSettings() {
+      playSound('click');
       document.getElementById('settingsModal').classList.remove('hidden');
       document.getElementById('soundToggle').checked = soundEnabled;
       document.getElementById('bgmToggle').checked = bgmEnabled;
       renderSaveSlotsUI();
+      // V3.2: 根据去广告状态隐藏/显示按钮
+      const removeAdsBtn = document.getElementById('settingsRemoveAdsBtn');
+      if (removeAdsBtn) {
+        removeAdsBtn.style.display = noAds ? 'none' : '';
+      }
+      // V3.0: 渲染周目信息
+      const cycleInfoEl = document.getElementById('settingsCycleInfo');
+      if (cycleInfoEl) {
+        const ng = loadNewgamePlus();
+        const cycleBonus = Math.min(Math.floor(ng.cycleCount / 3) * 5, 30);
+        const unlockedCards = Object.values(config.nameCards).filter(nc => ng.nameCards[nc.id] && ng.nameCards[nc.id].unlocked).length;
+        const unlockedScripts = Object.values(config.scripts).filter(sc => sc.id !== 'normal' && ng.scripts[sc.id] && ng.scripts[sc.id].unlocked).length;
+        cycleInfoEl.innerHTML = `
+          <div style="font-weight:bold; color:var(--gold); margin-bottom:4px;">🔄 多周目进度</div>
+          <div>当前周目：第 <strong>${ng.cycleCount}</strong> 周目</div>
+          <div>周目加成：大臣初始能力 +${cycleBonus}</div>
+          <div>已解锁名臣卡：${unlockedCards}/3</div>
+          <div>已解锁剧本：${unlockedScripts}/4</div>
+        `;
+      }
     }
 
     function closeSettings(e) {
@@ -3430,12 +4421,14 @@
     let archiveTab = 'characters';
 
     function openArchive() {
+      playSound('click');
       archiveTab = 'characters';
       renderArchiveContent();
       document.getElementById('archiveModal').classList.remove('hidden');
     }
 
     function closeArchive(e) {
+      playSound('click');
       if (e && e.target !== document.getElementById('archiveModal')) return;
       document.getElementById('archiveModal').classList.add('hidden');
     }
@@ -3679,8 +4672,336 @@
     function restartGame() {
       showDifficultySelect();
     }
+    
+    // ==================== V3.0 周目系统 ====================
+    function loadNewgamePlus() {
+      try {
+        const raw = localStorage.getItem('lyg_newgame_plus');
+        if (!raw) return getDefaultNewgamePlus();
+        const data = JSON.parse(raw);
+        return { ...getDefaultNewgamePlus(), ...data };
+      } catch (e) { return getDefaultNewgamePlus(); }
+    }
+    
+    function saveNewgamePlus(data) {
+      try { localStorage.setItem('lyg_newgame_plus', JSON.stringify(data)); } catch (e) {}
+    }
+    
+    function getDefaultNewgamePlus() {
+      return {
+        cycleCount: 0,
+        nameCards: {
+          duruohui: { unlocked: false, usedCount: 0 },
+          lijing: { unlocked: false, usedCount: 0 },
+          chusuliang: { unlocked: false, usedCount: 0 }
+        },
+        scripts: {
+          normal: { unlocked: true, clearedCount: 0 },
+          xuanwumen: { unlocked: false, clearedCount: 0 },
+          turkic_defeated: { unlocked: false, clearedCount: 0 },
+          prince_deposed: { unlocked: false, clearedCount: 0 },
+          weizheng_early: { unlocked: false, clearedCount: 0 }
+        },
+        challengeStats: {
+          turkic_war: { great: 0, win: 0, stalemate: 0, defeat: 0 },
+          prince_struggle: { stable: 0, transit: 0, chaos: 0 }
+        }
+      };
+    }
+    
+    function incrementCycleAndUnlocks() {
+      // 幂等保护：同一局只结算一次（结局页刷新或页内购买后 renderAll 会重复触发 showEnding）
+      if (gameState.cycleCounted) return;
+      gameState.cycleCounted = true;
+      saveGame();
+
+      const ng = loadNewgamePlus();
+      const achData = loadAchievements();
+      
+      // 周目+1
+      ng.cycleCount += 1;
+      
+      // 记录剧本通关次数
+      if (gameState.scriptId && ng.scripts[gameState.scriptId]) {
+        ng.scripts[gameState.scriptId].clearedCount += 1;
+      }
+      
+      // 记录挑战结果
+      if (gameState.challengeResults) {
+        Object.entries(gameState.challengeResults).forEach(([key, rank]) => {
+          if (ng.challengeStats[key] && ng.challengeStats[key][rank] !== undefined) {
+            ng.challengeStats[key][rank] += 1;
+          }
+        });
+      }
+      
+      // 解锁名臣卡检查
+      // 杜如晦：触发全部6种结局
+      if (!ng.nameCards.duruohui.unlocked && (achData.endingsSeen || []).length >= 6) {
+        ng.nameCards.duruohui.unlocked = true;
+      }
+      // 李靖：决战突厥大捷5次
+      const turkicGreat = (ng.challengeStats.turkic_war && ng.challengeStats.turkic_war.great) || 0;
+      if (!ng.nameCards.lijing.unlocked && turkicGreat >= 5) {
+        ng.nameCards.lijing.unlocked = true;
+      }
+      // 褚遂良：魏征好感达100通关（本局检查）
+      if (!ng.nameCards.chusuliang.unlocked && gameState.characters.weizheng && gameState.characters.weizheng.favor >= 100) {
+        ng.nameCards.chusuliang.unlocked = true;
+      }
+      
+      // 解锁剧本检查
+      // 玄武门刚结束：hard难度获得太宗谥号
+      if (!ng.scripts.xuanwumen.unlocked && gameState.difficulty === 'hard' && gameState.titleId === 'taizong') {
+        ng.scripts.xuanwumen.unlocked = true;
+      }
+      // 突厥已灭：决战突厥大捷3次
+      if (!ng.scripts.turkic_defeated.unlocked && turkicGreat >= 3) {
+        ng.scripts.turkic_defeated.unlocked = true;
+      }
+      // 太子已废：储位暗涌稳定3次
+      const princeStable = (ng.challengeStats.prince_struggle && ng.challengeStats.prince_struggle.stable) || 0;
+      if (!ng.scripts.prince_deposed.unlocked && princeStable >= 3) {
+        ng.scripts.prince_deposed.unlocked = true;
+      }
+      // 魏征早逝：魏征好感-100通关（本局检查）
+      if (!ng.scripts.weizheng_early.unlocked && gameState.characters.weizheng && gameState.characters.weizheng.favor <= -100) {
+        ng.scripts.weizheng_early.unlocked = true;
+      }
+      
+      saveNewgamePlus(ng);
+    }
+
+    // V3.0: 渲染结局页周目信息（结算逻辑见 incrementCycleAndUnlocks）
+    function renderCycleInfo(ng) {
+      const cycleInfo = document.getElementById('cycleInfo');
+      if (cycleInfo && ng) {
+        cycleInfo.innerHTML = `🔄 <strong>第 ${ng.cycleCount} 周目</strong> · 周目加成：大臣初始能力 +${Math.min(Math.floor(ng.cycleCount / 3) * 5, 30)}`;
+      }
+    }
+    
+    // V3.0: 剧本选择弹窗
+    function showScriptSelect() {
+      const ng = loadNewgamePlus();
+      const availableScripts = Object.values(config.scripts).filter(sc => !sc.unlockCondition || (ng.scripts[sc.id] && ng.scripts[sc.id].unlocked));
+      const modal = document.getElementById('scriptSelectModal');
+      const content = document.getElementById('scriptSelectContent');
+      if (!modal || !content) {
+        // 如果弹窗不存在，直接跳到名臣卡选择
+        showNameCardSelect();
+        return;
+      }
+      content.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${availableScripts.map(sc => `
+            <button class="btn btn-secondary" style="text-align:left; padding:12px;" onclick="selectScript('${sc.id}')">
+              <div style="font-weight:bold; font-size:1rem; color:var(--red); margin-bottom:4px;">${sc.emoji} ${sc.name}</div>
+              <div style="font-size:0.8rem; color:var(--text-light);">${sc.desc}</div>
+              ${sc.unlockCondition ? '<div style="font-size:0.7rem; color:var(--gold); margin-top:4px;">🔓 已解锁</div>' : ''}
+            </button>
+          `).join('')}
+          <button class="btn btn-secondary" style="text-align:center; padding:8px; opacity:0.8;" onclick="backToDifficulty()">← 返回难度选择</button>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function backToDifficulty() {
+      document.getElementById('scriptSelectModal').classList.add('hidden');
+      showDifficultySelect();
+    }
+    
+    function selectScript(scriptId) {
+      document.getElementById('scriptSelectModal').classList.add('hidden');
+      showNameCardSelect(scriptId);
+    }
+    
+    // V3.0: 名臣卡选择弹窗
+    function showNameCardSelect(scriptId) {
+      const ng = loadNewgamePlus();
+      const availableCards = Object.values(config.nameCards).filter(nc => ng.nameCards[nc.id] && ng.nameCards[nc.id].unlocked);
+      const modal = document.getElementById('nameCardSelectModal');
+      const content = document.getElementById('nameCardSelectContent');
+      if (!modal || !content) {
+        // 如果弹窗不存在，直接开始游戏
+        startNewGame(scriptId, null);
+        return;
+      }
+      if (availableCards.length === 0) {
+        modal.classList.add('hidden');
+        startNewGame(scriptId, null);
+        return;
+      }
+      content.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn btn-secondary" style="text-align:left; padding:12px;" onclick="selectNameCard('${scriptId}', null)">
+            <div style="font-weight:bold; font-size:1rem; color:var(--text-light); margin-bottom:4px;">🚫 不携带名臣卡</div>
+            <div style="font-size:0.8rem; color:var(--text-light);">以标准配置开始</div>
+          </button>
+          ${availableCards.map(nc => {
+            const portraitHtml = nc.portrait
+              ? `<img src="${nc.portrait}" alt="${nc.name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-right:10px;" onerror="this.style.display='none'">`
+              : '';
+            return `
+            <button class="btn btn-secondary" style="text-align:left; padding:12px; display:flex; align-items:center;" onclick="selectNameCard('${scriptId}', '${nc.id}')">
+              ${portraitHtml}
+              <div>
+                <div style="font-weight:bold; font-size:1rem; color:var(--red); margin-bottom:4px;">${nc.emoji} ${nc.name}</div>
+                <div style="font-size:0.8rem; color:var(--text-light);">${nc.desc}</div>
+              </div>
+            </button>
+          `}).join('')}
+          <button class="btn btn-secondary" style="text-align:center; padding:8px; opacity:0.8;" onclick="backToScriptSelect()">← 返回剧本选择</button>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function backToScriptSelect() {
+      document.getElementById('nameCardSelectModal').classList.add('hidden');
+      showScriptSelect();
+    }
+    
+    function selectNameCard(scriptId, nameCardId) {
+      document.getElementById('nameCardSelectModal').classList.add('hidden');
+      startNewGame(scriptId, nameCardId);
+    }
+    
+    function startNewGame(scriptId, nameCardId) {
+      gameState = createInitialState(selectedDifficultyId, scriptId, nameCardId);
+      gameState.currentEvents = randomEvents(config.eventsPerDay);
+      try { localStorage.removeItem('lyg_save'); } catch (e) {}
+      // V3.0: 清空自动存档，防止新开局后误读回上一局的存档
+      try {
+        const slots = getSaveSlots();
+        if (slots.auto) { slots.auto = null; setSaveSlots(slots); }
+      } catch (e) {}
+      // V3.0: 记录名臣卡使用次数
+      if (nameCardId) {
+        try {
+          const ng = loadNewgamePlus();
+          if (ng.nameCards[nameCardId]) {
+            ng.nameCards[nameCardId].usedCount = (ng.nameCards[nameCardId].usedCount || 0) + 1;
+            saveNewgamePlus(ng);
+          }
+        } catch (e) {}
+      }
+      logEvent('game_start', { from: 'new', difficulty: selectedDifficultyId, script: scriptId, nameCard: nameCardId });
+      if (bgmEnabled) startBGM();
+      renderAll();
+    }
+
+    // ==================== V3.2 粒子特效与场景切换 ====================
+    function initParticles() {
+      const canvas = document.getElementById('particleCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      const particles = [];
+      const maxParticles = 40;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      class Particle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h - h;
+          this.size = Math.random() * 2 + 0.5;
+          this.speed = Math.random() * 0.5 + 0.2;
+          this.opacity = Math.random() * 0.5 + 0.2;
+          this.wobble = Math.random() * Math.PI * 2;
+          this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+          this.type = Math.random() > 0.7 ? 'petal' : 'dust';
+        }
+        update() {
+          this.y += this.speed;
+          this.wobble += this.wobbleSpeed;
+          this.x += Math.sin(this.wobble) * 0.3;
+          if (this.y > h + 10) this.reset();
+        }
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.opacity;
+          if (this.type === 'petal') {
+            ctx.fillStyle = '#d4a5a5';
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, this.size * 1.5, this.size, this.wobble, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillStyle = '#e8d48b';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      for (let i = 0; i < maxParticles; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    function showSceneTransition(text, icon, duration = 1200) {
+      return new Promise(resolve => {
+        const overlay = document.getElementById('sceneTransition');
+        const tText = document.getElementById('sceneTransitionText');
+        const tIcon = document.getElementById('sceneTransitionIcon');
+        if (!overlay) { resolve(); return; }
+        tText.textContent = text || '';
+        tIcon.textContent = icon || '';
+        overlay.classList.add('active');
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          resolve();
+        }, duration);
+      });
+    }
+
+    function enhanceEventCard() {
+      const card = document.querySelector('.event-card');
+      if (card) card.classList.add('scroll-in');
+    }
+
+    function updateCharacterGlow() {
+      Object.entries(gameState.characters).forEach(([key, char]) => {
+        const card = document.getElementById('char-' + key);
+        if (!card) return;
+        if (char.favor >= 60 && !gameState.deceased[key]) {
+          card.classList.add('glow-pulse');
+        } else {
+          card.classList.remove('glow-pulse');
+        }
+      });
+    }
 
     // ==================== 初始化 ====================
+    function init() {
+      checkVersion();
+      initParticles();
+      // V3.2: 启动画面控制入口，不直接开始游戏
+      const hasSave = (() => {
+        try {
+          const slots = getSaveSlots();
+          return !!(slots.auto || slots.slot1 || slots.slot2 || slots.slot3);
+        } catch (e) { return false; }
+      })();
+      const enterText = document.getElementById('splashEnterText');
+      if (enterText) enterText.textContent = hasSave ? '继续游戏' : '开始游戏';
+    }
+
+    init();
     function checkVersion() {
       try {
         const savedVersion = localStorage.getItem('lyg_version');
@@ -3690,24 +5011,41 @@
           localStorage.removeItem('lyg_archive_unlocks');
           // V1.5: 成就数据跨版本保留
           // localStorage.removeItem('lyg_achievements');
+          // V3.0: 周目数据跨版本保留
+          // localStorage.removeItem('lyg_newgame_plus');
           localStorage.setItem('lyg_version', config.version);
-          console.log(`版本已更新：${savedVersion || '无'} → ${config.version}，旧存档已清除（成就数据保留）`);
+          console.log(`版本已更新：${savedVersion || '无'} → ${config.version}，旧存档已清除（成就/周目数据保留）`);
         }
       } catch (e) {}
+    }
+
+    // V3.2: 启动画面点击进入
+    function enterGame() {
+      const splash = document.getElementById('splashScreen');
+      if (!splash || splash.classList.contains('hidden')) return;
+      splash.classList.add('hidden');
+      playSound('click');
+      setTimeout(() => {
+        splash.style.display = 'none';
+        loadSoundSettings();
+        const hasSaveData = loadGame();
+        if (!hasSaveData) {
+          showDifficultySelect();
+        } else {
+          gameState.currentEvents = randomEvents(config.eventsPerDay);
+          if (bgmEnabled) startBGM();
+          logEvent('game_start', { from: 'save' });
+          renderAll();
+        }
+      }, 800);
     }
 
     window.onload = function() {
       checkVersion();
       loadSoundSettings();
       const hasSaveData = loadGame();
-      if (!hasSaveData) {
-        showDifficultySelect();
-      } else {
-        gameState.currentEvents = randomEvents(config.eventsPerDay);
-        if (bgmEnabled) startBGM();
-        logEvent('game_start', { from: 'save' });
-        renderAll();
-      }
+      const enterText = document.getElementById('splashEnterText');
+      if (enterText) enterText.textContent = hasSaveData ? '继续游戏' : '开始游戏';
     };
 
     function showDifficultySelect() {
@@ -3730,14 +5068,13 @@
       modal.classList.remove('hidden');
     }
 
+    let selectedDifficultyId = 'normal';
+    
     function selectDifficulty(difficultyId) {
+      selectedDifficultyId = difficultyId;
       document.getElementById('difficultyModal').classList.add('hidden');
-      gameState = createInitialState(difficultyId);
-      gameState.currentEvents = randomEvents(config.eventsPerDay);
-      try { localStorage.removeItem('lyg_save'); } catch (e) {}
-      logEvent('game_start', { from: 'new', difficulty: difficultyId });
-      if (bgmEnabled) startBGM();
-      renderAll();
+      // V3.0: 先选择剧本，再选择名臣卡，最后开始
+      showScriptSelect();
     }
 
     // ==================== 存档系统 V1.2.2 ====================
@@ -4250,6 +5587,33 @@
       renderEditorEventList();
       alert('已恢复默认事件配置');
     }
-  </script>
+  function setupInkRipple() {
+      document.querySelectorAll('.btn').forEach(btn => {
+        if (btn.dataset.inkSetup) return;
+        btn.dataset.inkSetup = 'true';
+        btn.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          ripple.className = 'btn-ink';
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+          this.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 500);
+        });
+      });
+    }
+    
+    </script>
+  <!-- 场景切换遮罩 -->
+  <div id="sceneTransition" class="scene-transition">
+    <div class="scene-transition-icon" id="sceneTransitionIcon"></div>
+    <div class="scene-transition-text" id="sceneTransitionText"></div>
+  </div>
+
+  <!-- 粒子特效 Canvas -->
+  <canvas id="particleCanvas"></canvas>
+
 </body>
 </html>

@@ -1,0 +1,8 @@
+# 浏览器自动化测试残留（非项目文件）
+=0.2.6
+click_req*.json
+eval_req*.json
+eval_ending.json
+nav_req.json
+ss_req.json
+patch_step2.py
