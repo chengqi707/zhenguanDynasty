@@ -44,7 +44,7 @@ function getSharePath(seed) {
 
 function getShareImageUrl() {
   // 使用云存储中的分享图片，或动态生成
-  return 'cloud://lingyange-xxx/share-card.png'; // 替换为实际云存储路径
+  return 'cloud://lyg-cloud-env/share-card.png'; // 替换为实际云存储路径
 }
 
 module.exports = {

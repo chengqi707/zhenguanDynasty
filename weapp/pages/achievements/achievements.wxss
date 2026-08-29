@@ -1,0 +1,102 @@
+/* 成就殿样式 */
+.container {
+  padding: 20rpx;
+}
+
+.achievement-header {
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.achievement-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--gold);
+  letter-spacing: 8rpx;
+}
+
+.achievement-subtitle {
+  font-size: 28rpx;
+  color: var(--text-light);
+  margin-top: 10rpx;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+  overflow-x: auto;
+}
+
+.category-tab {
+  padding: 12rpx 24rpx;
+  border: 2rpx solid var(--gold-light);
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: var(--text-light);
+  white-space: nowrap;
+  background: var(--black-light);
+}
+
+.category-tab.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201, 162, 39, 0.15);
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.achievement-card {
+  border: 2rpx solid var(--gold-light);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+  background: var(--paper);
+}
+
+.achievement-card.unlocked {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #fffef8, #f7f3e8);
+  box-shadow: 0 4rpx 12rpx rgba(201, 162, 39, 0.2);
+}
+
+.achievement-card.locked {
+  opacity: 0.6;
+  background: #f0ece0;
+  border-color: #ccc;
+}
+
+.achievement-icon {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.achievement-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 6rpx;
+}
+
+.achievement-card.unlocked .achievement-name {
+  color: var(--red);
+}
+
+.achievement-card.locked .achievement-name {
+  color: var(--text-light);
+}
+
+.achievement-desc {
+  font-size: 22rpx;
+  color: var(--text-light);
+  line-height: 1.4;
+  margin-bottom: 8rpx;
+}
+
+.achievement-rarity {
+  font-size: 24rpx;
+}

@@ -3,7 +3,7 @@
 const app = getApp();
 
 // 云开发环境 ID（需在小程序后台开通云开发）
-const CLOUD_ENV = 'lingyange-xxx'; // 替换为实际环境 ID
+const CLOUD_ENV = 'lyg-cloud-env'; // 替换为实际环境 ID
 
 function initCloud() {
   if (!wx.cloud) {

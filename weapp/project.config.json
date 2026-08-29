@@ -1,0 +1,40 @@
+{
+  "description": "项目配置文件",
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "cloudfunctions" }
+    ]
+  },
+  "setting": {
+    "bundle": false,
+    "userConfirmedBundleSwitch": false,
+    "urlCheck": true,
+    "scopeDataCheck": false,
+    "coverView": true,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "condition": false
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.0.0",
+  "appid": "wx YOUR_APPID_HERE",
+  "projectname": "凌烟阁密档",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloudfunctionTemplateRoot": "cloudfunctions/",
+  "watchOptions": {
+    "ignore": [
+      "node_modules",
+      "cloudfunctions"
+    ]
+  },
+  "debugOptions": {
+    "hidedInDevtools": []
+  },
+  "scripts": {}
+}

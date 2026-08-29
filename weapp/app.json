@@ -2,7 +2,10 @@
   "pages": [
     "pages/index/index",
     "pages/game/game",
-    "pages/shop/shop"
+    "pages/shop/shop",
+    "pages/achievements/achievements",
+    "pages/leaderboard/leaderboard",
+    "pages/harem/harem"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -19,21 +22,19 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "assets/tab-home.png",
-        "selectedIconPath": "assets/tab-home-active.png"
+        "text": "首页"
       },
       {
         "pagePath": "pages/game/game",
-        "text": "朝政",
-        "iconPath": "assets/tab-game.png",
-        "selectedIconPath": "assets/tab-game-active.png"
+        "text": "朝政"
       },
       {
         "pagePath": "pages/shop/shop",
-        "text": "商铺",
-        "iconPath": "assets/tab-shop.png",
-        "selectedIconPath": "assets/tab-shop-active.png"
+        "text": "商铺"
+      },
+      {
+        "pagePath": "pages/achievements/achievements",
+        "text": "成就"
       }
     ]
   },
@@ -42,5 +43,6 @@
   "permission": {},
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
-  "usingComponents": {}
+  "usingComponents": {},
+  "__usePrivacyCheck__": true
 }

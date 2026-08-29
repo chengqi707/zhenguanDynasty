@@ -1,0 +1,14 @@
+<view class="container">
+  <view class="harem-header">
+    <view class="harem-title">🌸 后宫</view>
+    <view class="harem-subtitle">深宫大院，暗流涌动</view>
+  </view>
+
+  <view class="harem-grid">
+    <view class="harem-card" wx:for="{{characters}}" wx:key="key">
+      <view class="harem-portrait">{{item.emoji}}</view>
+      <view class="harem-name">{{item.name}}</view>
+      <view class="harem-title">{{item.title}}</view>
+    </view>
+  </view>
+</view>

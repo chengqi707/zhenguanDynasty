@@ -1,2 +1,6 @@
-<!-- 商铺页面占位 -->
-<view></view>
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "商铺",
+  "navigationBarBackgroundColor": "#1a1a1a",
+  "navigationBarTextStyle": "white"
+}

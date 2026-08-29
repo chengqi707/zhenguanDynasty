@@ -1,0 +1,99 @@
+{
+  "description": "凌烟阁密档 云开发数据库 Schema",
+  "collections": [
+    {
+      "name": "game_saves",
+      "description": "用户游戏存档",
+      "fields": {
+        "_openid": { "type": "string", "required": true, "description": "用户openid" },
+        "slotId": { "type": "string", "required": true, "description": "存档位ID" },
+        "saveData": { "type": "object", "required": true, "description": "存档数据" },
+        "createTime": { "type": "date", "required": true },
+        "updateTime": { "type": "date", "required": true }
+      },
+      "indexes": [
+        { "name": "openid_slotId", "keys": { "_openid": 1, "slotId": 1 }, "unique": true }
+      ]
+    },
+    {
+      "name": "leaderboard",
+      "description": "全球排行榜",
+      "fields": {
+        "_openid": { "type": "string", "required": true },
+        "nickname": { "type": "string", "required": false },
+        "score": { "type": "number", "required": true },
+        "title": { "type": "string", "required": false },
+        "cycle": { "type": "number", "required": false },
+        "updateTime": { "type": "date", "required": true }
+      },
+      "indexes": [
+        { "name": "score", "keys": { "score": -1 } }
+      ]
+    },
+    {
+      "name": "purchase_logs",
+      "description": "购买记录",
+      "fields": {
+        "_openid": { "type": "string", "required": true },
+        "productId": { "type": "string", "required": true },
+        "type": { "type": "string", "required": true },
+        "status": { "type": "string", "required": true },
+        "createTime": { "type": "date", "required": true }
+      },
+      "indexes": [
+        { "name": "openid_time", "keys": { "_openid": 1, "createTime": -1 } }
+      ]
+    },
+    {
+      "name": "orders",
+      "description": "微信支付订单",
+      "fields": {
+        "_openid": { "type": "string", "required": true },
+        "orderId": { "type": "string", "required": true },
+        "productId": { "type": "string", "required": true },
+        "productName": { "type": "string", "required": true },
+        "price": { "type": "number", "required": true },
+        "status": { "type": "string", "required": true },
+        "createTime": { "type": "date", "required": true },
+        "payTime": { "type": "date", "required": false }
+      },
+      "indexes": [
+        { "name": "orderId", "keys": { "orderId": 1 }, "unique": true },
+        { "name": "openid_status", "keys": { "_openid": 1, "status": 1 } }
+      ]
+    },
+    {
+      "name": "user_purchases",
+      "description": "用户已购买商品",
+      "fields": {
+        "_openid": { "type": "string", "required": true },
+        "productId": { "type": "string", "required": true },
+        "productName": { "type": "string", "required": true },
+        "price": { "type": "number", "required": true },
+        "orderId": { "type": "string", "required": true },
+        "purchaseTime": { "type": "date", "required": true }
+      },
+      "indexes": [
+        { "name": "openid_product", "keys": { "_openid": 1, "productId": 1 }, "unique": true }
+      ]
+    },
+    {
+      "name": "user_profiles",
+      "description": "用户资料",
+      "fields": {
+        "_openid": { "type": "string", "required": true },
+        "nickname": { "type": "string", "required": false },
+        "avatarUrl": { "type": "string", "required": false },
+        "totalPlayTime": { "type": "number", "required": false, "default": 0 },
+        "cycleCount": { "type": "number", "required": false, "default": 0 },
+        "achievements": { "type": "array", "required": false },
+        "vipLevel": { "type": "number", "required": false, "default": 0 },
+        "createTime": { "type": "date", "required": true },
+        "updateTime": { "type": "date", "required": true }
+      },
+      "indexes": [
+        { "name": "openid", "keys": { "_openid": 1 }, "unique": true }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,9 @@
 
 const app = getApp();
 
+// 激励视频广告位 ID（占位，配置后 app.js onLaunch 才会初始化广告）
+const AD_UNIT_ID = '';
+
 let rewardedVideoAd = null;
 let bannerAd = null;
 
@@ -11,7 +14,7 @@ function initRewardedAd(adUnitId) {
     console.warn('当前版本不支持激励视频广告');
     return null;
   }
-  rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId });
+  rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: adUnitId || AD_UNIT_ID });
   
   rewardedVideoAd.onLoad(() => {
     console.log('激励视频广告加载成功');
@@ -32,6 +35,8 @@ function showRewardedAd(options = {}) {
     }
     
     if (!rewardedVideoAd) {
+      // 未配置广告位时走友好提示回退（由调用方 catch 后 toast），不报错
+      console.warn('广告未初始化（未配置广告位 ID）');
       reject(new Error('广告未初始化'));
       return;
     }
@@ -94,6 +99,7 @@ function destroyBannerAd() {
 }
 
 module.exports = {
+  AD_UNIT_ID,
   initRewardedAd,
   showRewardedAd,
   initBannerAd,

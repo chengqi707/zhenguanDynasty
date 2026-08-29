@@ -1,0 +1,54 @@
+/* 后宫样式 */
+.container {
+  padding: 20rpx;
+}
+
+.harem-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.harem-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #d8a7c8;
+  letter-spacing: 8rpx;
+}
+
+.harem-subtitle {
+  font-size: 28rpx;
+  color: var(--text-light);
+  margin-top: 10rpx;
+}
+
+.harem-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20rpx;
+}
+
+.harem-card {
+  border: 2rpx solid #d8a7c8;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #fff8fb, #fcedf5);
+  box-shadow: 0 4rpx 12rpx rgba(142, 68, 173, 0.15);
+}
+
+.harem-portrait {
+  font-size: 80rpx;
+  margin-bottom: 12rpx;
+}
+
+.harem-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 8rpx;
+}
+
+.harem-title {
+  font-size: 26rpx;
+  color: #8e44ad;
+}

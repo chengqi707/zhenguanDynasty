@@ -1,1 +1,6 @@
-{}
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "凌烟阁密档",
+  "navigationBarBackgroundColor": "#1a1a1a",
+  "navigationBarTextStyle": "white"
+}

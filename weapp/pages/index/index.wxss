@@ -9,7 +9,7 @@
 
 .header {
   text-align: center;
-  margin-bottom: 60rpx;
+  margin-bottom: 40rpx;
 }
 
 .title {
@@ -27,11 +27,35 @@
   opacity: 0.8;
 }
 
+/* V3.0 周目信息 */
+.cycle-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30rpx;
+  gap: 8rpx;
+}
+
+.cycle-badge {
+  background: linear-gradient(135deg, var(--gold), var(--red));
+  color: var(--paper);
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.cycle-bonus {
+  font-size: 24rpx;
+  color: var(--gold-light);
+  opacity: 0.9;
+}
+
 .characters-preview {
   display: flex;
   justify-content: center;
   gap: 30rpx;
-  margin-bottom: 60rpx;
+  margin-bottom: 50rpx;
 }
 
 .char-item {
@@ -70,7 +94,7 @@
 }
 
 .version {
-  margin-top: 60rpx;
+  margin-top: 40rpx;
   font-size: 24rpx;
   color: var(--text-light);
   opacity: 0.6;
@@ -81,6 +105,7 @@
   display: flex;
   flex-direction: column;
   gap: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .difficulty-item {
@@ -115,6 +140,125 @@
   color: var(--text-light);
 }
 
+/* V3.0 选择器 */
+.selector-section {
+  margin-bottom: 20rpx;
+  padding: 16rpx;
+  background: var(--black-light);
+  border-radius: 12rpx;
+  border: 1rpx solid var(--gold-light);
+}
+
+.selector-label {
+  font-size: 26rpx;
+  color: var(--gold-light);
+  margin-bottom: 12rpx;
+}
+
+.selector-value {
+  font-size: 30rpx;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 16rpx;
+  background: var(--black);
+  border-radius: 8rpx;
+}
+
+.selector-value .arrow {
+  color: var(--gold);
+  font-size: 24rpx;
+}
+
+.namecard-grid {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.namecard-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx;
+  background: var(--black);
+  border: 2rpx solid var(--gold-light);
+  border-radius: 12rpx;
+  min-width: 140rpx;
+  opacity: 0.6;
+}
+
+.namecard-item.selected {
+  border-color: var(--gold);
+  background: rgba(201, 162, 39, 0.15);
+  opacity: 1;
+}
+
+.namecard-item.locked {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.namecard-emoji {
+  font-size: 40rpx;
+  margin-bottom: 4rpx;
+}
+
+.namecard-name {
+  font-size: 24rpx;
+  color: var(--text);
+  font-weight: bold;
+}
+
+.namecard-title {
+  font-size: 20rpx;
+  color: var(--text-light);
+}
+
+/* 剧本列表 */
+.script-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.script-item {
+  border: 2rpx solid var(--gold-light);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  background: var(--black-light);
+  opacity: 0.7;
+}
+
+.script-item.selected {
+  border-color: var(--gold);
+  background: rgba(201, 162, 39, 0.15);
+  opacity: 1;
+}
+
+.script-item.locked {
+  opacity: 0.4;
+}
+
+.script-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--red);
+  margin-bottom: 8rpx;
+}
+
+.script-desc {
+  font-size: 24rpx;
+  color: var(--text);
+  margin-bottom: 8rpx;
+}
+
+.script-lock {
+  font-size: 22rpx;
+  color: var(--gold-light);
+}
+
 /* 设置 */
 .setting-item {
   display: flex;
@@ -128,4 +272,10 @@
 
 .ad-removed {
   color: var(--gold);
+}
+
+/* 大弹窗 */
+.modal-large {
+  max-height: 80vh;
+  overflow-y: auto;
 }

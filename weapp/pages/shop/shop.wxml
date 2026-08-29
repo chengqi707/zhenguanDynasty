@@ -1,25 +1,34 @@
-<!-- 商铺页面：去广告、道具 -->
+<!-- 商铺页面：去广告、名臣卡、剧本、加成包 -->
 <view class="container shop-container">
   <view class="shop-header">
     <view class="shop-title">皇家商铺</view>
-    <view class="shop-subtitle">支持贞观之治，去除烦扰</view>
+    <view class="shop-subtitle">支持贞观之治，获取强力助力</view>
   </view>
 
   <view class="products">
-    <view class="product-card {{noAds ? 'purchased' : ''}}">
-      <view class="product-icon">🚫</view>
-      <view class="product-info">
-        <view class="product-name">永久去广告</view>
-        <view class="product-desc">移除所有激励视频和 Banner 广告，享受纯净朝政体验</view>
-        <view class="product-price">¥6.00</view>
+    <view 
+      class="product-card {{item.purchased ? 'purchased' : ''}}"
+      wx:for="{{products}}"
+      wx:key="id"
+    >
+      <view class="product-top">
+        <view class="product-icon">{{item.icon}}</view>
+        <view class="product-info">
+          <view class="product-name">{{item.name}}</view>
+          <view class="product-desc">{{item.desc}}</view>
+        </view>
       </view>
-      <button 
-        class="btn {{noAds ? 'btn-disabled' : 'btn-primary'}}" 
-        bindtap="purchaseRemoveAds"
-        disabled="{{noAds}}"
-      >
-        {{noAds ? '已购买' : '立即购买'}}
-      </button>
+      <view class="product-bottom">
+        <view class="product-price">¥{{item.price}}.00</view>
+        <button 
+          class="btn {{item.purchased ? 'btn-disabled' : 'btn-primary'}}" 
+          bindtap="purchaseItem"
+          data-id="{{item.id}}"
+          disabled="{{item.purchased}}"
+        >
+          {{item.purchased ? '已购买' : '立即购买'}}
+        </button>
+      </view>
     </view>
   </view>
 

@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="achievement-header">
+    <view class="achievement-title">🏆 成就殿</view>
+    <view class="achievement-subtitle">已解锁 {{unlockedCount}} / {{totalCount}}</view>
+  </view>
+
+  <view class="category-tabs">
+    <view 
+      class="category-tab {{activeCategory === item.id ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="id"
+      bindtap="switchCategory"
+      data-id="{{item.id}}"
+    >
+      {{item.name}}
+    </view>
+  </view>
+
+  <view class="achievement-grid">
+    <view 
+      class="achievement-card {{item.unlocked ? 'unlocked' : 'locked'}}"
+      wx:for="{{filteredAchievements}}"
+      wx:key="id"
+    >
+      <view class="achievement-icon">{{item.unlocked ? '🏅' : '🔒'}}</view>
+      <view class="achievement-name">{{item.name}}</view>
+      <view class="achievement-desc">{{item.desc}}</view>
+      <view class="achievement-rarity" wx:if="{{item.rarity === 3}}">⭐⭐⭐</view>
+      <view class="achievement-rarity" wx:if="{{item.rarity === 2}}">⭐⭐</view>
+      <view class="achievement-rarity" wx:if="{{item.rarity === 1}}">⭐</view>
+    </view>
+  </view>
+</view>

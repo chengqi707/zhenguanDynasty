@@ -1,0 +1,103 @@
+/* 排行榜样式 */
+.container {
+  padding: 20rpx;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.leaderboard-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--gold);
+  letter-spacing: 8rpx;
+}
+
+.leaderboard-subtitle {
+  font-size: 28rpx;
+  color: var(--text-light);
+  margin-top: 10rpx;
+}
+
+.leaderboard-myrank {
+  font-size: 26rpx;
+  color: var(--gold-light);
+  margin-top: 12rpx;
+}
+
+.leaderboard-mock-badge {
+  display: inline-block;
+  font-size: 22rpx;
+  color: var(--text-light);
+  border: 2rpx solid var(--text-light);
+  border-radius: 8rpx;
+  padding: 4rpx 12rpx;
+  margin-top: 12rpx;
+}
+
+.leaderboard-item.me {
+  border-color: var(--red);
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx;
+  border: 2rpx solid var(--gold-light);
+  border-radius: 12rpx;
+  background: var(--paper);
+}
+
+.leaderboard-item.top {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #fffef8, #f7f3e8);
+}
+
+.rank-number {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--gold);
+  min-width: 60rpx;
+  text-align: center;
+}
+
+.player-info {
+  flex: 1;
+}
+
+.player-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 4rpx;
+}
+
+.player-meta {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+.player-score {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--red);
+}
+
+.loading {
+  text-align: center;
+  padding: 60rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: var(--text-light);
+}

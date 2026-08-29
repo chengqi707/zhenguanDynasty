@@ -1,9 +1,17 @@
-<!-- 首页：开始游戏、继续游戏、难度选择、排行榜 -->
+<!-- 首页：开始游戏、继续游戏、难度选择、排行榜、成就、周目信息 -->
 <view class="container index-container">
   <!-- 标题区 -->
   <view class="header">
     <view class="title">凌烟阁密档</view>
     <view class="subtitle">扮演李世民，书写你的贞观传奇</view>
+  </view>
+
+  <!-- V3.0 周目信息 -->
+  <view class="cycle-info" wx:if="{{cycleCount > 0}}">
+    <view class="cycle-badge">第 {{cycleCount}} 周目</view>
+    <view class="cycle-bonus" wx:if="{{permanentBonus.stability > 0 || permanentBonus.ability > 0}}">
+      永久加成：稳定度 +{{permanentBonus.stability}} · 能力 +{{permanentBonus.ability}}
+    </view>
   </view>
 
   <!-- 角色预览 -->
@@ -22,6 +30,9 @@
     <button class="btn btn-primary action-btn" bindtap="startNewGame">
       {{hasSave ? '新开一局' : '开始朝政'}}
     </button>
+    <button class="btn btn-secondary action-btn" bindtap="showAchievements">
+      成就殿
+    </button>
     <button class="btn btn-secondary action-btn" bindtap="showLeaderboard">
       排行榜
     </button>
@@ -34,9 +45,9 @@
   <view class="version">v{{version}}</view>
 </view>
 
-<!-- 难度选择弹窗 -->
+<!-- 难度选择弹窗（含剧本/名臣卡选择） -->
 <view class="modal-overlay" wx:if="{{showDifficultyModal}}" bindtap="closeDifficultyModal">
-  <view class="modal" catchtap="preventBubble">
+  <view class="modal modal-large" catchtap="preventBubble">
     <view class="modal-title">选择难度</view>
     <view class="difficulty-list">
       <view 
@@ -53,9 +64,57 @@
         </view>
       </view>
     </view>
+
+    <!-- V3.0 剧本选择 -->
+    <view class="selector-section" wx:if="{{unlockedScripts.length > 1}}">
+      <view class="selector-label">开局剧本</view>
+      <view class="selector-value" bindtap="openScriptSelector">
+        {{selectedScriptName}}
+        <text class="arrow">▼</text>
+      </view>
+    </view>
+
+    <!-- V3.0 名臣卡选择 -->
+    <view class="selector-section" wx:if="{{unlockedNameCards.length > 0}}">
+      <view class="selector-label">名臣卡（最多2张）</view>
+      <view class="namecard-grid">
+        <view 
+          class="namecard-item {{selectedNameCards.includes(item.id) ? 'selected' : ''}} {{item.unlocked ? '' : 'locked'}}"
+          wx:for="{{unlockedNameCards}}"
+          wx:key="id"
+          bindtap="toggleNameCard"
+          data-id="{{item.id}}"
+        >
+          <view class="namecard-emoji">{{item.emoji}}</view>
+          <view class="namecard-name">{{item.name}}</view>
+          <view class="namecard-title">{{item.title}}</view>
+        </view>
+      </view>
+    </view>
+
     <button class="btn btn-primary" style="width:100%; margin-top:20rpx;" bindtap="confirmStart">
       确认开始
     </button>
+  </view>
+</view>
+
+<!-- 剧本选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showScriptModal}}" bindtap="closeScriptModal">
+  <view class="modal" catchtap="preventBubble">
+    <view class="modal-title">选择剧本</view>
+    <view class="script-list">
+      <view 
+        class="script-item {{selectedScript === item.id ? 'selected' : ''}} {{item.unlocked ? '' : 'locked'}}"
+        wx:for="{{unlockedScripts}}"
+        wx:key="id"
+        bindtap="selectScript"
+        data-id="{{item.id}}"
+      >
+        <view class="script-name">{{item.name}}</view>
+        <view class="script-desc">{{item.desc}}</view>
+        <view class="script-lock" wx:if="{{!item.unlocked}}">{{item.unlockCondition}}</view>
+      </view>
+    </view>
   </view>
 </view>
 
