@@ -35,7 +35,7 @@ const cloudManager = {
     try {
       const res = await wx.cloud.callFunction({
         name: 'saveGame',
-        data: { openid: id, saveData, slotId }
+        data: { saveData, slotId }
       });
       return res.result;
     } catch (err) {
@@ -50,7 +50,7 @@ const cloudManager = {
     try {
       const res = await wx.cloud.callFunction({
         name: 'loadGame',
-        data: { openid: id, slotId }
+        data: { slotId }
       });
       return res.result;
     } catch (err) {

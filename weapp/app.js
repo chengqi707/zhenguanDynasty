@@ -37,6 +37,8 @@ App({
         if (res.result && res.result.openid) {
           this.globalData.openid = res.result.openid;
           console.log('登录成功，openid 已获取');
+          // 本地旧标记可能来自模拟支付，登录后只恢复服务端已核验的去广告权益。
+          require('./utils/payment.js').checkPurchaseStatus();
         }
       },
       fail: (err) => {
@@ -70,7 +72,7 @@ App({
       if (settings) {
         this.globalData.soundEnabled = settings.sound !== false;
         this.globalData.bgmEnabled = settings.bgm === true;
-        this.globalData.noAds = settings.noAds === true;
+        this.globalData.noAds = false;
       }
     } catch (e) {
       console.error('加载设置失败', e);

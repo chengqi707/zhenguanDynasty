@@ -1,9 +1,11 @@
 {
   "description": "凌烟阁密档 云开发数据库 Schema",
+  "deploymentNote": "securityRules 为部署要求，须在云开发控制台逐集合应用，不会随上传云函数自动生效。受保护集合禁止小程序端直接读写，仅允许服务端访问。",
   "collections": [
     {
       "name": "game_saves",
       "description": "用户游戏存档",
+      "securityRules": { "read": false, "write": false },
       "fields": {
         "_openid": { "type": "string", "required": true, "description": "用户openid" },
         "slotId": { "type": "string", "required": true, "description": "存档位ID" },
@@ -33,6 +35,7 @@
     {
       "name": "purchase_logs",
       "description": "购买记录",
+      "securityRules": { "read": false, "write": false },
       "fields": {
         "_openid": { "type": "string", "required": true },
         "productId": { "type": "string", "required": true },
@@ -47,6 +50,7 @@
     {
       "name": "orders",
       "description": "微信支付订单",
+      "securityRules": { "read": false, "write": false },
       "fields": {
         "_openid": { "type": "string", "required": true },
         "orderId": { "type": "string", "required": true },
@@ -54,6 +58,10 @@
         "productName": { "type": "string", "required": true },
         "price": { "type": "number", "required": true },
         "status": { "type": "string", "required": true },
+        "paymentVerified": { "type": "boolean", "required": false, "description": "仅可信支付服务在验签或主动查单且核对身份、商品和金额后写入，旧订单不得直接补 true" },
+        "transactionId": { "type": "string", "required": false, "description": "支付渠道交易号" },
+        "amount": { "type": "number", "required": false, "description": "服务端定价，整数分" },
+        "amountPaid": { "type": "number", "required": false, "description": "支付渠道核验的实付金额，整数分" },
         "createTime": { "type": "date", "required": true },
         "payTime": { "type": "date", "required": false }
       },
@@ -65,12 +73,15 @@
     {
       "name": "user_purchases",
       "description": "用户已购买商品",
+      "securityRules": { "read": false, "write": false },
       "fields": {
         "_openid": { "type": "string", "required": true },
         "productId": { "type": "string", "required": true },
         "productName": { "type": "string", "required": true },
         "price": { "type": "number", "required": true },
         "orderId": { "type": "string", "required": true },
+        "paymentVerified": { "type": "boolean", "required": false, "description": "仅可信支付服务写入，与已核验订单配对" },
+        "transactionId": { "type": "string", "required": false },
         "purchaseTime": { "type": "date", "required": true }
       },
       "indexes": [

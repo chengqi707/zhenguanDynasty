@@ -3,10 +3,13 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
-exports.main = async (event, context) => {
-  const { openid, saveData, slotId = 'main' } = event;
-  if (!openid || !saveData) {
-    return { code: -1, message: '参数缺失' };
+exports.main = async (event) => {
+  const openid = cloud.getWXContext().OPENID;
+  if (typeof openid !== 'string' || !openid) return { code: -1, message: '请登录后保存存档' };
+  const { saveData, slotId = 'main' } = event || {};
+  if (!saveData || typeof saveData !== 'object' || Array.isArray(saveData) ||
+      typeof slotId !== 'string' || !/^[A-Za-z0-9_-]{1,32}$/.test(slotId)) {
+    return { code: -1, message: '存档参数不正确' };
   }
   try {
     const collection = db.collection('game_saves');
@@ -32,6 +35,6 @@ exports.main = async (event, context) => {
     return { code: 0, message: '保存成功' };
   } catch (err) {
     console.error('保存失败', err);
-    return { code: -1, message: '保存失败', error: err.message };
+    return { code: -1, message: '保存失败，请稍后重试' };
   }
 };

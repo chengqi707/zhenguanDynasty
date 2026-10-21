@@ -7,6 +7,8 @@ const analytics = require('../../utils/analytics.js');
 Page({
   data: {
     noAds: false,
+    purchasingId: '',
+    restoring: false,
     // V3.0 商品
     products: [],
     unlockedNameCards: [],
@@ -17,14 +19,11 @@ Page({
     this.setData({ noAds: app.globalData.noAds });
     this.loadProducts();
     this.loadUnlockedItems();
-    // 检查云端购买状态
-    payment.checkPurchaseStatus().then((hasPurchased) => {
-      this.setData({ noAds: hasPurchased || app.globalData.noAds });
-    });
   },
 
   onShow() {
     this.loadUnlockedItems();
+    this.restorePurchases(false);
   },
 
   loadProducts() {
@@ -73,105 +72,78 @@ Page({
     const cycle = saveManager.getCycleData();
     const nameCards = cycle.unlockedNameCards || [];
     const scripts = cycle.unlockedScripts || [];
-    const products = this.data.products.map(p => {
-      if (p.type === 'nameCard' && nameCards.includes(p.id)) {
-        return { ...p, purchased: true };
-      }
-      if (p.type === 'script' && scripts.includes(p.id)) {
-        return { ...p, purchased: true };
-      }
-      if (p.id === 'removeAds' && app.globalData.noAds) {
-        return { ...p, purchased: true };
-      }
-      return p;
-    });
-    this.setData({ products, unlockedNameCards: nameCards, unlockedScripts: scripts });
+    const products = this.data.products.map(p => ({
+      ...p,
+      purchased: (p.type === 'nameCard' && nameCards.includes(p.id)) ||
+        (p.type === 'script' && scripts.includes(p.id)) ||
+        (p.id === 'removeAds' && app.globalData.noAds) ||
+        (p.id === 'cycleBoost' && (cycle.appliedPurchases || []).includes('cycle_boost'))
+    }));
+    this.setData({ products, noAds: app.globalData.noAds, unlockedNameCards: nameCards, unlockedScripts: scripts });
   },
 
-  purchaseItem(e) {
+  applyReceipt(receipt) {
+    saveManager.applyVerifiedPurchase(receipt);
+    if (receipt.productId === 'remove_ads') {
+      app.globalData.noAds = true;
+      app.saveSettings();
+    }
+  },
+
+  async restorePurchases(showFeedback = true) {
+    if (this.data.restoring || this.data.purchasingId) return;
+    this.setData({ restoring: true });
+    try {
+      const receipts = await payment.getVerifiedPurchases();
+      receipts.forEach(receipt => this.applyReceipt(receipt));
+      this.loadUnlockedItems();
+      if (showFeedback !== false) {
+        wx.showToast({ title: receipts.length ? '已恢复购买权益' : '暂无已核验的购买记录', icon: 'none' });
+      }
+    } catch (err) {
+      if (showFeedback !== false) wx.showToast({ title: err.message || '权益恢复失败，请稍后重试', icon: 'none' });
+    } finally {
+      this.setData({ restoring: false });
+    }
+  },
+
+  async purchaseItem(e) {
+    if (this.data.purchasingId || this.data.restoring) return;
     const id = e.currentTarget.dataset.id;
     const product = this.data.products.find(p => p.id === id);
     if (!product) return;
-
     if (product.purchased) {
-      wx.showToast({ title: '已购买', icon: 'none' });
+      wx.showToast({ title: '已获得该商品', icon: 'none' });
       return;
     }
 
-    wx.showModal({
-      title: '确认购买',
-      content: `${product.name} ¥${product.price}.00，确认支付吗？`,
-      success: (res) => {
-        if (res.confirm) {
-          if (product.type === 'nameCard') {
-            this.purchaseNameCard(product);
-          } else if (product.type === 'script') {
-            this.purchaseScript(product);
-          } else if (product.type === 'boost') {
-            this.purchaseBoost(product);
-          } else {
-            this.purchaseRemoveAds(product);
-          }
-        }
+    // 弹出确认框时即锁定，防止连续点击发起多笔购买。
+    this.setData({ purchasingId: id });
+    try {
+      const confirmed = await new Promise((resolve, reject) => {
+        wx.showModal({
+          title: '确认购买',
+          content: product.name + ' ¥' + product.price + '.00，确认支付吗？',
+          success: res => resolve(res.confirm),
+          fail: () => reject(new Error('无法打开购买确认，请稍后重试'))
+        });
+      });
+      if (!confirmed) return;
+      const receipt = await payment.purchase(id);
+      const expectedId = payment.PRODUCTS[id].id;
+      if (receipt.success !== true || !payment.isVerifiedReceipt(receipt, expectedId)) {
+        throw new Error('购买权益尚未通过核验');
       }
-    });
-  },
-
-  purchaseRemoveAds(product) {
-    payment.purchase('removeAds').then(() => {
-      app.globalData.noAds = true;
-      app.saveSettings();
+      this.applyReceipt(receipt);
       this.loadUnlockedItems();
-      analytics.logPurchase('remove_ads', product.price);
-      wx.showToast({ title: '购买成功', icon: 'success' });
-    }).catch((err) => {
-      wx.showToast({ title: err.message || '购买失败', icon: 'none' });
-    });
-  },
-
-  purchaseNameCard(product) {
-    payment.purchase(product.id).then(() => {
-      saveManager.unlockNameCard(product.id);
-      const cycle = saveManager.getCycleData();
-      if (!cycle.unlockedNameCards.includes(product.id)) {
-        cycle.unlockedNameCards.push(product.id);
-        saveManager.saveCycleData(cycle);
-      }
-      this.loadUnlockedItems();
-      analytics.logPurchase('namecard_' + product.id, product.price);
-      wx.showToast({ title: `获得名臣卡：${product.name}`, icon: 'success' });
-    }).catch((err) => {
-      wx.showToast({ title: err.message || '购买失败', icon: 'none' });
-    });
-  },
-
-  purchaseScript(product) {
-    payment.purchase(product.id).then(() => {
-      const cycle = saveManager.getCycleData();
-      if (!cycle.unlockedScripts.includes(product.id)) {
-        cycle.unlockedScripts.push(product.id);
-        saveManager.saveCycleData(cycle);
-      }
-      this.loadUnlockedItems();
-      analytics.logPurchase('script_' + product.id, product.price);
-      wx.showToast({ title: `解锁剧本：${product.name}`, icon: 'success' });
-    }).catch((err) => {
-      wx.showToast({ title: err.message || '购买失败', icon: 'none' });
-    });
-  },
-
-  purchaseBoost(product) {
-    payment.purchase(product.id).then(() => {
-      const cycle = saveManager.getCycleData();
-      cycle.permanentBonus.stability += 5;
-      cycle.permanentBonus.ability += 3;
-      saveManager.saveCycleData(cycle);
-      this.loadUnlockedItems();
-      analytics.logPurchase('cycle_boost', product.price);
-      wx.showToast({ title: '永久加成已应用', icon: 'success' });
-    }).catch((err) => {
-      wx.showToast({ title: err.message || '购买失败', icon: 'none' });
-    });
+      // 恢复已有权益不重复记为新购买。
+      if (!receipt.restored) analytics.logPurchase(receipt.productId, product.price);
+      wx.showToast({ title: receipt.restored ? '已恢复购买权益' : '购买成功', icon: 'success' });
+    } catch (err) {
+      wx.showToast({ title: err.message || '购买失败，请稍后重试', icon: 'none' });
+    } finally {
+      this.setData({ purchasingId: '' });
+    }
   },
 
   onShareAppMessage() {

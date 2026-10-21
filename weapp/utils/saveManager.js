@@ -122,6 +122,8 @@ function getDefaultCycleData() {
     unlockedScripts: ['default'],
     unlockedNameCards: [],
     permanentBonus: { stability: 0, ability: 0 },
+    // 与加成一同保存，防止回调重复、页面重入或重启后再次领取。
+    appliedPurchases: [],
     endings: [],
     // 各剧本通关次数（供「百变君主」成就）
     scripts: {}
@@ -146,9 +148,36 @@ function getCycleData() {
 function saveCycleData(data) {
   try {
     wx.setStorageSync(CYCLE_KEY, JSON.stringify(data));
+    return true;
   } catch (e) {
     console.error('周目数据保存失败', e);
+    return false;
   }
+}
+
+// 仅接收支付管理器取得的服务端凭证；一次写入权益和领取标记。
+function applyVerifiedPurchase(receipt) {
+  const products = ['remove_ads', 'duruhui', 'lijing', 'chusuliang', 'golden_age', 'cycle_boost'];
+  if (!receipt || receipt.verified !== true || receipt.simulated || receipt.local || !products.includes(receipt.productId) ||
+      typeof receipt.orderId !== 'string' || !receipt.orderId ||
+      typeof receipt.transactionId !== 'string' || !receipt.transactionId) {
+    throw new Error('购买权益尚未通过核验');
+  }
+  if (receipt.productId === 'remove_ads') return false;
+  const cycle = getCycleData();
+  const applied = cycle.appliedPurchases || [];
+  if (applied.includes(receipt.productId)) return false;
+  if (['duruhui', 'lijing', 'chusuliang'].includes(receipt.productId)) {
+    if (!cycle.unlockedNameCards.includes(receipt.productId)) cycle.unlockedNameCards.push(receipt.productId);
+  } else if (receipt.productId === 'golden_age') {
+    if (!cycle.unlockedScripts.includes(receipt.productId)) cycle.unlockedScripts.push(receipt.productId);
+  } else if (receipt.productId === 'cycle_boost') {
+    cycle.permanentBonus.stability += 5;
+    cycle.permanentBonus.ability += 3;
+  }
+  cycle.appliedPurchases = [...applied, receipt.productId];
+  if (!saveCycleData(cycle)) throw new Error('权益保存失败，请稍后进入商铺恢复');
+  return true;
 }
 
 function recordCycleEnd(endingData) {
@@ -281,6 +310,7 @@ module.exports = {
   // V3.0
   getCycleData,
   saveCycleData,
+  applyVerifiedPurchase,
   recordCycleEnd,
   getAchievements,
   unlockAchievement,

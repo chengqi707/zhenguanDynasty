@@ -21,19 +21,21 @@
       <view class="product-bottom">
         <view class="product-price">¥{{item.price}}.00</view>
         <button 
-          class="btn {{item.purchased ? 'btn-disabled' : 'btn-primary'}}" 
+          class="btn {{item.purchased || purchasingId || restoring ? 'btn-disabled' : 'btn-primary'}}"
           bindtap="purchaseItem"
           data-id="{{item.id}}"
-          disabled="{{item.purchased}}"
+          disabled="{{item.purchased || purchasingId || restoring}}"
+          loading="{{purchasingId === item.id}}"
         >
-          {{item.purchased ? '已购买' : '立即购买'}}
+          {{item.purchased ? '已获得' : (purchasingId === item.id ? '处理中' : '立即购买')}}
         </button>
       </view>
     </view>
   </view>
 
   <view class="shop-footer">
-    <text>购买后可在所有设备同步权益</text>
+    <text>付费功能暂未开通，当前无法购买</text>
+    <button class="btn btn-primary" bindtap="restorePurchases" loading="{{restoring}}" disabled="{{restoring || purchasingId}}">{{restoring ? '恢复中' : '恢复已核验权益'}}</button>
     <text>如遇问题请联系客服</text>
   </view>
 </view>

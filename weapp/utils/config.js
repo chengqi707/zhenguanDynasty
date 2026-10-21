@@ -2,7 +2,7 @@
 // 与 Web 版本 config 对象保持同步
 
 const config = {
-  version: '3.2.0',
+  version: '3.2.1',
   maxDay: 15,
   eventsPerDay: 3,
   meetCooldown: 3,
